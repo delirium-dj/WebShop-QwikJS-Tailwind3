@@ -31,3 +31,12 @@
   - PriceRange
   - Existence
   - Offered
+
+## Todo
+
+- Product details page
+- Introduce Qwik Link
+- Add to Cart with onClick$
+- Qwik context store for cart
+- Client-only hydration only when clicking
+- Server-side data fetching

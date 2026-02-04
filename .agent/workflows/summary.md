@@ -10,7 +10,7 @@ description: Generates a hand-off summary of today's progress and pending tasks.
 
 ### Step 1: Analyze Recent Work
 
-1. Scan all `?.md` files in root directory.
+1. Scan all `*.md` files in root directory.
 2. Scan the git logs using `git log --oneline`.
 3. List all files modified in the `src/` directory.
 
