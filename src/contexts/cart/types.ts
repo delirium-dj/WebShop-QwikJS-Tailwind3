@@ -36,12 +36,12 @@ import type { QRL } from '@builder.io/qwik';
  */
 export interface CartActions {
   addItem: QRL<(item: Omit<CartItem, 'quantity'>, quantity?: number) => void>;
-  removeItem: QRL<(id: number) => void>;
-  updateQuantity: QRL<(id: number, quantity: number) => void>;
+  removeItem: QRL<(id: number, size?: string, color?: string) => void>;
+  updateQuantity: QRL<(id: number, quantity: number, size?: string, color?: string) => void>;
   clearCart: QRL<() => void>;
   // Getters might return Promises because they cross the serialization boundary
-  getItemQuantity: QRL<(id: number) => number>;
-  isInCart: QRL<(id: number) => boolean>;
+  getItemQuantity: QRL<(id: number, size?: string, color?: string) => number>;
+  isInCart: QRL<(id: number, size?: string, color?: string) => boolean>;
 }
 
 /**

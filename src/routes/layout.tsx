@@ -3,6 +3,7 @@ import { component$, Slot } from '@builder.io/qwik';
 import { routeLoader$ } from '@builder.io/qwik-city';
 import { CartProvider } from '~/contexts/cart';
 import { Header } from '~/components/ui/Header';
+import { ToastProvider } from '~/contexts/toast';
 
 export const useServerTimeLoader = routeLoader$(() => {
   return {
@@ -16,7 +17,9 @@ export default component$(() => {
       <div class="min-h-screen flex flex-col font-sans">
         <Header />
         <main class="flex-1 bg-white">
-          <Slot />
+          <ToastProvider>
+            <Slot />
+          </ToastProvider>
         </main>
         <footer class="bg-gray-900 text-white py-6">
           <div class="container mx-auto px-4 text-center">

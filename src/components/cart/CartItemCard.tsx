@@ -4,8 +4,8 @@ import type { CartItem } from '~/contexts/cart';
 
 type CartItemCardProps = {
   item: CartItem;
-  onUpdateQuantity$: PropFunction<(id: number, quantity: number) => void>;
-  onRemove$: PropFunction<(id: number) => void>;
+  onUpdateQuantity$: PropFunction<(id: number, quantity: number, size?: string, color?: string) => void>;
+  onRemove$: PropFunction<(id: number, size?: string, color?: string) => void>;
 };
 
 /**
@@ -21,12 +21,12 @@ export const CartItemCard = component$<CartItemCardProps>(
 
     const handleQuantityChange = $(async (newQuantity: number) => {
       if (newQuantity > 0 && newQuantity <= 99) {
-        await onUpdateQuantity$(item.id, newQuantity);
+        await onUpdateQuantity$(item.id, newQuantity, item.selectedSize, item.selectedColor);
       }
     });
 
     const handleRemove = $(async () => {
-      await onRemove$(item.id);
+      await onRemove$(item.id, item.selectedSize, item.selectedColor);
     });
 
     return (

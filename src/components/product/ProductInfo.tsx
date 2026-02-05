@@ -1,7 +1,8 @@
-// src/components/product/ProductInfo.tsx (UPDATED with Cart Integration)
+// src/components/product/ProductInfo.tsx (UPDATED with Enhanced Add to Cart)
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { useCart } from '~/contexts/cart';
 import { QuantitySelector } from './QuantitySelector';
+import { AddToCartButton } from '~/components/cart/AddToCartButton';
 
 type ProductInfoProps = {
   id: number;
@@ -20,6 +21,18 @@ type ProductInfoProps = {
   image: string; // Added for cart
 };
 
+/**
+ * Product Info Component
+ * Displays detailed product information on the product detail page.
+ * 
+ * Features:
+ * - Size and color selection
+ * - Quantity selector
+ * - Enhanced Add to Cart button with toast notifications
+ * - Buy Now button for quick checkout
+ * - Stock status indicators
+ * - Product features and specifications
+ */
 export const ProductInfo = component$<ProductInfoProps>((props) => {
   const cart = useCart();
   
@@ -34,7 +47,11 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
 
   const isOutOfStock = props.stock !== undefined && props.stock <= 0;
 
-  const handleAddToCart = $(async () => {
+  /**
+   * Buy Now Handler
+   * Adds the product to cart and immediately navigates to the cart page.
+   */
+  const handleBuyNow = $(async () => {
     isAdding.value = true;
 
     try {
@@ -48,22 +65,11 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
         selectedColor: selectedColor.value,
       }, quantity.value);
 
-      // Success feedback
-      console.log(`Added ${quantity.value}x "${props.title}" to cart!`);
-      
-      // Optional: Reset quantity after adding
-      // quantity.value = 1;
+      // Navigate to cart page
+      window.location.href = '/cart';
     } finally {
       isAdding.value = false;
     }
-  });
-
-  const handleBuyNow = $(async () => {
-    // Add to cart first
-    await handleAddToCart();
-    
-    // TODO: Navigate to cart/checkout in Step 7
-    window.location.href = '/cart';
   });
 
   return (
@@ -145,17 +151,6 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
               />
             </svg>
             <span class="font-semibold">Out of Stock</span>
-          </div>
-        ) : props.stock && props.stock < 10 ? (
-          <div class="flex items-center gap-2 text-orange-600">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <span class="font-semibold">Only {props.stock} left in stock!</span>
           </div>
         ) : (
           <div class="flex items-center gap-2 text-green-600">
@@ -244,19 +239,33 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
         />
       </div>
 
-      {/* Action Buttons */}
+      {/* 
+          Action Buttons:
+          - Enhanced Add to Cart button with loading states and toast notifications
+          - Buy Now button for quick checkout (navigates to cart immediately)
+      */}
       <div class="flex gap-4">
-        <button
-          onClick$={handleAddToCart}
-          disabled={isOutOfStock || isAdding.value}
-          class={`flex-1 py-4 rounded-md font-semibold text-lg transition-colors ${
-            isOutOfStock || isAdding.value
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-black text-white hover:bg-gray-800'
-          }`}
-        >
-          {isAdding.value ? 'Adding...' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-        </button>
+        {/* Enhanced Add to Cart Button */}
+        <div class="flex-1">
+          <AddToCartButton
+            product={{
+              id: props.id,
+              title: props.title,
+              price: props.price,
+              image: props.image,
+              discount: props.discount,
+              selectedSize: selectedSize.value,
+              selectedColor: selectedColor.value,
+            }}
+            quantity={quantity.value}
+            variant="primary"
+            size="lg"
+            fullWidth
+            disabled={isOutOfStock}
+          />
+        </div>
+
+        {/* Buy Now Button */}
         <button
           onClick$={handleBuyNow}
           disabled={isOutOfStock || isAdding.value}

@@ -75,9 +75,25 @@ export const CartProvider = component$(() => {
   });
 
   // Action: Remove an item completely
-  const removeItem = $((id: number) => {
-    // Filter creates a NEW array excluding the item with the given ID.
-    cartState.items = cartState.items.filter((item) => item.id !== id);
+  const removeItem = $((id: number, size?: string, color?: string) => {
+    cartState.items = cartState.items.filter((item) => {
+      // Keep items with different IDs
+      if (item.id !== id) return true;
+      
+      // For items with same ID, check if variants match
+      // Treat null/undefined/empty string as equivalent for comparison
+      const itemSize = item.selectedSize || undefined;
+      const targetSize = size || undefined;
+      const itemColor = item.selectedColor || undefined;
+      const targetColor = color || undefined;
+
+      const sizeMatch = itemSize === targetSize;
+      const colorMatch = itemColor === targetColor;
+
+      // If ID matches AND size matches AND color matches, we want to REMOVE it (return false)
+      // Otherwise, keep it (return true)
+      return !(sizeMatch && colorMatch);
+    });
 
     const totals = calculateCartTotals(cartState.items);
     Object.assign(cartState, totals);
@@ -85,15 +101,24 @@ export const CartProvider = component$(() => {
   });
 
   // Action: Update quantity (e.g., user types '5' in the box)
-  const updateQuantity = $((id: number, quantity: number) => {
+  const updateQuantity = $((id: number, quantity: number, size?: string, color?: string) => {
     // If user tries to set 0 or negative, we remove the item instead.
     if (quantity <= 0) {
-      removeItem(id);
+      removeItem(id, size, color);
       return;
     }
 
     // Find the item and update its specific quantity property.
-    const itemIndex = cartState.items.findIndex((item) => item.id === id);
+    // Must match ID, Size, and Color
+    const itemIndex = cartState.items.findIndex((item) => {
+      if (item.id !== id) return false;
+      const itemSize = item.selectedSize || undefined;
+      const targetSize = size || undefined;
+      const itemColor = item.selectedColor || undefined;
+      const targetColor = color || undefined;
+      return itemSize === targetSize && itemColor === targetColor;
+    });
+
     if (itemIndex !== -1) {
       cartState.items[itemIndex].quantity = quantity;
 
@@ -116,13 +141,38 @@ export const CartProvider = component$(() => {
   });
 
   // Helper: Get quantity for a specific ID (useful for UI badges)
-  const getItemQuantity = $((id: number): number => {
-    const item = cartState.items.find((item) => item.id === id);
-    return item ? item.quantity : 0;
+  // If size/color provided, gets specific variant quantity. Otherwise returns total for that product ID.
+  const getItemQuantity = $((id: number, size?: string, color?: string): number => {
+    if (size || color) {
+       const item = cartState.items.find((item) => {
+         if (item.id !== id) return false;
+         const itemSize = item.selectedSize || undefined;
+         const targetSize = size || undefined;
+         const itemColor = item.selectedColor || undefined;
+         const targetColor = color || undefined;
+         return itemSize === targetSize && itemColor === targetColor;
+       });
+       return item ? item.quantity : 0;
+    }
+    
+    // Sum all variants if no specific variant requested
+    return cartState.items
+      .filter(item => item.id === id)
+      .reduce((sum, item) => sum + item.quantity, 0);
   });
 
   // Helper: Check if item is already in cart
-  const isInCart = $((id: number): boolean => {
+  const isInCart = $((id: number, size?: string, color?: string): boolean => {
+     if (size || color) {
+       return cartState.items.some((item) => {
+         if (item.id !== id) return false;
+         const itemSize = item.selectedSize || undefined;
+         const targetSize = size || undefined;
+         const itemColor = item.selectedColor || undefined;
+         const targetColor = color || undefined;
+         return itemSize === targetSize && itemColor === targetColor;
+       });
+    }
     return cartState.items.some((item) => item.id === id);
   });
 

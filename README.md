@@ -36,6 +36,7 @@
 
 - [x] Product details page (Gallery, Info, Specs, Related Products)
 - [x] Hamburger Menu (Animated, Slide-in Drawer, Body Scroll Lock, Responsive)
+- [x] Enhanced Add to Cart (Loading States, Success Animations, Toast Notifications)
 - [ ] Introduce Qwik Link
 - [x] Add to Cart with onClick$
 - [x] Qwik context store for cart (Shared state, LocalStorage persistence)
