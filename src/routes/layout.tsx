@@ -18,7 +18,7 @@ export default component$(() => {
         <main class="flex-1 bg-white">
           <Slot />
         </main>
-        <footer class="bg-gray-900 text-white py-12">
+        <footer class="bg-gray-900 text-white py-6">
           <div class="container mx-auto px-4 text-center">
             <p class="text-gray-500">© 2024 ReconShop. All rights reserved.</p>
           </div>

@@ -21,9 +21,10 @@ export const MobileMenu = component$<MobileMenuProps>(({ links }) => {
   const toggleMenu = $(() => {
     isOpen.value = !isOpen.value;
     
-    // Prevent body scroll when menu is open
+    // Prevent body scroll when menu is open to keep user position stable
     if (typeof document !== 'undefined') {
-      if (!isOpen.value) {
+      // Logic Fix: When isOpen is true, we want to HIDE the scrollbar (hidden)
+      if (isOpen.value) {
         document.body.style.overflow = 'hidden';
       } else {
         document.body.style.overflow = '';
@@ -33,6 +34,7 @@ export const MobileMenu = component$<MobileMenuProps>(({ links }) => {
 
   const closeMenu = $(() => {
     isOpen.value = false;
+    // Restore scrolling when menu is closed
     if (typeof document !== 'undefined') {
       document.body.style.overflow = '';
     }
@@ -40,7 +42,11 @@ export const MobileMenu = component$<MobileMenuProps>(({ links }) => {
 
   return (
     <>
-      {/* Hamburger Button - Only visible on mobile */}
+      {/* 
+          Hamburger Toggle Button
+          - z-50: Keeps it above most things, but below the drawer if needed.
+          - lg:hidden: This menu only exists for mobile/tablet screens.
+      */}
       <button
         onClick$={toggleMenu}
         class="lg:hidden p-2 text-gray-700 hover:text-black transition-colors relative z-50"
@@ -67,11 +73,17 @@ export const MobileMenu = component$<MobileMenuProps>(({ links }) => {
         </div>
       </button>
 
-      {/* Overlay - Darkens background when menu is open */}
+      {/* 
+          Overlay (Backdrop)
+          - The white gap is caused by scrollbar-gutter: stable in global.css
+          - We use w-[100vw] and ml-[calc(50%-50vw)] to force full viewport coverage
+          - This technique centers the overlay and makes it ignore any gutter/padding
+      */}
       {isOpen.value && (
         <div
           onClick$={closeMenu}
-          class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden transition-opacity duration-300"
+          class="fixed top-0 left-0 right-0 bottom-0 w-[100vw] h-[100vh] ml-[calc(50%-50vw)] bg-black bg-opacity-50 z-40 lg:hidden transition-opacity duration-300"
+          style="margin-left: calc(50% - 50vw);"
           aria-hidden="true"
         />
       )}
