@@ -35,6 +35,7 @@
 ## Todo
 
 - [x] Product details page (Gallery, Info, Specs, Related Products)
+- [x] Hamburger Menu (Animated, Slide-in Drawer, Body Scroll Lock, Responsive)
 - [ ] Introduce Qwik Link
 - [x] Add to Cart with onClick$
 - [x] Qwik context store for cart (Shared state, LocalStorage persistence)
