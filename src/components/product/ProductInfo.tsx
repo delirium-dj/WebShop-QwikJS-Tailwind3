@@ -1,89 +1,86 @@
-// src/components/product/ProductInfo.tsx
+// src/components/product/ProductInfo.tsx (UPDATED with Cart Integration)
 import { component$, useSignal, $ } from '@builder.io/qwik';
+import { useCart } from '~/contexts/cart';
 import { QuantitySelector } from './QuantitySelector';
 
-// Define the data structure for the product information passed to this component.
 type ProductInfoProps = {
   id: number;
   title: string;
   price: number;
-  discount?: number;     // Optional percentage discount
-  rating?: number;       // Average rating (0-5)
-  reviews?: number;      // Total number of reviews
+  discount?: number;
+  rating?: number;
+  reviews?: number;
   description?: string;
-  stock?: number;        // Inventory count
-  sizes?: string[];      // Available sizes
-  colors?: string[];     // Available colors
-  category?: string;     // Product category name
-  specifications?: Record<string, string>; // Dynamic key-value pairs for technical specs
-  features?: string[];   // List of bullet points
+  stock?: number;
+  sizes?: string[];
+  colors?: string[];
+  category?: string;
+  specifications?: Record<string, string>;
+  features?: string[];
+  image: string; // Added for cart
 };
 
-/**
- * ProductInfo Component
- * Purpose: Handles the technical and commercial details of a product.
- * It manages local selection state (size, color, quantity) and displays pricing logic.
- */
 export const ProductInfo = component$<ProductInfoProps>((props) => {
-  // Local State Management (Signals):
-  // We use useSignal for simple reactive values that update the UI when they change.
-  // We initialize these with the first available option.
+  const cart = useCart();
+  
   const selectedSize = useSignal<string | undefined>(props.sizes?.[0]);
   const selectedColor = useSignal<string | undefined>(props.colors?.[0]);
   const quantity = useSignal(1);
+  const isAdding = useSignal(false);
 
-  // Derived Values:
-  // We calculate the final price if a discount is applied.
   const discountedPrice = props.discount
     ? props.price - (props.price * props.discount) / 100
     : props.price;
 
-  // Simple check for availability styling.
   const isOutOfStock = props.stock !== undefined && props.stock <= 0;
 
-  // Event Handlers (using $ for Qwik serialization):
-  // Qwik needs to serialize these functions so they can be "resumed" on the client.
-  
-  const handleAddToCart = $(() => {
-    // Note for Junior: This is a placeholder. 
-    // In Step 3, we will connect this to a global 'Cart Context'.
-    console.log('Adding to cart:', {
-      id: props.id,
-      title: props.title,
-      quantity: quantity.value,
-      size: selectedSize.value,
-      color: selectedColor.value,
-    });
-    alert(
-      `Added ${quantity.value}x "${props.title}" to cart!\n` +
-        (selectedSize.value ? `Size: ${selectedSize.value}\n` : '') +
-        (selectedColor.value ? `Color: ${selectedColor.value}\n` : '') +
-        '(Full cart functionality coming in Step 3)'
-    );
+  const handleAddToCart = $(async () => {
+    isAdding.value = true;
+
+    try {
+      await cart.actions.addItem({
+        id: props.id,
+        title: props.title,
+        price: props.price,
+        image: props.image,
+        discount: props.discount,
+        selectedSize: selectedSize.value,
+        selectedColor: selectedColor.value,
+      }, quantity.value);
+
+      // Success feedback
+      console.log(`Added ${quantity.value}x "${props.title}" to cart!`);
+      
+      // Optional: Reset quantity after adding
+      // quantity.value = 1;
+    } finally {
+      isAdding.value = false;
+    }
   });
 
-  const handleBuyNow = $(() => {
-    // Placeholder for Step 7: Checkout integration.
-    alert('Buy Now feature coming in Step 7 (Checkout Flow)');
+  const handleBuyNow = $(async () => {
+    // Add to cart first
+    await handleAddToCart();
+    
+    // TODO: Navigate to cart/checkout in Step 7
+    window.location.href = '/cart';
   });
 
   return (
     <div class="space-y-6">
-      {/* Category Tag */}
+      {/* Category */}
       {props.category && (
-        <div class="text-sm text-gray-400 uppercase font-bold tracking-widest">
+        <div class="text-sm text-gray-500 uppercase tracking-wide">
           {props.category}
         </div>
       )}
 
-      {/* Product Title */}
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-        {props.title}
-      </h1>
+      {/* Title */}
+      <h1 class="text-3xl font-bold text-gray-900">{props.title}</h1>
 
-      {/* Ratings Section */}
+      {/* Rating & Reviews */}
       {props.rating && (
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-4">
           <div class="flex items-center">
             <div class="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (
@@ -92,7 +89,7 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
                   class={`w-5 h-5 ${
                     i < Math.floor(props.rating!)
                       ? 'fill-current'
-                      : 'fill-gray-200'
+                      : 'fill-gray-300'
                   }`}
                   viewBox="0 0 20 20"
                 >
@@ -100,87 +97,102 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
                 </svg>
               ))}
             </div>
-            <span class="ml-2 text-gray-900 font-bold">
+            <span class="ml-2 text-gray-700 font-medium">
               {props.rating.toFixed(1)}
             </span>
           </div>
           {props.reviews && (
-            <span class="text-gray-400 text-sm">
-              • {props.reviews} Verified Reviews
-            </span>
+            <span class="text-gray-500">({props.reviews} reviews)</span>
           )}
         </div>
       )}
 
-      {/* Pricing Information */}
-      <div class="py-6 border-y border-gray-100">
+      {/* Price */}
+      <div class="border-t border-b py-4">
         {props.discount && props.discount > 0 ? (
           <div class="space-y-2">
-            <div class="flex items-baseline gap-4">
-              <span class="text-4xl font-bold text-red-600">
+            <div class="flex items-center gap-4">
+              <span class="text-3xl font-bold text-red-600">
                 ${discountedPrice.toFixed(2)}
               </span>
-              <span class="text-xl text-gray-400 line-through decoration-2">
+              <span class="text-xl text-gray-500 line-through">
                 ${props.price.toFixed(2)}
               </span>
-              <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                -{props.discount}% OFF
+              <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                Save {props.discount}%
               </span>
             </div>
+            <p class="text-sm text-green-600 font-medium">
+              You save ${(props.price - discountedPrice).toFixed(2)}
+            </p>
           </div>
         ) : (
-          <span class="text-4xl font-black text-gray-900">
+          <span class="text-3xl font-bold text-gray-900">
             ${props.price.toFixed(2)}
           </span>
         )}
       </div>
 
-      {/* Inventory Feedback */}
+      {/* Stock Status */}
       <div>
         {isOutOfStock ? (
-          <div class="flex items-center gap-2 text-red-500 font-bold bg-red-50 px-4 py-2 rounded-lg w-fit">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-            </span>
-            Currently Unavailable
+          <div class="flex items-center gap-2 text-red-600">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span class="font-semibold">Out of Stock</span>
           </div>
         ) : props.stock && props.stock < 10 ? (
-          <div class="flex items-center gap-2 text-orange-600 font-bold bg-orange-50 px-4 py-2 rounded-lg w-fit italic">
-             Hurry! Only {props.stock} left in stock
+          <div class="flex items-center gap-2 text-orange-600">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span class="font-semibold">Only {props.stock} left in stock!</span>
           </div>
         ) : (
-          <div class="flex items-center gap-2 text-emerald-600 font-bold bg-emerald-50 px-4 py-2 rounded-lg w-fit">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+          <div class="flex items-center gap-2 text-green-600">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
             </svg>
-            Ready to Ship
+            <span class="font-semibold">In Stock</span>
           </div>
         )}
       </div>
 
-      {/* Product Narrative */}
+      {/* Description */}
       {props.description && (
-        <p class="text-gray-600 leading-relaxed text-lg italic">
-          "{props.description}"
-        </p>
+        <div class="prose max-w-none">
+          <p class="text-gray-700 leading-relaxed">{props.description}</p>
+        </div>
       )}
 
-      {/* Variant Selection: Sizes */}
+      {/* Size Selector */}
       {props.sizes && props.sizes.length > 0 && (
-        <div class="space-y-3">
-          <label class="text-xs font-black text-gray-400 uppercase tracking-widest">
-            Select Size
+        <div>
+          <label class="block text-sm font-semibold text-gray-900 mb-3">
+            Size
           </label>
           <div class="flex flex-wrap gap-2">
             {props.sizes.map((size) => (
               <button
                 key={size}
                 onClick$={() => (selectedSize.value = size)}
-                class={`px-6 py-2.5 border-2 rounded-xl font-bold transition-all duration-200 ${
+                class={`px-6 py-3 border-2 rounded-md font-medium transition-all ${
                   selectedSize.value === size
-                    ? 'border-black bg-black text-white shadow-lg'
-                    : 'border-gray-200 text-gray-600 hover:border-gray-900'
+                    ? 'border-black bg-black text-white'
+                    : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
                 {size}
@@ -190,23 +202,24 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
         </div>
       )}
 
-      {/* Variant Selection: Colors */}
+      {/* Color Selector */}
       {props.colors && props.colors.length > 0 && (
-        <div class="space-y-3">
-          <label class="text-xs font-black text-gray-400 uppercase tracking-widest">
-            Choose Color: <span class="text-gray-900 lowercase">{selectedColor.value}</span>
+        <div>
+          <label class="block text-sm font-semibold text-gray-900 mb-3">
+            Color: <span class="font-normal">{selectedColor.value}</span>
           </label>
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-wrap gap-3">
             {props.colors.map((color) => (
               <button
                 key={color}
                 onClick$={() => (selectedColor.value = color)}
-                class={`w-10 h-10 rounded-full border-2 transition-all duration-300 ring-offset-2 hover:scale-110 ${
+                class={`w-12 h-12 rounded-full border-2 transition-all ${
                   selectedColor.value === color
-                    ? 'border-black ring-2 ring-black'
-                    : 'border-transparent'
+                    ? 'border-black ring-2 ring-offset-2 ring-black'
+                    : 'border-gray-300 hover:border-gray-400'
                 }`}
                 style={`background-color: ${color.toLowerCase()}`}
+                aria-label={color}
                 title={color}
               />
             ))}
@@ -214,82 +227,91 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
         </div>
       )}
 
-      {/* Purchase Controls */}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-black text-gray-400 uppercase tracking-widest">
-            Quantity
-          </label>
+      {/* Quantity Selector */}
+      <div>
+        <label class="block text-sm font-semibold text-gray-900 mb-3">
+          Quantity
+        </label>
+        {/* 
+          Using QuantitySelector with two-way binding concept
+          onChange$ is a PropFunction (Qwik's way of passing callbacks).
+          The optimizer automatically wraps this arrow function in a QRL.
+        */}
         <QuantitySelector
           initialQuantity={1}
           max={props.stock || 99}
           onChange$={(qty) => (quantity.value = qty)}
         />
-        </div>
-        
-        <div class="flex flex-col justify-end gap-3">
-          <button
-            onClick$={handleAddToCart}
-            disabled={isOutOfStock}
-            class={`w-full py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all duration-300 active:scale-95 ${
-              isOutOfStock
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-black text-white hover:bg-gray-900 shadow-xl hover:shadow-black/20'
-            }`}
-          >
-            {isOutOfStock ? 'Sold Out' : 'Add to Bag'}
-          </button>
-          
-          <button
-            onClick$={handleBuyNow}
-            disabled={isOutOfStock}
-            class={`w-full py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all duration-300 border-2 active:scale-95 ${
-              isOutOfStock
-                ? 'bg-transparent text-gray-300 border-gray-200 cursor-not-allowed'
-                : 'bg-white text-black border-black hover:bg-gray-50'
-            }`}
-          >
-            Instant Checkout
-          </button>
-        </div>
       </div>
 
-      {/* Descriptive Accents: Features and Specs */}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-gray-100">
-        {/* Features List */}
-        {props.features && props.features.length > 0 && (
-          <div class="space-y-4">
-            <h3 class="font-black text-sm uppercase tracking-widest text-gray-900">Highlights</h3>
-            <ul class="space-y-3">
-              {props.features.map((feature, index) => (
-                <li key={index} class="flex items-start gap-3">
-                  <div class="w-1.5 h-1.5 rounded-full bg-black mt-2 flex-shrink-0" />
-                  <span class="text-gray-600 text-sm font-medium">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+      {/* Action Buttons */}
+      <div class="flex gap-4">
+        <button
+          onClick$={handleAddToCart}
+          disabled={isOutOfStock || isAdding.value}
+          class={`flex-1 py-4 rounded-md font-semibold text-lg transition-colors ${
+            isOutOfStock || isAdding.value
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-black text-white hover:bg-gray-800'
+          }`}
+        >
+          {isAdding.value ? 'Adding...' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+        </button>
+        <button
+          onClick$={handleBuyNow}
+          disabled={isOutOfStock || isAdding.value}
+          class={`flex-1 py-4 rounded-md font-semibold text-lg transition-colors ${
+            isOutOfStock || isAdding.value
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : 'bg-gray-900 text-white hover:bg-black border-2 border-black'
+          }`}
+        >
+          Buy Now
+        </button>
+      </div>
 
-        {/* Specifications Grid */}
-        {props.specifications && Object.keys(props.specifications).length > 0 && (
-          <div class="space-y-4">
-            <h3 class="font-black text-sm uppercase tracking-widest text-gray-900">The Specs</h3>
-            <div class="grid grid-cols-1 gap-4">
-              {Object.entries(props.specifications).map(([key, value]) => (
-                <div
-                  key={key}
-                  class="flex flex-col py-2 border-b border-gray-50"
+      {/* Features */}
+      {props.features && props.features.length > 0 && (
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold mb-4">Key Features</h3>
+          <ul class="space-y-2">
+            {props.features.map((feature, index) => (
+              <li key={index} class="flex items-start gap-2">
+                <svg
+                  class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
                 >
-                  <dt class="text-xs font-bold text-gray-400 uppercase tracking-tighter mb-1">{key}</dt>
-                  <dd class="text-gray-900 text-sm font-bold">{value}</dd>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span class="text-gray-700">{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Specifications */}
+      {props.specifications && Object.keys(props.specifications).length > 0 && (
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold mb-4">Specifications</h3>
+          <dl class="grid grid-cols-1 gap-3">
+            {Object.entries(props.specifications).map(([key, value]) => (
+              <div
+                key={key}
+                class="flex justify-between py-2 border-b border-gray-200"
+              >
+                <dt class="text-gray-600 font-medium">{key}</dt>
+                <dd class="text-gray-900">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
     </div>
   );
 });
-

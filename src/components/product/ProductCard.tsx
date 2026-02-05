@@ -1,129 +1,132 @@
-// src/components/product/ProductCard.tsx
+// src/components/product/ProductCard.tsx (UPDATED with Cart Integration)
 import { component$, $ } from '@builder.io/qwik';
 import { Link } from '@builder.io/qwik-city';
+import { useCart } from '~/contexts/cart';
 
-// Defines the properties this component expects.
 type ProductCardProps = {
   id: number;
   title: string;
   price: number;
   image: string;
-  discount?: number; // Optional percentage (e.g., 20)
-  rating?: number;   // Optional star rating (e.g., 4.5)
-  stock?: number;    // Optional stock quantity
+  discount?: number;
+  rating?: number;
+  stock?: number;
 };
 
-/**
- * ProductCard Component
- * Purpose: A reusable card that displays a summary of a product.
- * It's used in grids on the home page and shop page.
- */
 export const ProductCard = component$<ProductCardProps>(
   ({ id, title, price, image, discount, rating, stock }) => {
-    // Derived state for the UI:
-    // We calculate the final price if a discount is active.
+    // Access the global cart state and actions.
+    const cart = useCart();
+    
+    // Derived state for pricing and stock status.
     const discountedPrice = discount ? price - (price * discount) / 100 : price;
-    // Check if we should disable the card features.
     const isOutOfStock = stock !== undefined && stock <= 0;
 
-    // Event Handler:
-    // We use $((...)) to create a QRL (Qwik URL) for the event listener. 
-    // This allows Qwik to only download this function when the user actually clicks.
+    // Event Handler: Add item to cart
+    // Qwik requires the $() wrapper to serialize this function for the client.
     const handleAddToCart = $((event: Event) => {
-      // Since the whole card is a <Link>, we stop the click from navigating 
-      // when the user just wants to add to the cart.
+      // Vital: Stop the click from bubbling up to the <Link> component.
+      // If we don't do this, clicking "Add to Cart" would also navigate the user to the product page.
       event.preventDefault();
       event.stopPropagation();
       
-      // Placeholder for Step 3:
-      console.log('Add to cart clicked for product:', id);
-      alert(`Added "${title}" to cart! (Cart functionality coming in Step 3)`);
+      // Call the global action to add the item.
+      cart.actions.addItem({
+        id,
+        title,
+        price,
+        image,
+        discount,
+      }, 1); // Default quantity is 1
+
+      // TODO for Step 3: Replace this console.log with a visible toast notification
+      console.log(`Added "${title}" to cart!`);
     });
 
     return (
       <Link href={`/product/${id}`} class="block group">
-        <div class="border border-gray-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 bg-white">
-          {/* Visual Container */}
-          <div class="relative overflow-hidden bg-gray-50 aspect-square">
+        <div class="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          {/* Product Image */}
+          <div class="relative overflow-hidden bg-gray-100">
             <img
               src={image}
               alt={title}
               width={400}
               height={400}
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              class="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-110"
             />
             
-            {/* Promo Badges */}
+            {/* Discount Badge */}
             {discount && discount > 0 && (
-              <div class="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-tighter shadow-lg">
+              <div class="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                 -{discount}%
               </div>
             )}
 
-            {/* Inventory Overlay */}
+            {/* Out of Stock Badge */}
             {isOutOfStock && (
-              <div class="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
-                <span class="bg-black text-white px-6 py-2 rounded-xl text-sm font-black uppercase tracking-widest shadow-xl">
-                  Sold Out
+              <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <span class="bg-white text-black px-4 py-2 rounded-md font-semibold">
+                  Out of Stock
                 </span>
               </div>
             )}
           </div>
 
-          {/* Content Container */}
-          <div class="p-6">
-            {/* Social Proof (Ratings) */}
+          {/* Product Info */}
+          <div class="p-4">
+            {/* Rating */}
             {rating && (
-              <div class="flex items-center mb-3">
+              <div class="flex items-center mb-2">
                 <div class="flex text-yellow-400">
                   {[...Array(5)].map((_, i) => (
                     <svg
                       key={i}
-                      class={`w-3.5 h-3.5 ${i < Math.floor(rating) ? 'fill-current' : 'fill-gray-200'}`}
+                      class={`w-4 h-4 ${i < Math.floor(rating) ? 'fill-current' : 'fill-gray-300'}`}
                       viewBox="0 0 20 20"
                     >
                       <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                     </svg>
                   ))}
                 </div>
-                <span class="text-[10px] font-black text-gray-400 ml-1.5 uppercase tracking-widest">{rating.toFixed(1)}</span>
+                <span class="text-sm text-gray-600 ml-2">({rating.toFixed(1)})</span>
               </div>
             )}
 
-            {/* Product Meta */}
-            <h3 class="text-gray-900 font-bold text-lg mb-1 line-clamp-1 group-hover:text-black transition-colors">
+            {/* Title */}
+            <h3 class="text-lg font-semibold mb-2 line-clamp-2 min-h-[3.5rem]">
               {title}
             </h3>
 
-            {/* Price Visualization */}
-            <div class="mb-5 flex items-center gap-2">
+            {/* Price */}
+            <div class="mb-4">
               {discount && discount > 0 ? (
-                <>
-                  <span class="text-xl font-black text-red-600 tracking-tight">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl font-bold text-red-600">
                     ${discountedPrice.toFixed(2)}
                   </span>
-                  <span class="text-xs text-gray-400 line-through font-bold">
+                  <span class="text-sm text-gray-500 line-through">
                     ${price.toFixed(2)}
                   </span>
-                </>
+                </div>
               ) : (
-                <span class="text-xl font-black text-gray-900 tracking-tight">
+                <span class="text-xl font-bold text-gray-900">
                   ${price.toFixed(2)}
                 </span>
               )}
             </div>
 
-            {/* Interactive Element */}
+            {/* Add to Cart Button */}
             <button
               onClick$={handleAddToCart}
               disabled={isOutOfStock}
-              class={`w-full py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 ${
+              class={`w-full py-2 rounded-md font-medium transition-colors duration-200 ${
                 isOutOfStock
-                  ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                  : 'bg-black text-white hover:bg-gray-800 shadow-lg hover:translate-y-[-2px] active:translate-y-0'
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-black text-white hover:bg-gray-800'
               }`}
             >
-              {isOutOfStock ? 'Unavailable' : 'Add to Bag'}
+              {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
             </button>
           </div>
         </div>
@@ -131,4 +134,3 @@ export const ProductCard = component$<ProductCardProps>(
     );
   }
 );
-

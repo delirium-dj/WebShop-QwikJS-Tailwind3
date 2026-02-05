@@ -36,7 +36,7 @@
 
 - [x] Product details page (Gallery, Info, Specs, Related Products)
 - [ ] Introduce Qwik Link
-- [ ] Add to Cart with onClick$
-- [ ] Qwik context store for cart
+- [x] Add to Cart with onClick$
+- [x] Qwik context store for cart (Shared state, LocalStorage persistence)
 - [ ] Client-only hydration only when clicking
 - [ ] Server-side data fetching
