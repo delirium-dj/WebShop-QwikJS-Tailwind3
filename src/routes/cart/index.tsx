@@ -77,8 +77,13 @@ export default component$(() => {
               ))}
             </div>
 
-            {/* Continue Shopping Button */}
-            <div class="mt-6">
+            {/* 
+                Continue Shopping Button - Desktop Version:
+                - hidden: Hidden by default on mobile.
+                - lg:block: Only shows up on large screens (Desktops).
+                - We keep it here for desktop so it stays aligned with the items list.
+            */}
+            <div class="mt-6 hidden lg:block">
               <Link
                 href="/shop"
                 class="inline-flex items-center text-gray-700 hover:text-black font-medium transition"
@@ -211,6 +216,34 @@ export default component$(() => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* 
+            Continue Shopping Button - Mobile/Tablet Version:
+            - mt-8: Adds extra spacing from the summary box above.
+            - lg:hidden: This is the magic! It hides the button on big screens (Desktop) because we already have one there.
+            - text-center: Centers the link on mobile so it's easier to tap.
+        */}
+        <div class="mt-8 lg:hidden text-center">
+          <Link
+            href="/shop"
+            class="inline-flex items-center text-gray-700 hover:text-black font-medium transition"
+          >
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Continue Shopping
+          </Link>
         </div>
       </div>
     </div>

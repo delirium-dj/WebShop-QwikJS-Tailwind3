@@ -17,7 +17,7 @@ export const CartItemCard = component$<CartItemCardProps>(
     const itemPrice = item.discount
       ? item.price - (item.price * item.discount) / 100
       : item.price;
-    const itemTotal = itemPrice * item.quantity;
+
 
     const handleQuantityChange = $(async (newQuantity: number) => {
       if (newQuantity > 0 && newQuantity <= 99) {
@@ -30,22 +30,28 @@ export const CartItemCard = component$<CartItemCardProps>(
     });
 
     return (
-      <div class="flex gap-4 p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
-        {/* Product Image */}
-        <div class="flex-shrink-0">
+      <div class="flex flex-col sm:flex-row gap-4 p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors">
+        {/* 
+            Responsive Container Optimization:
+            - flex-col: This stacks the image on top of the text on mobile (smaller screens).
+            - sm:flex-row: This puts them side-by-side again on tablets and larger (640px+).
+            - justify-center (on the image div): Centers the product image when it's stacked.
+        */}
+        {/* Product Image Container */}
+        <div class="flex-shrink-0 flex justify-center sm:block">
           <img
             src={item.image}
             alt={item.title}
-            width={96}
-            height={96}
-            class="w-24 h-24 object-cover rounded-md"
+            width={128}
+            height={128}
+            class="w-full h-48 sm:w-36 sm:h-36 object-cover rounded-md"
           />
         </div>
 
         {/* Product Details */}
         <div class="flex-1 flex flex-col justify-between">
           <div>
-            <h3 class="font-semibold text-gray-900 mb-1">{item.title}</h3>
+            <h3 class="font-bold text-gray-900 mb-1 text-xl">{item.title}</h3>
 
             {/* Variants */}
             {(item.selectedSize || item.selectedColor) && (
@@ -124,13 +130,6 @@ export const CartItemCard = component$<CartItemCardProps>(
               Remove
             </button>
           </div>
-        </div>
-
-        {/* Item Total */}
-        <div class="flex-shrink-0 text-right">
-          <p class="text-lg font-bold text-gray-900">
-            ${itemTotal.toFixed(2)}
-          </p>
         </div>
       </div>
     );
