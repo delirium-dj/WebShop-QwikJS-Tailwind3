@@ -27,18 +27,21 @@ export interface CartState {
   total: number;      // Final checkout price
 }
 
+import type { QRL } from '@builder.io/qwik';
+
 /**
  * CartActions Interface
  * Functions that components can call to change the cart.
+ * note: We use QRL<...> type wrapper to tell Qwik these functions are serializable.
  */
 export interface CartActions {
-  addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
-  removeItem: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
-  clearCart: () => void;
+  addItem: QRL<(item: Omit<CartItem, 'quantity'>, quantity?: number) => void>;
+  removeItem: QRL<(id: number) => void>;
+  updateQuantity: QRL<(id: number, quantity: number) => void>;
+  clearCart: QRL<() => void>;
   // Getters might return Promises because they cross the serialization boundary
-  getItemQuantity: (id: number) => number | Promise<number>;
-  isInCart: (id: number) => boolean | Promise<boolean>;
+  getItemQuantity: QRL<(id: number) => number>;
+  isInCart: QRL<(id: number) => boolean>;
 }
 
 /**

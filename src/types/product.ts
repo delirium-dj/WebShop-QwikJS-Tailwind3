@@ -4,10 +4,11 @@
  * Using an interface helps TypeScript catch errors if we forget a required field.
  */
 export interface Product {
-  id: string | number;         // Unique identifier (from database)
+  id: number;                  // Unique identifier (from database)
   title: string;               // Name of the product
   description: string;         // Long form marketing text
   price: number;               // Current selling price
+  discount?: number;           // Discount percentage (0-100)
   originalPrice?: number;      // Original price (for showing MSRP or cross-outs)
   image: string;               // Main display image URL
   images?: string[];           // Array of additional gallery images
@@ -20,6 +21,8 @@ export interface Product {
   inStock: boolean;            // Quick check for availability
   stockQuantity?: number;      // Actual number of items in the warehouse
   sku?: string;                // Stock Keeping Unit (for inventory tracking)
+  sizes?: string[];            // Available sizes
+  colors?: string[];           // Available colors
   weight?: number;             // Weight in grams or kg
   dimensions?: {               // Size for shipping calculations
     length: number;

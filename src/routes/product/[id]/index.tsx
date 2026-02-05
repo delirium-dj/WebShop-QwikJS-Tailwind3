@@ -5,6 +5,7 @@ import { ProductGallery } from '~/components/product/ProductGallery';
 import { ProductInfo } from '~/components/product/ProductInfo';
 import { RelatedProducts } from '~/components/product/RelatedProducts';
 import { Breadcrumb } from '~/components/ui/Breadcrumb';
+import type { Product } from '~/types/product';
 
 // This is a mock data loader - in Step 5 you'll replace this with real API/database calls
 // We use routeLoader$ to fetch data on the server before the component renders.
@@ -14,7 +15,7 @@ export const useProductData = routeLoader$(async ({ params, status }) => {
 
   // Mock product database - replace with actual data fetching from an API or Database later.
   // Why? Because we want to show a realistic e-commerce experience while developing.
-  const mockProducts = [
+  const mockProducts: Product[] = [
     {
       id: 1,
       title: 'Premium Wireless Headphones',
@@ -31,8 +32,10 @@ export const useProductData = routeLoader$(async ({ params, status }) => {
       description:
         'Experience premium sound quality with our flagship wireless headphones. Featuring active noise cancellation, 30-hour battery life, and premium materials for ultimate comfort. Perfect for music lovers and professionals alike.',
       rating: 4.8,
-      reviews: 342,
-      stock: 45,
+      reviewCount: 342,
+      inStock: true,
+      stockQuantity: 45,
+      sku: 'WHP-001',
       sizes: ['One Size'],
       colors: ['Black', 'Silver', 'Blue', 'Red'],
       features: [
@@ -68,8 +71,9 @@ export const useProductData = routeLoader$(async ({ params, status }) => {
       description:
         'The most advanced smartwatch yet. Track your health, stay connected, and customize your style with our latest wearable technology.',
       rating: 4.6,
-      reviews: 218,
-      stock: 8,
+      reviewCount: 218,
+      inStock: true,
+      stockQuantity: 8,
       sizes: ['40mm', '44mm'],
       colors: ['Space Gray', 'Silver', 'Gold', 'Rose Gold'],
       features: [
@@ -103,8 +107,9 @@ export const useProductData = routeLoader$(async ({ params, status }) => {
       description:
         'Capture stunning portraits with this professional-grade 50mm prime lens. Features fast f/1.8 aperture for beautiful bokeh and low-light performance.',
       rating: 4.9,
-      reviews: 156,
-      stock: 0, // Out of stock example
+      reviewCount: 156,
+      inStock: false,
+      stockQuantity: 0,
       features: [
         'Fast f/1.8 maximum aperture',
         '8-blade circular aperture for smooth bokeh',
@@ -144,6 +149,7 @@ export const useProductData = routeLoader$(async ({ params, status }) => {
     relatedProducts,
   };
 });
+
 
 export default component$(() => {
   // We consume the data from our routeLoader$ here.
@@ -201,11 +207,12 @@ export default component$(() => {
               id={product.id}
               title={product.title}
               price={product.price}
+              image={product.image}
               discount={product.discount}
               rating={product.rating}
-              reviews={product.reviews}
+              reviews={product.reviewCount}
               description={product.description}
-              stock={product.stock}
+              stock={product.stockQuantity}
               sizes={product.sizes}
               colors={product.colors}
               category={product.category}
