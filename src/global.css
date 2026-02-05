@@ -6,4 +6,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 
+ * UI Layout Stability Fix
+ * Property: scrollbar-gutter: stable
+ * Why: This prevents the "jumping" effect where the header or content shifts 
+ * horizontally by a few pixels when a vertical scrollbar appears or disappears.
+ * It reserves space for the scrollbar even if the page content isn't long enough to scroll.
+ */
+html {
+  scrollbar-gutter: stable;
+}
+
+
 

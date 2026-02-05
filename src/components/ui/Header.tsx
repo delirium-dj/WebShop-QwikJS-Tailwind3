@@ -11,22 +11,23 @@ export const Header = component$(() => {
           ReconShop
         </Link>
         
-        {/* Navigation */}
-        <nav class="hidden md:flex items-center gap-8">
-          <Link href="/" class="text-sm font-bold text-gray-600 hover:text-black uppercase tracking-wide">
-            Home
-          </Link>
-          <Link href="/shop" class="text-sm font-bold text-gray-600 hover:text-black uppercase tracking-wide">
-            Shop
-          </Link>
-          <Link href="/about" class="text-sm font-bold text-gray-600 hover:text-black uppercase tracking-wide">
-            About
-          </Link>
-        </nav>
-
-        {/* Actions */}
-        <div class="flex items-center gap-4">
+        {/* Actions & Navigation grouped on the right */}
+        <div class="flex items-center gap-8">
+          {/* Cart slightly left of links */}
           <CartBadge />
+
+          {/* Navigation links on the far right */}
+          <nav class="hidden md:flex items-center gap-6">
+            <Link href="/" class="text-xs font-bold text-gray-600 hover:text-black uppercase tracking-widest transition-colors">
+              Home
+            </Link>
+            <Link href="/shop" class="text-xs font-bold text-gray-600 hover:text-black uppercase tracking-widest transition-colors">
+              Shop
+            </Link>
+            <Link href="/about" class="text-xs font-bold text-gray-600 hover:text-black uppercase tracking-widest transition-colors">
+              About
+            </Link>
+          </nav>
         </div>
       </div>
     </header>
