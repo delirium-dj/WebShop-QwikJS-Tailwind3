@@ -71,20 +71,20 @@ Why third? Leverages the context store you just built, adds proper Qwik event ha
 
 Benefits: Better UX, proper Qwik reactivity, preparation for server actions
 
-### Step 4: Cart Page/Drawer 🛍️
+### Step 4: Cart Page/Drawer 🛍️ (COMPLETED ✅)
 
 Why fourth? Users need to review their cart before checkout.
 
 #### What to implement:
 
-- [ ] Cart sidebar/drawer that slides in
-- [ ] Cart page route (/cart)
-- [ ] List all cart items with thumbnails
-- [ ] Update quantities inline
-- [ ] Remove items
-- [ ] Show subtotal, taxes, shipping estimates
-- [ ] Checkout button
-- [ ] Empty cart state
+- [x] Cart sidebar/drawer that slides in
+- [x] Cart page route (/cart)
+- [x] List all cart items with thumbnails
+- [x] Update quantities inline
+- [x] Remove items
+- [x] Show subtotal, taxes, shipping estimates
+- [x] Checkout button
+- [x] Empty cart state
 
 Benefits: Completes the pre-checkout experience
 
@@ -175,3 +175,4 @@ Benefits: Completes the purchase funnel
 - [x] Redesigned mobile header: Added persistent Cart icon and badge next to hamburger menu.
 - [x] Refactored icon system: Created reusable `CartIcon` and `CartCountBadge` components.
 - [x] Enhanced mobile menu navigation with integrated cart state notification.
+- [x] Implemented Step 4: Full Cart Drawer and Enhanced /cart page with quantity controls and totals.
