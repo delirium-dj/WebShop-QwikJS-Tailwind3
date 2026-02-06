@@ -1,43 +1,81 @@
 // src/components/cart/CartBadge.tsx
-import { component$ } from '@builder.io/qwik';
-import { Link } from '@builder.io/qwik-city';
-import { useCart } from '~/contexts/cart'; // This is our hook to access the global cart state
-import { CartIcon } from '../ui/icons/CartIcon'; // Reusing the shared cart icon component
-import { CartCountBadge } from './CartCountBadge';
 
 /**
- * Cart Badge Component
- * Displays a shopping cart icon with a real-time count of items.
- * It's reactive, meaning it "re-renders" automatically whenever the cart items change.
+ * CartBadge Component
+ * 
+ * This component displays a shopping cart icon with a badge showing the number of items.
+ * It's typically placed in the header/navigation bar.
+ * 
+ * Features:
+ * - Shows cart icon
+ * - Displays item count in a red badge
+ * - Badge pulses/animates when items are added
+ * - Opens cart drawer on click (instead of navigating to cart page)
+ * - Accessible with proper ARIA labels
+ * 
+ * The badge count comes from the cart context, so it automatically updates
+ * whenever items are added or removed from the cart.
  */
+
+import { component$, useSignal, $ } from '@builder.io/qwik';
+import { useCart } from '~/contexts/cart';
+import { CartDrawer } from './CartDrawer';
+import { CartIcon } from '../ui/icons/CartIcon';
+import { CartCountBadge } from './CartCountBadge';
+
 export const CartBadge = component$(() => {
-  // We grab the current cart state using our custom hook.
+  // Get cart state from context
+  // This gives us access to the total number of items in the cart
   const cart = useCart();
+  
+  // Create a signal to track whether the drawer is open or closed
+  // Signals are Qwik's way of managing reactive state
+  const isDrawerOpen = useSignal(false);
 
   return (
-    <Link
-      href="/cart"
-      class="relative inline-flex items-center p-2 text-gray-700 hover:text-black transition-colors"
-      aria-label="Shopping cart"
-    >
+    <>
       {/* 
-          Shopping Cart SVG Icon:
-          - We use the shared CartIcon component here to keep things DRY.
+        CART BUTTON
+        This button opens the cart drawer when clicked
+        It shows the cart icon and the item count badge
       */}
-      <CartIcon class="w-6 h-6" />
+      <button
+        onClick$={() => {
+          // Toggle the drawer open
+          isDrawerOpen.value = true;
+        }}
+        class="relative inline-flex items-center p-2 text-gray-700 hover:text-black transition-colors"
+        aria-label={`Shopping cart with ${cart.state.totalItems} items`}
+      >
+        <CartIcon class="w-6 h-6" />
+
+        {/* 
+          ITEM COUNT BADGE
+          - We use the shared CartCountBadge for consistency
+          - It handles the totalItems > 0 check internally
+        */}
+        <CartCountBadge 
+          count={cart.state.totalItems} 
+          class="absolute -top-1 -right-1 w-5 h-5 text-xs animate-pulse" 
+        />
+      </button>
 
       {/* 
-          Item Count Badge:
-          - We only show the red badge if there is at least 1 item in the cart.
-          - 'animate-pulse': This adds a subtle "breathing" animation to draw the user's eye 
-             when they have something in their cart.
-          - We cap the display at '99+' so it doesn't break the small circle UI if someone 
-            buys hundreds of items.
+        CART DRAWER
+        The slide-in drawer that shows cart contents
+        Only renders when isDrawerOpen is true
+        
+        Props explained:
+        - isOpen: Controls visibility of the drawer
+        - onClose: Function to call when drawer should close
       */}
-      <CartCountBadge 
-        count={cart.state.totalItems} 
-        class="absolute -top-1 -right-1 w-5 h-5 text-xs animate-pulse" 
+      <CartDrawer
+        isOpen={isDrawerOpen.value}
+        onClose={$(() => {
+          // Close the drawer by setting the signal to false
+          isDrawerOpen.value = false;
+        })}
       />
-    </Link>
+    </>
   );
 });
