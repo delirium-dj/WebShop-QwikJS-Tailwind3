@@ -2,6 +2,8 @@
 import { component$ } from '@builder.io/qwik';
 import { Link } from '@builder.io/qwik-city';
 import { useCart } from '~/contexts/cart'; // This is our hook to access the global cart state
+import { CartIcon } from '../ui/icons/CartIcon'; // Reusing the shared cart icon component
+import { CartCountBadge } from './CartCountBadge';
 
 /**
  * Cart Badge Component
@@ -20,22 +22,9 @@ export const CartBadge = component$(() => {
     >
       {/* 
           Shopping Cart SVG Icon:
-          - 'w-6 h-6': Standard size for navigation icons.
+          - We use the shared CartIcon component here to keep things DRY.
       */}
-      <svg
-        class="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-        />
-      </svg>
+      <CartIcon class="w-6 h-6" />
 
       {/* 
           Item Count Badge:
@@ -45,11 +34,10 @@ export const CartBadge = component$(() => {
           - We cap the display at '99+' so it doesn't break the small circle UI if someone 
             buys hundreds of items.
       */}
-      {cart.state.totalItems > 0 && (
-        <span class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full animate-pulse">
-          {cart.state.totalItems > 99 ? '99+' : cart.state.totalItems}
-        </span>
-      )}
+      <CartCountBadge 
+        count={cart.state.totalItems} 
+        class="absolute -top-1 -right-1 w-5 h-5 text-xs animate-pulse" 
+      />
     </Link>
   );
 });

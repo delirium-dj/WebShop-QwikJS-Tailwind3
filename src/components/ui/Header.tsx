@@ -37,7 +37,7 @@ export const Header = component$(() => {
               - We group the Cart, Desktop Links, and Hamburger Menu together here.
               - 'space-x-6': Adds uniform horizontal spacing between these elements.
           */}
-          <div class="flex items-center space-x-6">
+          <div class="flex items-center space-x-2 md:space-x-6">
             {/* 
                 Search Icon:
                 - 'hidden md:block': We hide this on very small screens to keep the header clean,
@@ -66,12 +66,9 @@ export const Header = component$(() => {
                 Functional Cart Badge:
                 - This component is tied to our Qwik Cart Context. 
                 - Whenever an item is added, this icon will update automatically.
-                - 'hidden lg:block': We show the special CartBadge on desktop. 
-                  (Note: Mobile users can access the cart via the view button in the MobileMenu).
+                - We now show this on both mobile and desktop as per user request.
             */}
-            <div class="hidden lg:block">
-               <CartBadge />
-            </div>
+            <CartBadge />
 
             {/* 
                 Desktop Navigation:
