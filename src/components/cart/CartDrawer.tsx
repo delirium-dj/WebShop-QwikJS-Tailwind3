@@ -19,7 +19,7 @@
  * <CartDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
  */
 
-import { component$, $, useVisibleTask$, type PropFunction } from '@builder.io/qwik';
+import { component$, $, useTask$, type PropFunction } from '@builder.io/qwik';
 import { Link } from '@builder.io/qwik-city';
 import { useCart } from '~/contexts/cart';
 
@@ -55,7 +55,7 @@ export const CartDrawer = component$<CartDrawerProps>(({ isOpen, onClose }) => {
    * This prevents the page from scrolling in the background
    * when the drawer is open, improving UX
    */
-  useVisibleTask$(({ track }) => {
+  useTask$(({ track }) => {
     // Track changes to isOpen prop
     track(() => isOpen);
     
