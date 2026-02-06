@@ -88,7 +88,31 @@ Why fourth? Users need to review their cart before checkout.
 
 Benefits: Completes the pre-checkout experience
 
-### Step 5: Server-Side Data Fetching 🌐
+### Step 5.1: Install Vite Image Tools
+
+#### What to implement:
+
+- [ ] Install Vite Image Tools
+- [ ] Configure Vite Image Tools
+- [ ] Implement image loading and optimization (AVIF, WebP, JPEG - in that preferred order)
+- [ ] Implement image lazy loading
+- [ ] Implement image placeholders
+- [ ] Implement image error handling
+- [ ] Implement image aspect ratio
+
+### Step 5.2: Product Images
+
+#### What to implement:
+
+- [ ] Implement product images
+- [ ] AI should generate 5 images for each product or use existing images from Unsplash or similar image service
+- [ ] Ensure that we have 10 random products for MVP with at least 2 images each and maximum of 5 images per product
+- [ ] Implement image gallery with zoom
+- [ ] Make sure that the images are responsive and work on all devices
+- [ ] Make sure that the images are optimized for performance
+- [ ] Make sure that images have product at the center of the image
+
+### Step 5.3: Server-Side Data Fetching 🌐
 
 Why fifth? Improves performance and SEO, enables dynamic product data.
 
