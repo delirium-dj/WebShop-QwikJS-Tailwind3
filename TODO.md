@@ -63,9 +63,11 @@ Why third? Leverages the context store you just built, adds proper Qwik event ha
 
 - [x] Replace existing cart buttons with proper onClick$ handlers
 - [x] Add loading states during cart operations
-- [x] Success notifications/toasts
+- [x] Success notifications/toasts (integrated in Product Page and Home)
 - [x] Optimistic UI updates
 - [x] Prevent duplicate additions
+- [x] **BUG FIX**: Prevent navigation when clicking "Add to Cart" on Home Page.
+- [x] **BUG FIX**: Support multiple variants of the same product in cart.
 
 Benefits: Better UX, proper Qwik reactivity, preparation for server actions
 
@@ -111,7 +113,7 @@ Why sixth? Required before implementing checkout and order history.
 - [ ] Protected routes
 - [ ] User profile page
 - [ ] Password reset flow
-- [ ] Social login (optional)
+- [ ] Social logins (Google [a must have], Microsoft [optional], LinkedIn [optional], GitHub [optional], GitLab [optional])
 
 Benefits: Enables personalized features, order tracking, saved addresses
 
@@ -166,3 +168,7 @@ Benefits: Completes the purchase funnel
 - [x] Home page with Featured Products.
 - [x] Product Card component.
 - [x] Tailwind CSS integration.
+- [x] Integrated `AddToCartButton` with loading/success states and toast notifications.
+- [x] Fixed cart removal logic to support product variants (size/color).
+- [x] Cleaned up product page UI (removed low-stock warnings).
+- [x] Resolved build-blocking serialization errors in Toast Context.
