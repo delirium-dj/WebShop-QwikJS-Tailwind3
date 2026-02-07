@@ -15,7 +15,7 @@
  * <ImageGallery images={product.images} />
  */
 
-import { component$, useSignal, $, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useSignal, $, useTask$ } from '@builder.io/qwik';
 import type { ProductImage as ProductImageType } from '../../types/image.types';
 import { ProductImage } from './ProductImage';
 import { getPrimaryImage, preloadImage } from '../../utils/image.utils';
@@ -75,7 +75,7 @@ export const ImageGallery = component$<ImageGalleryProps>((props) => {
    * Preload adjacent images for smoother navigation
    * This runs on the client side after the component is visible
    */
-  useVisibleTask$(({ track }) => {
+  useTask$(({ track }) => {
     // Track changes to selectedIndex
     track(() => selectedIndex.value);
     
