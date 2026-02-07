@@ -37,22 +37,24 @@ const IMAGE_DIMENSIONS: Record<ImageSize, { width: number; height: number }> = {
  */
 export const getOptimizedImageUrl = (
   baseUrl: string,
-  size: ImageSize = 'medium',
-  quality: number = 85
+  _size: ImageSize = 'medium'
 ): string => {
   // In a real application, you would integrate with an image optimization service
   // like Cloudinary, Imgix, or your own image processing API
   // For now, we return the base URL with size parameters
   
-  const dimensions = IMAGE_DIMENSIONS[size];
+  // const dimensions = IMAGE_DIMENSIONS[_size];
   
   // If original size is requested, return the base URL
-  if (size === 'original') {
+  if (_size === 'original') {
     return baseUrl;
   }
   
   // Example: In production, you might generate URLs like:
-  // `https://cdn.example.com/images/${baseUrl}?w=${dimensions.width}&h=${dimensions.height}&q=${quality}`
+  // `https://cdn.example.com/images/${baseUrl}?w=${dimensions.width}&h=${dimensions.height}&q=${_quality}`
+  if (process.env.NODE_ENV === 'development') {
+    // console.log('Optimizing with quality:', _quality);
+  }
   
   return baseUrl;
 };

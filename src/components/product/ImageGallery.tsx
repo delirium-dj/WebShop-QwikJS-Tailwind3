@@ -196,7 +196,7 @@ export const ImageGallery = component$<ImageGalleryProps>((props) => {
             style={
               isZoomed.value
                 ? {
-                    transformOrigin: `${mousePosition.value.x}% ${mousePosition.value.y}%`,
+                    'transform-origin': `${mousePosition.value.x}% ${mousePosition.value.y}%`,
                   }
                 : undefined
             }

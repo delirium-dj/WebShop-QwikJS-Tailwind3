@@ -51,6 +51,9 @@ interface ProductImageProps {
   
   // Optional click handler
   onClick$?: QRL<() => void>;
+  
+  // Optional styles
+  style?: any;
 }
 
 /**
@@ -66,7 +69,6 @@ export const ProductImage = component$<ProductImageProps>((props) => {
     class: className = '',
     lazy = true,
     showPlaceholder = true,
-    quality = 85,
     onClick$,
   } = props;
 
@@ -80,7 +82,7 @@ export const ProductImage = component$<ProductImageProps>((props) => {
   const dimensions = getSizeDimensions(size);
   
   // Generate the optimized image URL
-  const imageUrl = getOptimizedImageUrl(image.url, size, quality);
+  const imageUrl = getOptimizedImageUrl(image.url, size);
   
   // Generate srcset for responsive images (different sizes for different screen widths)
   const srcSet = generateSrcSet(image.url);
@@ -132,7 +134,7 @@ export const ProductImage = component$<ProductImageProps>((props) => {
       {/* Main product image */}
       <img
         src={hasError.value ? placeholderUrl : imageUrl}
-        srcSet={hasError.value ? undefined : srcSet}
+        srcset={hasError.value ? undefined : srcSet}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         alt={image.alt}
         width={dimensions.width || image.width}
@@ -146,6 +148,7 @@ export const ProductImage = component$<ProductImageProps>((props) => {
         onLoad$={handleLoad$}
         onError$={handleError$}
         onClick$={onClick$}
+        style={props.style}
       />
 
       {/* Optional badge for primary images */}
