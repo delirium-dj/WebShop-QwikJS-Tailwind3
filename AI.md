@@ -712,40 +712,40 @@ The project now includes 16 sample products for comprehensive testing and develo
 
 ```typescript
 interface MockProduct {
-  id: string;              // Unique ID (prod-1, prod-2, etc.)
-  name: string;            // Product title
-  slug: string;            // URL-friendly name
-  price: number;           // Current price
-  originalPrice?: number;  // Original price (for discounts)
-  images: ProductImage[];  // Array of product images
-  category: string;        // Product category
-  rating: number;          // Star rating (0-5)
-  inStock: boolean;        // Availability status
-  description: string;     // Product description
-  createdAt: Date;         // Timestamp for sorting
+  id: string; // Unique ID (prod-1, prod-2, etc.)
+  name: string; // Product title
+  slug: string; // URL-friendly name
+  price: number; // Current price
+  originalPrice?: number; // Original price (for discounts)
+  images: ProductImage[]; // Array of product images
+  category: string; // Product category
+  rating: number; // Star rating (0-5)
+  inStock: boolean; // Availability status
+  description: string; // Product description
+  createdAt: Date; // Timestamp for sorting
 }
 ```
 
 **Current Products (16 total):**
 
-| ID | Name | Category | Price | Stock |
-|----|------|----------|-------|-------|
-| prod-1 | Premium Wireless Headphones | Electronics | $299.99 | ✅ |
-| prod-2 | Smartphone Stand | Accessories | $29.99 | ✅ |
-| prod-3 | USB-C Cable Pack | Cables | $19.99 | ❌ |
-| prod-4 | Wireless Mouse | Computer Accessories | $49.99 | ✅ |
-| prod-5 | Mechanical Keyboard RGB | Computer Accessories | $159.99 | ✅ |
-| prod-6 | Portable SSD 1TB | Storage | $129.99 | ✅ |
-| prod-7 | USB Hub 7-in-1 | Cables & Hubs | $39.99 | ✅ |
-| prod-8 | Webcam 4K Pro | Video | $89.99 | ✅ |
-| prod-9 | Laptop Stand Aluminum | Accessories | $44.99 | ✅ |
-| prod-10 | Monitor Light Bar | Lighting | $69.99 | ✅ |
-| prod-11 | Desk Organizer Set | Office Supplies | $34.99 | ✅ |
-| prod-12 | Wireless Charging Pad | Charging | $24.99 | ✅ |
-| prod-13 | Portable Phone Charger 20000mAh | Charging | $54.99 | ✅ |
-| prod-14 | Blue Light Glasses | Eye Protection | $59.99 | ✅ |
-| prod-15 | Ergonomic Wrist Rest | Accessories | $19.99 | ✅ |
-| prod-16 | HDMI Cable 2.1 8K | Cables | $29.99 | ✅ |
+| ID      | Name                            | Category             | Price   | Stock |
+| ------- | ------------------------------- | -------------------- | ------- | ----- |
+| prod-1  | Premium Wireless Headphones     | Electronics          | $299.99 | ✅    |
+| prod-2  | Smartphone Stand                | Accessories          | $29.99  | ✅    |
+| prod-3  | USB-C Cable Pack                | Cables               | $19.99  | ❌    |
+| prod-4  | Wireless Mouse                  | Computer Accessories | $49.99  | ✅    |
+| prod-5  | Mechanical Keyboard RGB         | Computer Accessories | $159.99 | ✅    |
+| prod-6  | Portable SSD 1TB                | Storage              | $129.99 | ✅    |
+| prod-7  | USB Hub 7-in-1                  | Cables & Hubs        | $39.99  | ✅    |
+| prod-8  | Webcam 4K Pro                   | Video                | $89.99  | ✅    |
+| prod-9  | Laptop Stand Aluminum           | Accessories          | $44.99  | ✅    |
+| prod-10 | Monitor Light Bar               | Lighting             | $69.99  | ✅    |
+| prod-11 | Desk Organizer Set              | Office Supplies      | $34.99  | ✅    |
+| prod-12 | Wireless Charging Pad           | Charging             | $24.99  | ✅    |
+| prod-13 | Portable Phone Charger 20000mAh | Charging             | $54.99  | ✅    |
+| prod-14 | Blue Light Glasses              | Eye Protection       | $59.99  | ✅    |
+| prod-15 | Ergonomic Wrist Rest            | Accessories          | $19.99  | ✅    |
+| prod-16 | HDMI Cable 2.1 8K               | Cables               | $29.99  | ✅    |
 
 **Helper Functions:**
 
@@ -770,10 +770,10 @@ export const getLatestProducts = (count: number = 4) => {
     })
     .slice(0, count)
     .map((product) => ({
-      id: parseInt(product.id.replace('prod-', '')),
+      id: parseInt(product.id.replace("prod-", "")),
       title: product.name,
       price: product.price,
-      image: product.images[0]?.url || '/images/placeholder.jpg',
+      image: product.images[0]?.url || "/images/placeholder.jpg",
     }));
 };
 ```
@@ -1265,4 +1265,3 @@ When working on this project:
 **Last Updated:** February 9, 2026 (18:00 UTC)
 **Session:** Expanded mock products (4→16) + dynamic homepage sync + AI context docs  
 **Next Update:** After Step 5.3 (Server-side data fetching) or major feature additions
-
