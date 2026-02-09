@@ -1,8 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 9, 2026  
-**Operating System** Windows 10
-**Terminal** PowerShell 7+
+**Last Updated:** February 9, 2026 (Updated with mock data expansion and dynamic featured products)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -706,6 +704,93 @@ export const useProductData = routeLoader$(async ({ params, status }) => {
 // Production: Should fetch from API/database
 ```
 
+### Mock Product Data (src/data/mockProducts.ts)
+
+**Expanded to 16 Products** with dynamic data source:
+
+The project now includes 16 sample products for comprehensive testing and development. Each product has:
+
+```typescript
+interface MockProduct {
+  id: string;              // Unique ID (prod-1, prod-2, etc.)
+  name: string;            // Product title
+  slug: string;            // URL-friendly name
+  price: number;           // Current price
+  originalPrice?: number;  // Original price (for discounts)
+  images: ProductImage[];  // Array of product images
+  category: string;        // Product category
+  rating: number;          // Star rating (0-5)
+  inStock: boolean;        // Availability status
+  description: string;     // Product description
+  createdAt: Date;         // Timestamp for sorting
+}
+```
+
+**Current Products (16 total):**
+
+| ID | Name | Category | Price | Stock |
+|----|------|----------|-------|-------|
+| prod-1 | Premium Wireless Headphones | Electronics | $299.99 | ✅ |
+| prod-2 | Smartphone Stand | Accessories | $29.99 | ✅ |
+| prod-3 | USB-C Cable Pack | Cables | $19.99 | ❌ |
+| prod-4 | Wireless Mouse | Computer Accessories | $49.99 | ✅ |
+| prod-5 | Mechanical Keyboard RGB | Computer Accessories | $159.99 | ✅ |
+| prod-6 | Portable SSD 1TB | Storage | $129.99 | ✅ |
+| prod-7 | USB Hub 7-in-1 | Cables & Hubs | $39.99 | ✅ |
+| prod-8 | Webcam 4K Pro | Video | $89.99 | ✅ |
+| prod-9 | Laptop Stand Aluminum | Accessories | $44.99 | ✅ |
+| prod-10 | Monitor Light Bar | Lighting | $69.99 | ✅ |
+| prod-11 | Desk Organizer Set | Office Supplies | $34.99 | ✅ |
+| prod-12 | Wireless Charging Pad | Charging | $24.99 | ✅ |
+| prod-13 | Portable Phone Charger 20000mAh | Charging | $54.99 | ✅ |
+| prod-14 | Blue Light Glasses | Eye Protection | $59.99 | ✅ |
+| prod-15 | Ergonomic Wrist Rest | Accessories | $19.99 | ✅ |
+| prod-16 | HDMI Cable 2.1 8K | Cables | $29.99 | ✅ |
+
+**Helper Functions:**
+
+```typescript
+// Get single product by ID
+export const getProductById = (id: string) => {
+  return mockProducts.find((product) => product.id === id);
+};
+
+// Get single product by slug
+export const getProductBySlug = (slug: string) => {
+  return mockProducts.find((product) => product.slug === slug);
+};
+
+// Get latest featured products (sorted by createdAt, newest first)
+export const getLatestProducts = (count: number = 4) => {
+  return mockProducts
+    .sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA; // Newest first
+    })
+    .slice(0, count)
+    .map((product) => ({
+      id: parseInt(product.id.replace('prod-', '')),
+      title: product.name,
+      price: product.price,
+      image: product.images[0]?.url || '/images/placeholder.jpg',
+    }));
+};
+```
+
+**Homepage Integration:**
+
+The homepage now uses `getLatestProducts(4)` to display the 4 most recently added products:
+
+```typescript
+// src/routes/index.tsx
+export const useFeaturedProducts = routeLoader$(async () => {
+  return getLatestProducts(4); // Returns 4 newest products
+});
+```
+
+This ensures **automatic synchronization** - adding new products to mockProducts.ts automatically updates the homepage without code changes.
+
 ---
 
 ## 🎨 Styling & Theme
@@ -957,12 +1042,15 @@ useVisibleTask$(() => {
 - [x] Toast notifications system
 - [x] Homepage with featured products
 - [x] Multiple product variants support
+- [x] **NEW**: AI context documentation system (AI.md + update workflow)
+- [x] **NEW**: Expanded mock products (4 → 16 products with timestamps)
+- [x] **NEW**: Dynamic featured products from mockProducts data source
 
 ### In Progress 🔄
 
 - [ ] Qwik Link integration for optimized navigation
 - [ ] Advanced hydration optimization
-- [ ] Server-side data fetching with real API
+- [ ] Step 5.3: Full server-side data fetching with real API
 
 ### Planned Features 📋
 
@@ -1173,6 +1261,8 @@ When working on this project:
 
 ---
 
-**Document Version:** 1.0  
-**Last Generated:** February 9, 2026  
-**Next Update:** After major feature changes or architectural updates
+**Document Version:** 1.1  
+**Last Updated:** February 9, 2026 (18:00 UTC)
+**Session:** Expanded mock products (4→16) + dynamic homepage sync + AI context docs  
+**Next Update:** After Step 5.3 (Server-side data fetching) or major feature additions
+
