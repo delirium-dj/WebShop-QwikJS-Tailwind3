@@ -42,6 +42,9 @@ interface ProductCardProps {
   // Additional CSS classes
   class?: string;
 
+  // Whether the product is featured
+  isFeatured?: boolean;
+
   // Whether to show the "Add to Cart" button
   showAddToCart?: boolean;
 
@@ -71,6 +74,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
     inStock: flatInStock,
     stock: flatStock,
     class: className = "",
+    isFeatured = false,
     showAddToCart = true,
     onAddToCart$,
   } = props;
@@ -111,13 +115,17 @@ export const ProductCard = component$<ProductCardProps>((props) => {
         };
 
   // Calculate discount percentage
-  const discountPct =
-    discount ||
-    (originalPrice
-      ? Math.round(((originalPrice - price) / originalPrice) * 100)
-      : 0);
-  const displayOriginalPrice =
-    originalPrice || (discount ? price / (1 - discount / 100) : undefined);
+  // User Rule: Do not make "Discounts" for "Featured" products.
+  const discountPct = isFeatured
+    ? 0
+    : discount ||
+      (originalPrice
+        ? Math.round(((originalPrice - price) / originalPrice) * 100)
+        : 0);
+  
+  const displayOriginalPrice = isFeatured
+    ? undefined
+    : originalPrice || (discount ? price / (1 - discount / 100) : undefined);
 
   /**
    * Handle add to cart button click
@@ -134,37 +142,70 @@ export const ProductCard = component$<ProductCardProps>((props) => {
 
   return (
     <div
-      class={`product-card group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl ${className} `}
+      class={`product-card group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl ${className} flex flex-col h-full`}
     >
       {/* Product link wrapper */}
-      <Link href={`/product/${id}`} class="block">
-        {/* Image section */}
-        <div class="relative aspect-square bg-gray-100">
+      <Link href={`/product/${id}`} class="flex flex-col flex-1 h-full">
+        {/* Image section - Aspect square maintains previous look */}
+        <div class="relative aspect-square w-full bg-gray-50 overflow-hidden flex items-center justify-center">
           <ProductImage
             image={displayImage}
             size="small"
             class="h-full w-full transition-transform duration-300 group-hover:scale-105"
+            style={{ objectFit: 'contain' }}
           />
 
-          {/* Discount badge */}
+          {/* Featured badge (Upper Left) */}
+          {isFeatured && (
+            <div class="absolute left-2 top-2 z-10 rounded bg-indigo-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+              Featured
+            </div>
+          )}
+
+          {/* Discount badge (Upper Right) */}
           {discountPct > 0 && (
-            <div class="absolute right-2 top-2 rounded bg-red-600 px-2 py-1 text-xs font-bold text-white">
+            <div class="absolute right-2 top-2 z-20 rounded bg-red-600 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
               -{discountPct}%
             </div>
           )}
 
           {/* Out of stock overlay */}
           {!isAvailable && (
-            <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="absolute inset-0 z-30 flex items-center justify-center bg-black bg-opacity-50">
               <span class="rounded-lg bg-white px-4 py-2 font-semibold text-gray-800">
                 Out of Stock
               </span>
             </div>
           )}
+
+          {/* Wishlist button - Moved to bottom-right of image section */}
+          <button
+            class="absolute right-2 bottom-2 z-20 rounded-full bg-white bg-opacity-80 p-2 shadow-md transition-all hover:bg-opacity-100 hover:scale-110 active:scale-95"
+            onClick$={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              // Wishlist functionality would go here
+            }}
+            aria-label="Add to wishlist"
+          >
+            <svg
+              class="h-4 w-4 text-gray-600 transition-colors hover:text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </button>
         </div>
 
-        {/* Product details section */}
-        <div class="p-4">
+        {/* Product details section - flex-1 expands to push footer down */}
+        <div class="p-4 flex flex-col flex-1">
           {/* Category */}
           {category && (
             <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">
@@ -200,67 +241,45 @@ export const ProductCard = component$<ProductCardProps>((props) => {
             </div>
           )}
 
-          {/* Price section */}
-          <div class="mb-3 flex items-center gap-2">
-            <span class="text-2xl font-bold text-gray-900">
-              ${price.toFixed(2)}
-            </span>
-            {displayOriginalPrice && (
-              <span class="text-sm text-gray-500 line-through">
-                ${displayOriginalPrice.toFixed(2)}
+          {/* Sticky Bottom Section: Price and Add to Cart */}
+          <div class="mt-auto pt-3 border-t border-gray-100">
+            {/* Price section */}
+            <div class="mb-3 flex items-center gap-2">
+              <span class="text-xl font-bold text-gray-900">
+                ${price.toFixed(2)}
               </span>
+              {displayOriginalPrice && (
+                <span class="text-sm text-gray-500 line-through">
+                  ${displayOriginalPrice.toFixed(2)}
+                </span>
+              )}
+            </div>
+
+            {/* Add to cart button */}
+            {showAddToCart && isAvailable && (
+              <button
+                class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 active:scale-95"
+                onClick$={handleAddToCart$}
+              >
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                Add to Cart
+              </button>
             )}
           </div>
-
-          {/* Add to cart button */}
-          {showAddToCart && isAvailable && (
-            <button
-              class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
-              onClick$={handleAddToCart$}
-            >
-              <svg
-                class="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              Add to Cart
-            </button>
-          )}
         </div>
       </Link>
-
-      {/* Wishlist button */}
-      <button
-        class="absolute left-4 top-4 z-10 rounded-full bg-white bg-opacity-80 p-2 shadow-md transition-all hover:bg-opacity-100"
-        onClick$={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          // Wishlist functionality would go here
-        }}
-        aria-label="Add to wishlist"
-      >
-        <svg
-          class="h-5 w-5 text-gray-600 transition-colors hover:text-red-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-          />
-        </svg>
-      </button>
     </div>
   );
 });

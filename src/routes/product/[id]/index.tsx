@@ -5,144 +5,33 @@ import { ProductGallery } from '~/components/product/ProductGallery';
 import { ProductInfo } from '~/components/product/ProductInfo';
 import { RelatedProducts } from '~/components/product/RelatedProducts';
 import { Breadcrumb } from '~/components/ui/Breadcrumb';
-import type { Product } from '~/types/product';
+import { getProductById, getAllProducts } from '~/services/api/products';
+import { mapApiProductToProduct, mapApiProductsToProducts } from '~/utils/product-mapper';
 
-// This is a mock data loader - in Step 5 you'll replace this with real API/database calls
 // We use routeLoader$ to fetch data on the server before the component renders.
-// This is essential for SEO and performance (Resumability).
 export const useProductData = routeLoader$(async ({ params, status }) => {
-  const productId = parseInt(params.id);
+  const productId = params.id;
 
-  // Mock product database - replace with actual data fetching from an API or Database later.
-  // Why? Because we want to show a realistic e-commerce experience while developing.
-  const mockProducts: Product[] = [
-    {
-      id: 1,
-      title: 'Premium Wireless Headphones',
-      price: 299.99,
-      discount: 15,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
-      images: [
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800',
-        'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800',
-        'https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=800',
-        'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800',
-      ],
-      category: 'Electronics',
-      description:
-        'Experience premium sound quality with our flagship wireless headphones. Featuring active noise cancellation, 30-hour battery life, and premium materials for ultimate comfort. Perfect for music lovers and professionals alike.',
-      rating: 4.8,
-      reviewCount: 342,
-      inStock: true,
-      stockQuantity: 45,
-      sku: 'WHP-001',
-      sizes: ['One Size'],
-      colors: ['Black', 'Silver', 'Blue', 'Red'],
-      features: [
-        'Active Noise Cancellation (ANC) technology',
-        '30-hour battery life with quick charge',
-        'Premium memory foam ear cushions',
-        'Bluetooth 5.0 with multipoint connectivity',
-        'Built-in microphone for hands-free calls',
-        'Foldable design with carrying case included',
-      ],
-      specifications: {
-        'Driver Size': '40mm',
-        'Frequency Response': '20Hz - 20kHz',
-        'Impedance': '32 Ohm',
-        'Weight': '250g',
-        'Bluetooth Version': '5.0',
-        'Battery Life': '30 hours',
-        'Charging Time': '2 hours',
-        'Warranty': '2 years',
-      },
-    },
-    {
-      id: 2,
-      title: 'Smart Watch Series X',
-      price: 399.99,
-      discount: 20,
-      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
-      images: [
-        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800',
-        'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800',
-      ],
-      category: 'Wearables',
-      description:
-        'The most advanced smartwatch yet. Track your health, stay connected, and customize your style with our latest wearable technology.',
-      rating: 4.6,
-      reviewCount: 218,
-      inStock: true,
-      stockQuantity: 8,
-      sizes: ['40mm', '44mm'],
-      colors: ['Space Gray', 'Silver', 'Gold', 'Rose Gold'],
-      features: [
-        'Always-on Retina display',
-        'Blood oxygen monitoring',
-        'ECG app for heart health',
-        'Water resistant up to 50m',
-        '18-hour battery life',
-        'GPS and cellular connectivity',
-      ],
-      specifications: {
-        'Display Size': '1.78 inches',
-        'Resolution': '448 x 368 pixels',
-        'Processor': 'Dual-core S8',
-        'Storage': '32GB',
-        'Battery': '18 hours',
-        'Water Resistance': '50m',
-        'Operating System': 'watchOS 10',
-      },
-    },
-    {
-      id: 3,
-      title: 'Professional Camera Lens 50mm f/1.8',
-      price: 599.99,
-      image: 'https://images.unsplash.com/photo-1606980402022-f7d7f24c1f4f?w=800',
-      images: [
-        'https://images.unsplash.com/photo-1606980402022-f7d7f24c1f4f?w=800',
-        'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800',
-      ],
-      category: 'Photography',
-      description:
-        'Capture stunning portraits with this professional-grade 50mm prime lens. Features fast f/1.8 aperture for beautiful bokeh and low-light performance.',
-      rating: 4.9,
-      reviewCount: 156,
-      inStock: false,
-      stockQuantity: 0,
-      features: [
-        'Fast f/1.8 maximum aperture',
-        '8-blade circular aperture for smooth bokeh',
-        'Ultra-low dispersion glass elements',
-        'Weather-sealed construction',
-        'Silent autofocus motor',
-        'Minimum focus distance: 0.45m',
-      ],
-      specifications: {
-        'Focal Length': '50mm',
-        'Maximum Aperture': 'f/1.8',
-        'Minimum Aperture': 'f/22',
-        'Lens Elements': '9 elements in 8 groups',
-        'Filter Size': '58mm',
-        'Weight': '420g',
-        'Length': '77mm',
-      },
-    },
-  ];
+  // 1. Fetch the main product
+  const apiProduct = await getProductById(productId);
 
-  const product = mockProducts.find((p) => p.id === productId);
-
-  // If the product doesn't exist, we return null and set the status to 404.
-  // This tells search engines that the page doesn't exist.
-  if (!product) {
+  if (!apiProduct) {
     status(404);
     return null;
   }
 
-  // Get related products (products in the same category, excluding the current one)
-  const relatedProducts = mockProducts
-    .filter((p) => p.id !== productId && p.category === product.category)
-    .slice(0, 4);
+  // 2. Map to our internal format
+  const product = mapApiProductToProduct(apiProduct);
+
+  // 3. Fetch related products (all products in same category)
+  let relatedProducts: any[] = [];
+  const allInCategory = await getAllProducts(); // FakeStore doesn't have a great "related" filter besides category
+  
+  if (allInCategory) {
+    relatedProducts = mapApiProductsToProducts(allInCategory)
+      .filter((p) => p.id !== product.id && p.category === product.category)
+      .slice(0, 4);
+  }
 
   return {
     product,

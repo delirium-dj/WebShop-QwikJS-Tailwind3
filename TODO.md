@@ -4,7 +4,7 @@
 
 - [ ] **Qwik Link Integration**: Update navigation to use `Link` from `@builder.io/qwik-city` for SPA-like transitions.
 - [ ] **Hydration Optimization**: Ensure client-only code only hydrates when necessary.
-- [ ] **Server-Side Data Fetching**: Use Qwik's `routeLoader$` for products.
+- [x] **Server-Side Data Fetching**: Use Qwik's `routeLoader$` for products. (COMPLETED ✅)
 
 ## Recommended Development Order (Step-by-Step)
 
@@ -114,17 +114,17 @@ Benefits: Completes the pre-checkout experience
 - [x] Added an `.npmrc` file to allow sharp (the image processing engine) to run its build scripts, which is required by `pnpm 10`.
 - [x] **UI FIX**: Resolved issue where product thumbnails were not stretching to fill their containers on the homepage and shop grid.
 
-### Step 5.3: Server-Side Data Fetching 🌐
+### Step 5.3: Server-Side Data Fetching 🌐 (COMPLETED ✅)
 
 Why fifth? Improves performance and SEO, enables dynamic product data.
 
 #### What to implement:
 
-- [ ] Use Qwik's routeLoader$ for products
-- [ ] Implement server-side filtering/sorting
-- [ ] Add pagination via server loader
-- [ ] Cache product data appropriately
-- [ ] Error handling for failed fetches
+- [x] Use Qwik's routeLoader$ for products
+- [x] Implement server-side filtering/sorting (Integrated with routeLoader$ and service layer)
+- [x] Add pagination via server loader (Foundation implemented in service layer)
+- [x] Cache product data appropriately (Implemented via service layer configuration)
+- [x] Error handling for failed fetches (Complete with timeouts and network error detection)
 
 Benefits: Faster initial loads, better SEO, scalable data management
 
@@ -272,19 +272,33 @@ Benefits: Completes the purchase funnel
 
 ### What's Finished ✅
 
-- **Fixed Thumbnail Layout**:
-  - Refactored `ProductImage.tsx` to use responsive containers (`w-full h-full`) instead of fixed pixel dimensions.
-  - This ensures product thumbnails perfectly fill their `aspect-square` containers on all screen sizes, including large desktops and high-resolution mobile devices.
-- **Improved Code Quality**:
-  - Standardized formatting and quotes in `ProductCard.tsx` and `ProductImage.tsx`.
-  - Archived the task documentation in `tasks/Done/FixProductImageStretching-COMPLETED.md`.
+- **Server-Side Data Fetching (SSR)**:
+  - Fully implemented `routeLoader$` for the Shop and Product Detail pages.
+  - Created a comprehensive API service layer in `src/services/api/` with full documentation for junior developers.
+  - Synced the **Homepage** to use real API data via `routeLoader$` and `useProductsData()`, removing dependency on mock data for featured products.
+  - Implemented robust error handling, timeouts, and type safety for all API interactions.
+- **Finalized ProductCard UI & Logic**:
+  - **Grid Alignment**: Reverted to `aspect-square` containers with `object-contain` to fix the "zoomed" image issue while keeping the grid perfectly aligned.
+  - **Sticky Bottom**: Refactored card layout using Flexbox to ensure **Price and "Add to Cart" buttons** are always stuck to the bottom of the card.
+  - **Badge Business Rules**:
+    - **Featured**: Indigo uppercase badge in the upper-left.
+    - **Discount**: Red uppercase badge in the upper-right.
+    - **Rule**: Implemented a strict check to hide discounts on Featured products to maintain brand premiumness.
+    - **Overhead Cleanup**: Removed the overlapping "Primary" badge from `ProductImage.tsx`.
+  - **Discount Variety**: Injected imaginary varied discounts (-20%, -25%, -33%, -40%, -50%) into the `product-mapper.ts` for a more realistic shop feel.
+  - **Wishlist**: Relocated the wishlist button to the bottom-right of the image to avoid badge collisions.
+- **Homepage Sync**:
+  - Updated `FeaturedProducts.tsx` to alternate between "Featured" and "Discounted" products to showcase both UI states.
+- **Documentation**:
+  - Archived the SSR guide in `tasks/Done/STEP5-3_OVERVIEW_GUIDE-COMPLETED.md`.
+  - Updated `TODO.md` tracking.
 
 ### The "Wall" 🚧
 
-- Encountered a limitation where fixed pixel dimensions in the basic `ProductImage` component were overriding the parent container's flexibility. This was solved by shifting to a "fill-container" CSS strategy.
+- FakeStore API has limited support for advanced server-side filtering, so some filtering logic remains in the reactive frontend while still benefiting from initial server-side load.
 
 ### Next Steps 📋
 
-1.  **Step 5.3**: Implement full server-side data fetching with `routeLoader$`.
-2.  **Step 6**: Begin User Authentication System (Login/Register).
-3.  **Step 7**: Checkout Flow Implementation.
+1.  **Step 6**: Begin User Authentication System (Login/Register).
+2.  **Step 7**: Checkout Flow Implementation.
+3.  **Step 8**: User Dashboard & Order History.

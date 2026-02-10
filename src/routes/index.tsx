@@ -1,14 +1,23 @@
 import { component$ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
-import { routeLoader$ } from "@builder.io/qwik-city";
+import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
 import { Hero } from "../components/Hero";
 import { Categories } from "../components/home/Categories";
 import { Banner } from "../components/home/Banner";
 import { FeaturedProducts } from "../components/home/FeaturedProducts";
-import { getLatestProducts } from "../data/mockProducts";
+import { getAllProducts } from "~/services/api/products";
+import { mapApiProductsToProducts } from "~/utils/product-mapper";
 
 export const useFeaturedProducts = routeLoader$(async () => {
-  return getLatestProducts(4);
+  // Fetch from the real API (FakeStore)
+  const apiProducts = await getAllProducts({ limit: 4, sort: 'desc' });
+  
+  // Transform the data to our internal format
+  if (apiProducts && apiProducts.length > 0) {
+    return mapApiProductsToProducts(apiProducts);
+  }
+
+  // Fallback to empty
+  return [];
 });
 
 export default component$(() => {

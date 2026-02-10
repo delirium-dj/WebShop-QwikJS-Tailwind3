@@ -157,12 +157,6 @@ export const ProductImage = component$<ProductImageProps>((props) => {
         style={props.style}
       />
 
-      {/* Optional badge for primary images */}
-      {image.isPrimary && (
-        <div class="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded">
-          Primary
-        </div>
-      )}
     </div>
   );
 });

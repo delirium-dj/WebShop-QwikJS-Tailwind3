@@ -14,26 +14,47 @@
  */
 
 import { component$, useSignal, $ } from '@builder.io/qwik';
+import { routeLoader$ } from '@builder.io/qwik-city';
 import { ProductCard } from '~/components/product';
-import { mockProducts } from '~/data/mockProducts';
+import { getAllProducts } from '~/services/api/products';
+import { mapApiProductsToProducts } from '~/utils/product-mapper';
+
+/**
+ * routeLoader$ - Fetches all products on the server
+ */
+export const useShopProducts = routeLoader$(async () => {
+  // Fetch from the real API (FakeStore)
+  const apiProducts = await getAllProducts();
+  
+  // Transform the data to our internal format
+  if (apiProducts && apiProducts.length > 0) {
+    return mapApiProductsToProducts(apiProducts);
+  }
+
+  // Fallback to empty if both fail
+  return [];
+});
 
 /**
  * Shop Page Component
  */
 export default component$(() => {
+  // Consume data from routeLoader$
+  const productsSignal = useShopProducts();
+  
   // Signals for filters and sorting
   const selectedCategory = useSignal('all');
   const sortBy = useSignal('featured');
   const showFilters = useSignal(false);
 
   // Get unique categories from products
-  const categories = ['all', ...new Set(mockProducts.map((p) => p.category))];
+  const categories = ['all', ...new Set(productsSignal.value.map((p) => p.category))];
 
   /**
    * Filter and sort products based on user selections
    */
   const getFilteredProducts = () => {
-    let filtered = [...mockProducts];
+    let filtered = [...productsSignal.value];
 
     // Filter by category
     if (selectedCategory.value !== 'all') {
@@ -49,7 +70,7 @@ export default component$(() => {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'name':
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
         break;
       case 'rating':
         filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -114,7 +135,7 @@ export default component$(() => {
                       />
                       <span class="capitalize">
                         {category}
-                        {category === 'all' && ` (${mockProducts.length})`}
+                        {category === 'all' && ` (${productsSignal.value.length})`}
                       </span>
                     </label>
                   ))}
