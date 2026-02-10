@@ -1,21 +1,22 @@
-import { component$, useSignal, $ } from '@builder.io/qwik';
-import type { ProductImage } from '~/types/image.types';
+import { component$, useSignal, $ } from "@builder.io/qwik";
+import type { ProductImage } from "~/utils/image";
 
 // Prop definitions for the ProductGallery component
 type ProductGalleryProps = {
   images: (string | ProductImage)[]; // Array of image URLs or objects
-  title: string;    // Product title for alt text accessibility
+  title: string; // Product title for alt text accessibility
 };
 
 /**
  * ProductGallery Component
- * Purpose: Manages the display of product images, including a main view, 
+ * Purpose: Manages the display of product images, including a main view,
  * zoom functionality, and a thumbnail navigation bar.
  */
 export const ProductGallery = component$<ProductGalleryProps>(
   ({ images, title }) => {
     // Helper to get image URL regardless of format
-    const getUrl = (img: string | ProductImage) => typeof img === 'string' ? img : img.url;
+    const getUrl = (img: string | ProductImage) =>
+      typeof img === "string" ? img : img.url;
 
     // State management using Qwik signals:
     // selectedImageIndex: Tracks which image is currently being shown in the main view
@@ -24,7 +25,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
     const isZoomed = useSignal(false);
 
     // Event Handlers (using the $ suffix for Qwik serialization):
-    
+
     // Changes the active image when a thumbnail is clicked
     const handleThumbnailClick = $((index: number) => {
       selectedImageIndex.value = index;
@@ -54,9 +55,9 @@ export const ProductGallery = component$<ProductGalleryProps>(
     return (
       <div class="space-y-4">
         {/* Main Image Viewport */}
-        <div class="relative bg-gray-100 rounded-lg overflow-hidden group border border-gray-100 shadow-sm">
+        <div class="group relative overflow-hidden rounded-lg border border-gray-100 bg-gray-100 shadow-sm">
           <div
-            class={`relative flex items-center justify-center transition-all duration-300 ${isZoomed.value ? 'cursor-zoom-out bg-white z-10' : 'cursor-zoom-in'}`}
+            class={`relative flex items-center justify-center transition-all duration-300 ${isZoomed.value ? "z-10 cursor-zoom-out bg-white" : "cursor-zoom-in"}`}
             onClick$={toggleZoom}
           >
             <img
@@ -64,8 +65,8 @@ export const ProductGallery = component$<ProductGalleryProps>(
               alt={`${title} - Image ${selectedImageIndex.value + 1}`}
               width={800}
               height={500}
-              class={`w-full h-[500px] object-contain transition-transform duration-500 will-change-transform ${
-                isZoomed.value ? 'scale-150' : 'scale-100'
+              class={`h-[500px] w-full object-contain transition-transform duration-500 will-change-transform ${
+                isZoomed.value ? "scale-150" : "scale-100"
               }`}
             />
           </div>
@@ -75,11 +76,11 @@ export const ProductGallery = component$<ProductGalleryProps>(
             <>
               <button
                 onClick$={handlePrevious}
-                class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2.5 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform hover:scale-110"
+                class="absolute left-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white/90 p-2.5 opacity-0 shadow-md transition-all duration-200 hover:scale-110 hover:bg-white group-hover:opacity-100"
                 aria-label="Previous image"
               >
                 <svg
-                  class="w-6 h-6 text-gray-800"
+                  class="h-6 w-6 text-gray-800"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -94,11 +95,11 @@ export const ProductGallery = component$<ProductGalleryProps>(
               </button>
               <button
                 onClick$={handleNext}
-                class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2.5 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200 transform hover:scale-110"
+                class="absolute right-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white/90 p-2.5 opacity-0 shadow-md transition-all duration-200 hover:scale-110 hover:bg-white group-hover:opacity-100"
                 aria-label="Next image"
               >
                 <svg
-                  class="w-6 h-6 text-gray-800"
+                  class="h-6 w-6 text-gray-800"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -116,7 +117,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
 
           {/* Image Counter Badge */}
           {images.length > 1 && (
-            <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium tracking-wider">
+            <div class="absolute bottom-4 right-4 rounded-full bg-black/60 px-3 py-1 text-xs font-medium tracking-wider text-white backdrop-blur-md">
               {selectedImageIndex.value + 1} / {images.length}
             </div>
           )}
@@ -129,10 +130,10 @@ export const ProductGallery = component$<ProductGalleryProps>(
               <button
                 key={index}
                 onClick$={() => handleThumbnailClick(index)}
-                class={`relative aspect-square rounded-md overflow-hidden border-2 transition-all duration-200 ${
+                class={`relative aspect-square overflow-hidden rounded-md border-2 transition-all duration-200 ${
                   selectedImageIndex.value === index
-                    ? 'border-black ring-2 ring-black/10'
-                    : 'border-transparent opacity-70 hover:opacity-100'
+                    ? "border-black ring-2 ring-black/10"
+                    : "border-transparent opacity-70 hover:opacity-100"
                 }`}
               >
                 <img
@@ -140,7 +141,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
                   alt={`${title} thumbnail ${index + 1}`}
                   width={200}
                   height={200}
-                  class="w-full h-full object-cover"
+                  class="h-full w-full object-cover"
                 />
               </button>
             ))}
@@ -148,6 +149,5 @@ export const ProductGallery = component$<ProductGalleryProps>(
         )}
       </div>
     );
-  }
+  },
 );
-

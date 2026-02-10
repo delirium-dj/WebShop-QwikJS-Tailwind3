@@ -1,6 +1,6 @@
 import { component$, $, type PropFunction } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
-import type { ProductImage as ProductImageType } from "../../types/image.types";
+import type { ProductImage as ProductImageType } from "../../utils/image";
 import { ProductImage } from "./ProductImage";
 
 /**
@@ -122,7 +122,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
       (originalPrice
         ? Math.round(((originalPrice - price) / originalPrice) * 100)
         : 0);
-  
+
   const displayOriginalPrice = isFeatured
     ? undefined
     : originalPrice || (discount ? price / (1 - discount / 100) : undefined);
@@ -142,17 +142,17 @@ export const ProductCard = component$<ProductCardProps>((props) => {
 
   return (
     <div
-      class={`product-card group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl ${className} flex flex-col h-full`}
+      class={`product-card group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl ${className} flex h-full flex-col`}
     >
       {/* Product link wrapper */}
-      <Link href={`/product/${id}`} class="flex flex-col flex-1 h-full">
+      <Link href={`/product/${id}`} class="flex h-full flex-1 flex-col">
         {/* Image section - Aspect square maintains previous look */}
-        <div class="relative aspect-square w-full bg-gray-50 overflow-hidden flex items-center justify-center">
+        <div class="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gray-50">
           <ProductImage
             image={displayImage}
             size="small"
-            class="h-full w-full transition-transform duration-500 scale-95 group-hover:scale-100"
-            style={{ objectFit: 'contain' }}
+            class="h-full w-full scale-95 transition-transform duration-500 group-hover:scale-100"
+            style={{ objectFit: "contain" }}
           />
 
           {/* Featured badge (Upper Left) */}
@@ -180,7 +180,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
 
           {/* Wishlist button - Moved to bottom-right of image section */}
           <button
-            class="absolute right-2 bottom-2 z-20 rounded-full bg-white bg-opacity-80 p-2 shadow-md transition-all hover:bg-opacity-100 hover:scale-110 active:scale-95"
+            class="absolute bottom-2 right-2 z-20 rounded-full bg-white bg-opacity-80 p-2 shadow-md transition-all hover:scale-110 hover:bg-opacity-100 active:scale-95"
             onClick$={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -205,7 +205,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
         </div>
 
         {/* Product details section - flex-1 expands to push footer down */}
-        <div class="p-4 flex flex-col flex-1">
+        <div class="flex flex-1 flex-col p-4">
           {/* Category */}
           {category && (
             <p class="mb-1 text-xs uppercase tracking-wide text-gray-500">
@@ -228,10 +228,11 @@ export const ProductCard = component$<ProductCardProps>((props) => {
                 We check if it's an object and extract the 'rate' if needed.
               */}
               {(() => {
-                const ratingValue = (typeof rating === 'object' && rating !== null) 
-                  ? (rating as any).rate 
-                  : Number(rating);
-                
+                const ratingValue =
+                  typeof rating === "object" && rating !== null
+                    ? (rating as any).rate
+                    : Number(rating);
+
                 return (
                   <>
                     {[...Array(5)].map((_, index) => (
@@ -258,7 +259,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
           )}
 
           {/* Sticky Bottom Section: Price and Add to Cart */}
-          <div class="mt-auto pt-3 border-t border-gray-100">
+          <div class="mt-auto border-t border-gray-100 pt-3">
             {/* Price section */}
             <div class="mb-3 flex items-center gap-2">
               <span class="text-xl font-bold text-gray-900">

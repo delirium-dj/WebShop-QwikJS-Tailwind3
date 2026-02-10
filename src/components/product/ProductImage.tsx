@@ -26,13 +26,13 @@ import { component$, useSignal, $, type QRL } from "@builder.io/qwik";
 import type {
   ProductImage as ProductImageType,
   ImageSize,
-} from "../../types/image.types";
+} from "../../utils/image";
 import {
   getOptimizedImageUrl,
   generateSrcSet,
   getPlaceholderImage,
   getSizeDimensions,
-} from "../../utils/image.utils";
+} from "../../utils/image";
 
 /**
  * Component props interface
