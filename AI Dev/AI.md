@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 10, 2026 (Updated with 'Inset' image zoom logic and numeric ID sync)
+**Last Updated:** February 10, 2026 (Updated with Reactive Shop Filters & Unified API imports)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -21,6 +21,8 @@
 - ✅ **Advanced Cart Management**: Support for variants, persistent state, and optimistic updates
 - ✅ **Automated Image Optimization**: Multi-format (AVIF/WebP) support
 - ✅ **Toast Notifications**: Interactive feedback system
+- ✅ **Reactive Filtering & Sorting**: Instant grid updates powered by `useComputed$`
+- ✅ **URL State Management**: Shareable search/filter states via URL parameters
 - ✅ **Mobile-First UX**: High-performance animated menus and cart drawers
 
 ### Technology Stack
@@ -193,6 +195,47 @@ reconshop/
 ```
 
 ---
+
+- +## ⚡ Reactive Shop Filtering & Sorting
+- +### Core Implementation (src/routes/shop/index.tsx)
+- +The shop uses a fully reactive pattern that combines server-side data loading with client-side reactive filtering.
+- +#### 1. Server Data (routeLoader$)
++```tsx
++export const useProductsData = routeLoader$(async () => {
+- const products = await getAllProducts();
+- return { products };
+  +});
+  +```
+- +#### 2. Filtering State (Signals) +`tsx
++const selectedCategory = useSignal<string>('all');
++const sortBy = useSignal<string>('featured');
++const selectedPriceRanges = useSignal<number[]>([]);
++`
+- +#### 3. Reactive Grid (useComputed$)
+  +The grid is powered by a computed value that automatically tracks and re-runs filtering/sorting logic whenever any input signal changes.
+- +```tsx
+  +const filteredProducts = useComputed$(() => {
+- let filtered = [...products];
+-
+- // Reactive Filter Logic
+- if (selectedCategory.value !== 'all') {
+- filtered = filtered.filter(p => p.category === selectedCategory.value);
+- }
+-
+- // Sorting Logic...
+- return filtered;
+  +});
+  +```
+- +#### 4. URL Synchronization
+  +Whenever a filter changes, we update the browser URL without a page reload using `useNavigate()`. This makes the current filter state shareable.
+- +```tsx
+  +const updateURL = $(() => {
+- const params = new URLSearchParams();
+- if (selectedCategory.value !== 'all') params.set('category', selectedCategory.value);
+- nav(`/shop?${params.toString()}`);
+  +});
+  +```
+- +---
 
 ## 🏗️ Architecture & State Management
 
@@ -1027,7 +1070,7 @@ useVisibleTask$(() => {
 
 - [ ] Implementing User Authentication (Step 6)
 - [ ] Designing the Checkout Flow (Step 7)
-- [ ] Refining search/filtering performance
+- [ ] **NEW**: Implementing Reactive Sorting & Filtering in Shop (See `tasks/2026-02-10-REACTIVE-SHOP-FILTERS.md`)
 
 ### Planned Features 📋
 

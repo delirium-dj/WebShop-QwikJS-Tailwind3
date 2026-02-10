@@ -16,12 +16,30 @@
 
 import { API_CONFIG, buildUrl, getHeaders, API_ERRORS } from "./config";
 import type {
+  ApiProduct,
   ProductsResponse,
   ProductResponse,
   CategoriesResponse,
   ApiError,
   PaginationParams,
 } from "./types";
+
+/**
+ * TYPE RE-EXPORTS
+ * 
+ * For Junior Developers:
+ * We re-export these types here so that you can import both the functions 
+ * (like getAllProducts) and the data types (like ApiProduct) from this single file.
+ * This is a "one-stop shop" pattern that keeps your imports clean!
+ */
+export type {
+  ApiProduct,
+  ProductsResponse,
+  ProductResponse,
+  CategoriesResponse,
+  ApiError,
+  PaginationParams,
+};
 
 /**
  * handleApiError - Convert API errors into friendly messages

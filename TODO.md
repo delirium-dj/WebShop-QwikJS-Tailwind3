@@ -4,6 +4,7 @@
 
 - [ ] **Qwik Link Integration**: Update navigation to use `Link` from `@builder.io/qwik-city` for SPA-like transitions.
 - [ ] **Hydration Optimization**: Ensure client-only code only hydrates when necessary.
+- [x] **Reactive Shop Filters**: Implement `useComputed$` for sorting and filtering. (COMPLETED ✅)
 - [x] **Server-Side Data Fetching**: Use Qwik's `routeLoader$` for products. (COMPLETED ✅)
 
 ## Recommended Development Order (Step-by-Step)
@@ -293,12 +294,28 @@ Benefits: Completes the purchase funnel
   - Archived the SSR guide in `tasks/Done/STEP5-3_OVERVIEW_GUIDE-COMPLETED.md`.
   - Updated `TODO.md` tracking.
 
+### What's Finished ✅
+
+- **Reactive Shop Filtering & Sorting**:
+  - Fully implemented `useComputed$` for real-time, client-side filtering and sorting of product data.
+  - Added multi-select **Price Range** filtering.
+  - Added **In Stock Only** filter toggle.
+  - Implemented **URL State Synchronization** using `useLocation()` and `useNavigate()` for shareable filter states.
+  - Refactored sorting to support: Price (High/Low), Name (A-Z), and Rating.
+- **API Service Layer Enhancement**:
+  - Fixed a critical "Module not found" error by properly re-exporting `ApiProduct` and related types from `src/services/api/products.ts`.
+  - Implemented a "one-stop shop" import pattern for junior developers.
+- **Bug Fixes**:
+  - **Rating Display**: Resolved a "rating.toFixed is not a function" error by handling cases where the API returns a nested object `{ rate, count }` instead of a flat number.
+  - **Type Inference**: Fixed Qwik-specific linting errors on category mapping by removing explicit types in favor of automatic inference.
+
 ### The "Wall" 🚧
 
-- FakeStore API has limited support for advanced server-side filtering, so some filtering logic remains in the reactive frontend while still benefiting from initial server-side load.
+- Encountered some minor friction with Qwik's strictly serializable state requirements, but resolved them using proper signal and computed patterns.
 
 ### Next Steps 📋
 
 1.  **Step 6**: Begin User Authentication System (Login/Register).
 2.  **Step 7**: Checkout Flow Implementation.
 3.  **Step 8**: User Dashboard & Order History.
+4.  **Sync AI Context**: Update the `AI Dev` folder with these new reactive filter patterns.

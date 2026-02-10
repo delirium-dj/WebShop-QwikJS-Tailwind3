@@ -48,6 +48,6 @@ After finishing a task:
 
 ---
 
-**Version:** 2.0 (SSR & API Update)  
+**Version:** 2.1 (Reactive Filters Update)  
 **Date:** February 10, 2026  
 **Status:** Ready to 🚀
