@@ -151,7 +151,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
           <ProductImage
             image={displayImage}
             size="small"
-            class="h-full w-full transition-transform duration-300 group-hover:scale-105"
+            class="h-full w-full transition-transform duration-500 scale-95 group-hover:scale-100"
             style={{ objectFit: 'contain' }}
           />
 

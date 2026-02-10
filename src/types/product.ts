@@ -1,3 +1,5 @@
+import type { ProductImage } from './image.types';
+
 /**
  * Product Interface
  * Purpose: This is the data "blueprint" for a single product in our store.
@@ -11,7 +13,7 @@ export interface Product {
   discount?: number;           // Discount percentage (0-100)
   originalPrice?: number;      // Original price (for showing MSRP or cross-outs)
   image: string;               // Main display image URL
-  images?: string[];           // Array of additional gallery images
+  images?: ProductImage[];     // Array of additional gallery images (Updated to use ProductImage objects)
   category: string;            // Parent category (e.g., "Electronics")
   subcategory?: string;        // Specific sub-category (e.g., "Headphones")
   brand?: string;              // Manufacturer name

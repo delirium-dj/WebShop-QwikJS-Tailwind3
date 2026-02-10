@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 9, 2026 (Updated with mock data expansion and dynamic featured products)
+**Last Updated:** February 10, 2026 (Updated with 'Inset' image zoom logic and numeric ID sync)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -1017,7 +1017,7 @@ useVisibleTask$(() => {
 
 - [x] **Server-Side Rendering (SSR)**: Full API integration via `routeLoader$`
 - [x] **Dynamic Catalog**: Real-time fetching from **FakeStore API**
-- [x] **Product UI**: Unified aspect ratios and sticky alignment for cards
+- [x] **Product UI**: Unified aspect ratios, sticky alignment, and 'Inset' hover zoom (scale-95 to scale-100)
 - [x] **Cart System**: Variant support, LocalStorage, and Slide-in drawer
 - [x] **Mobile UX**: Animated menus and body scroll locking
 - [x] **Image Pipeline**: AVIF/WebP auto-optimization

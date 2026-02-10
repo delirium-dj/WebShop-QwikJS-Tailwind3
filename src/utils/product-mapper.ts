@@ -35,7 +35,7 @@ export function mapApiProductToProduct(apiProduct: ApiProduct): Product {
         })()
       : undefined,
     image: apiProduct.image,
-    images: [primaryImage] as any, // Components expect ProductImage structure now
+    images: [primaryImage], // Now matches Product interface
     category: apiProduct.category,
     rating: apiProduct.rating.rate,
     reviewCount: apiProduct.rating.count,

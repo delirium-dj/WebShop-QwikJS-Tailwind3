@@ -1,9 +1,9 @@
-// src/components/product/ProductGallery.tsx
 import { component$, useSignal, $ } from '@builder.io/qwik';
+import type { ProductImage } from '~/types/image.types';
 
 // Prop definitions for the ProductGallery component
 type ProductGalleryProps = {
-  images: string[]; // Array of image URLs to display
+  images: (string | ProductImage)[]; // Array of image URLs or objects
   title: string;    // Product title for alt text accessibility
 };
 
@@ -14,6 +14,9 @@ type ProductGalleryProps = {
  */
 export const ProductGallery = component$<ProductGalleryProps>(
   ({ images, title }) => {
+    // Helper to get image URL regardless of format
+    const getUrl = (img: string | ProductImage) => typeof img === 'string' ? img : img.url;
+
     // State management using Qwik signals:
     // selectedImageIndex: Tracks which image is currently being shown in the main view
     const selectedImageIndex = useSignal(0);
@@ -57,7 +60,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
             onClick$={toggleZoom}
           >
             <img
-              src={images[selectedImageIndex.value]}
+              src={getUrl(images[selectedImageIndex.value])}
               alt={`${title} - Image ${selectedImageIndex.value + 1}`}
               width={800}
               height={500}
@@ -133,7 +136,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
                 }`}
               >
                 <img
-                  src={image}
+                  src={getUrl(image)}
                   alt={`${title} thumbnail ${index + 1}`}
                   width={200}
                   height={200}
