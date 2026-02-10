@@ -417,7 +417,7 @@ export const mockProducts = [
         url: "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=800",
         alt: "HDMI 2.1 8K Cable",
         thumbnail:
-          "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=150",
+          "https://images.unsplash.com/photo-1625948515291-69613efd103f",
         width: 800,
         height: 800,
         isPrimary: true,

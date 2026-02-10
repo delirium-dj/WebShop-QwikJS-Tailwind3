@@ -9,6 +9,10 @@
  * - It handles lazy loading (images load only when visible on screen)
  * - It provides fallback images if the main image fails to load
  * - It optimizes images for different screen sizes
+ * - IMPORTANT: This component uses 100% width/height to fill its parent container
+ *   instead of fixed pixel dimensions. This allows images to adapt to various
+ *   screen sizes and parent container widths. The parent container should define
+ *   the desired size (e.g., aspect-square for 1:1 ratio).
  * 
  * Usage example:
  * <ProductImage 
@@ -107,10 +111,12 @@ export const ProductImage = component$<ProductImageProps>((props) => {
 
   return (
     <div
-      class={`relative overflow-hidden ${className}`}
+      class={`relative overflow-hidden w-full h-full ${className}`}
       style={{
-        width: dimensions.width > 0 ? `${dimensions.width}px` : '100%',
-        height: dimensions.height > 0 ? `${dimensions.height}px` : 'auto',
+        // Use responsive container approach: 100% width/height
+        // The image will stretch to fill its parent container while maintaining aspect ratio
+        // via the img's object-cover class. For maximum width constraint, uncomment:
+        // maxWidth: dimensions.width > 0 ? `${dimensions.width}px` : 'none',
       }}
     >
       {/* Show placeholder while image is loading (if enabled) */}
