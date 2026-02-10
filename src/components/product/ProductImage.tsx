@@ -1,9 +1,9 @@
 /**
  * ProductImage Component
- * 
+ *
  * A reusable component for displaying product images with optimization,
  * lazy loading, and responsive behavior.
- * 
+ *
  * For Junior Developers:
  * - This component wraps the native <img> tag with additional features
  * - It handles lazy loading (images load only when visible on screen)
@@ -13,23 +13,26 @@
  *   instead of fixed pixel dimensions. This allows images to adapt to various
  *   screen sizes and parent container widths. The parent container should define
  *   the desired size (e.g., aspect-square for 1:1 ratio).
- * 
+ *
  * Usage example:
- * <ProductImage 
- *   image={productImage} 
- *   size="medium" 
+ * <ProductImage
+ *   image={productImage}
+ *   size="medium"
  *   class="rounded-lg shadow-md"
  * />
  */
 
-import { component$, useSignal, $, type QRL } from '@builder.io/qwik';
-import type { ProductImage as ProductImageType, ImageSize } from '../../types/image.types';
+import { component$, useSignal, $, type QRL } from "@builder.io/qwik";
+import type {
+  ProductImage as ProductImageType,
+  ImageSize,
+} from "../../types/image.types";
 import {
   getOptimizedImageUrl,
   generateSrcSet,
   getPlaceholderImage,
   getSizeDimensions,
-} from '../../utils/image.utils';
+} from "../../utils/image.utils";
 
 /**
  * Component props interface
@@ -37,40 +40,40 @@ import {
 interface ProductImageProps {
   // The image object containing URL and metadata
   image: ProductImageType;
-  
+
   // Size variant to display (determines image dimensions)
   size?: ImageSize;
-  
+
   // Additional CSS classes to apply to the image
   class?: string;
-  
+
   // Whether to enable lazy loading (loads when scrolled into view)
   lazy?: boolean;
-  
+
   // Whether to show a placeholder while loading
   showPlaceholder?: boolean;
-  
+
   // Image quality (1-100, higher = better quality but larger file size)
   quality?: number;
-  
+
   // Optional click handler
   onClick$?: QRL<() => void>;
-  
+
   // Optional styles
   style?: any;
 }
 
 /**
  * ProductImage Component
- * 
+ *
  * Renders an optimized, responsive product image with lazy loading support
  */
 export const ProductImage = component$<ProductImageProps>((props) => {
   // Destructure props with default values
   const {
     image,
-    size = 'medium',
-    class: className = '',
+    size = "medium",
+    class: className = "",
     lazy = true,
     showPlaceholder = true,
     onClick$,
@@ -78,21 +81,24 @@ export const ProductImage = component$<ProductImageProps>((props) => {
 
   // Signal to track if the image has loaded successfully
   const isLoaded = useSignal(false);
-  
+
   // Signal to track if there was an error loading the image
   const hasError = useSignal(false);
 
   // Get the dimensions for the requested size
   const dimensions = getSizeDimensions(size);
-  
+
   // Generate the optimized image URL
   const imageUrl = getOptimizedImageUrl(image.url, size);
-  
+
   // Generate srcset for responsive images (different sizes for different screen widths)
   const srcSet = generateSrcSet(image.url);
-  
+
   // Get placeholder image URL in case of errors
-  const placeholderUrl = getPlaceholderImage(dimensions.width, dimensions.height);
+  const placeholderUrl = getPlaceholderImage(
+    dimensions.width,
+    dimensions.height,
+  );
 
   /**
    * Handler for when the image loads successfully
@@ -111,19 +117,21 @@ export const ProductImage = component$<ProductImageProps>((props) => {
 
   return (
     <div
-      class={`relative overflow-hidden w-full h-full ${className}`}
-      style={{
-        // Use responsive container approach: 100% width/height
-        // The image will stretch to fill its parent container while maintaining aspect ratio
-        // via the img's object-cover class. For maximum width constraint, uncomment:
-        // maxWidth: dimensions.width > 0 ? `${dimensions.width}px` : 'none',
-      }}
+      class={`relative h-full w-full overflow-hidden ${className}`}
+      style={
+        {
+          // Use responsive container approach: 100% width/height
+          // The image will stretch to fill its parent container while maintaining aspect ratio
+          // via the img's object-cover class. For maximum width constraint, uncomment:
+          // maxWidth: dimensions.width > 0 ? `${dimensions.width}px` : 'none',
+        }
+      }
     >
       {/* Show placeholder while image is loading (if enabled) */}
       {showPlaceholder && !isLoaded.value && !hasError.value && (
-        <div class="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+        <div class="absolute inset-0 flex animate-pulse items-center justify-center bg-gray-200">
           <svg
-            class="w-12 h-12 text-gray-400"
+            class="h-12 w-12 text-gray-400"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -145,18 +153,13 @@ export const ProductImage = component$<ProductImageProps>((props) => {
         alt={image.alt}
         width={dimensions.width || image.width}
         height={dimensions.height || image.height}
-        loading={lazy ? 'lazy' : 'eager'}
-        class={`
-          w-full h-full object-cover transition-opacity duration-300
-          ${isLoaded.value ? 'opacity-100' : 'opacity-0'}
-          ${onClick$ ? 'cursor-pointer hover:opacity-90' : ''}
-        `}
+        loading={lazy ? "lazy" : "eager"}
+        class={`h-full w-full object-cover transition-opacity duration-300 ${isLoaded.value ? "opacity-100" : "opacity-0"} ${onClick$ ? "cursor-pointer hover:opacity-90" : ""} `}
         onLoad$={handleLoad$}
         onError$={handleError$}
         onClick$={onClick$}
         style={props.style}
       />
-
     </div>
   );
 });

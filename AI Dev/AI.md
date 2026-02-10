@@ -14,28 +14,23 @@
 
 ### Key Features
 
-- ✅ Full responsive eCommerce experience
-- ✅ Client-side rendering (CSR)
-- ✅ Component-based, flexible architecture
-- ✅ Product image gallery with zoom
-- ✅ Shopping cart with context state management
-- ✅ Toast notifications system
-- ✅ Mobile hamburger menu (slide-in drawer)
-- ✅ Image optimization (AVIF, WebP, JPEG)
-- ✅ Lazy loading and responsive images
-- ✅ LocalStorage cart persistence
-- ✅ Real-time cart updates
+- ✅ **Server-Side Rendering (SSR)**: High SEO performance via Qwik City `routeLoader$`
+- ✅ **Dynamic Product Catalog**: Real-time fetching from FakeStore API
+- ✅ **Resumability**: Zero-hydration architecture for instant interactivity
+- ✅ **Uniform UI Components**: Responsive ProductCard and ProductGallery system
+- ✅ **Advanced Cart Management**: Support for variants, persistent state, and optimistic updates
+- ✅ **Automated Image Optimization**: Multi-format (AVIF/WebP) support
+- ✅ **Toast Notifications**: Interactive feedback system
+- ✅ **Mobile-First UX**: High-performance animated menus and cart drawers
 
 ### Technology Stack
 
-- **Framework:** QwikJS with Qwik City
-- **Build Tool:** Vite 7.3.1
-- **Styling:** Tailwind CSS 3.4.17
-- **Image Optimization:** Vite Image Optimizer
-- **Image Handling:** Vite Image Tools
-- **Type Checking:** TypeScript with strict mode
-- **Deployment:** Netlify Edge Functions
-- **Package Manager:** pnpm
+- **Framework**: QwikJS v1.19.0 + Qwik City
+- **API Store**: FakeStore API (https://fakestoreapi.com)
+- **Styling**: Tailwind CSS 3.4
+- **Image Pipeline**: Vite Image Optimizer + Vite Image Tools (AVIF/WebP)
+- **State**: Qwik Context API + serializeable `useStore$`
+- **Deployment**: Netlify Edge Functions (with virtual module fix)
 
 ### Development Commands
 
@@ -697,12 +692,11 @@ export const useProductData = routeLoader$(async ({ params, status }) => {
 });
 ```
 
-**Currently using mock data** - Replace with real API calls for production:
+### Global Data Strategy
 
-```typescript
-// Development: src/data/mockProducts.ts
-// Production: Should fetch from API/database
-```
+**Primary Data Source**: The application now uses the **FakeStore API** (`https://fakestoreapi.com`) as the production-ready source of truth. All product fetching is done via Qwik's `routeLoader$` for optimal performance.
+
+**Mock Data Legacy**: `src/data/mockProducts.ts` remains in the project as a secondary reference or for local-only testing. However, frontend components and routes are primary consumers of the `src/services/api/` layer.
 
 ### Mock Product Data (src/data/mockProducts.ts)
 
@@ -726,32 +720,21 @@ interface MockProduct {
 }
 ```
 
-**Current Products (16 total):**
+**Current Products (40 total):**
 
-| ID      | Name                            | Category             | Price   | Stock |
-| ------- | ------------------------------- | -------------------- | ------- | ----- |
-| prod-1  | Premium Wireless Headphones     | Electronics          | $299.99 | ✅    |
-| prod-2  | Smartphone Stand                | Accessories          | $29.99  | ✅    |
-| prod-3  | USB-C Cable Pack                | Cables               | $19.99  | ❌    |
-| prod-4  | Wireless Mouse                  | Computer Accessories | $49.99  | ✅    |
-| prod-5  | Mechanical Keyboard RGB         | Computer Accessories | $159.99 | ✅    |
-| prod-6  | Portable SSD 1TB                | Storage              | $129.99 | ✅    |
-| prod-7  | USB Hub 7-in-1                  | Cables & Hubs        | $39.99  | ✅    |
-| prod-8  | Webcam 4K Pro                   | Video                | $89.99  | ✅    |
-| prod-9  | Laptop Stand Aluminum           | Accessories          | $44.99  | ✅    |
-| prod-10 | Monitor Light Bar               | Lighting             | $69.99  | ✅    |
-| prod-11 | Desk Organizer Set              | Office Supplies      | $34.99  | ✅    |
-| prod-12 | Wireless Charging Pad           | Charging             | $24.99  | ✅    |
-| prod-13 | Portable Phone Charger 20000mAh | Charging             | $54.99  | ✅    |
-| prod-14 | Blue Light Glasses              | Eye Protection       | $59.99  | ✅    |
-| prod-15 | Ergonomic Wrist Rest            | Accessories          | $19.99  | ✅    |
-| prod-16 | HDMI Cable 2.1 8K               | Cables               | $29.99  | ✅    |
+| ID  | Name                                  | Category         | Price   | Stock |
+| --- | ------------------------------------- | ---------------- | ------- | ----- |
+| 1   | Fjallraven - Foldsack No. 1 Backpack  | Men's Clothing   | $109.95 | ✅    |
+| 2   | Mens Casual Premium Slim Fit T-Shirts | Men's Clothing   | $22.30  | ✅    |
+| 3   | Mens Cotton Jacket                    | Men's Clothing   | $55.99  | ✅    |
+| ... | ...                                   | ...              | ...     | ...   |
+| 40  | Casual Sunday Tee Comfort             | Women's Clothing | $16.99  | ✅    |
 
 **Helper Functions:**
 
 ```typescript
 // Get single product by ID
-export const getProductById = (id: string) => {
+export const getProductById = (id: number) => {
   return mockProducts.find((product) => product.id === id);
 };
 
@@ -762,7 +745,7 @@ export const getProductBySlug = (slug: string) => {
 
 // Get latest featured products (sorted by createdAt, newest first)
 export const getLatestProducts = (count: number = 4) => {
-  return mockProducts
+  return [...mockProducts]
     .sort((a, b) => {
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -770,7 +753,7 @@ export const getLatestProducts = (count: number = 4) => {
     })
     .slice(0, count)
     .map((product) => ({
-      id: parseInt(product.id.replace("prod-", "")),
+      id: product.id,
       title: product.name,
       price: product.price,
       image: product.images[0]?.url || "/images/placeholder.jpg",
@@ -1032,25 +1015,19 @@ useVisibleTask$(() => {
 
 ### Completed Features ✅
 
-- [x] Product details page with gallery and zoom
-- [x] Hamburger menu (animated slide-in drawer)
-- [x] Enhanced Add to Cart with loading states
-- [x] Cart context store with persistence
-- [x] Cart page/drawer with full management
-- [x] Image optimization with AVIF/WebP/JPEG
-- [x] Product filtering system
-- [x] Toast notifications system
-- [x] Homepage with featured products
-- [x] Multiple product variants support
-- [x] **NEW**: AI context documentation system (AI.md + update workflow)
-- [x] **NEW**: Expanded mock products (4 → 16 products with timestamps)
-- [x] **NEW**: Dynamic featured products from mockProducts data source
+- [x] **Server-Side Rendering (SSR)**: Full API integration via `routeLoader$`
+- [x] **Dynamic Catalog**: Real-time fetching from **FakeStore API**
+- [x] **Product UI**: Unified aspect ratios and sticky alignment for cards
+- [x] **Cart System**: Variant support, LocalStorage, and Slide-in drawer
+- [x] **Mobile UX**: Animated menus and body scroll locking
+- [x] **Image Pipeline**: AVIF/WebP auto-optimization
+- [x] **Netlify Fix**: Resolved Edge Function bundling errors
 
 ### In Progress 🔄
 
-- [ ] Qwik Link integration for optimized navigation
-- [ ] Advanced hydration optimization
-- [ ] Step 5.3: Full server-side data fetching with real API
+- [ ] Implementing User Authentication (Step 6)
+- [ ] Designing the Checkout Flow (Step 7)
+- [ ] Refining search/filtering performance
 
 ### Planned Features 📋
 
