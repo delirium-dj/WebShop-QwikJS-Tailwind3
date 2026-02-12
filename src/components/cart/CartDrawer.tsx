@@ -86,24 +86,33 @@ export const CartDrawer = component$<CartDrawerProps>(({ isOpen, onClose }) => {
         This is the semi-transparent dark background that appears behind the drawer
         Clicking it will close the drawer
       */}
+      {/* 
+        JUNIOR TIP: 
+        We use a high z-index (z-[90]) for the overlay so it covers the 
+        sticky header (z-40) and mobile menu components.
+      */}
       {isOpen && (
         <div
           onClick$={handleClose}
-          class="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300"
+          class="fixed inset-0 bg-black bg-opacity-50 z-[90] transition-opacity duration-300"
           aria-hidden="true"
         />
       )}
 
       {/* 
-        DRAWER CONTAINER
-        This is the main sliding panel that contains all cart content
-        It slides in from the right when isOpen is true
+        JUNIOR TIP: 
+        The drawer container needs a z-index of 100 (z-[100]) to override 
+        the mobile menu button and header. 
+        
+        We also add 'pointer-events-none' when it's closed to make 
+        absolutely sure it doesn't "accidentally" catch any clicks 
+        while it's hidden off-screen.
       */}
       <div
         class={`
-          fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50
+          fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl
           transform transition-transform duration-300 ease-in-out
-          ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+          ${isOpen ? 'translate-x-0 z-[100]' : 'translate-x-full z-0 pointer-events-none'}
         `}
       >
         {/* 
