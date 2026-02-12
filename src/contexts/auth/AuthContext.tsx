@@ -1,13 +1,18 @@
 /**
  * Auth Context - Authentication State Management
  * 
- * This file creates a Qwik Context that holds all authentication state
- * and provides auth functions to the entire application.
+ * WHAT: This file creates a "Global Store" for user authentication.
+ * IT CONTAINS: The user's status (loggedIn/loggedOut), their profile data, and 
+ * functions like login() and logout().
  * 
- * For Junior Developers:
- * - Context is like a "global storage" that any component can access
- * - Instead of passing props down 10 levels, components just call useAuth()
- * - Qwik's Context works differently than React's (it's more efficient)
+ * WHY: We use Context so we don't have to "prop drill" (pass data manually) 
+ * through every single component. Any component in the app can just call `useAuth()` 
+ * to know if a user is logged in.
+ * 
+ * JUNIOR TIP: 
+ * We separate 'state' (data that changes) from 'actions' (functions that do work).
+ * This is a Qwik best practice to prevent "Serialization Errors" because 
+ * functions cannot be easily saved to a database/proxy like raw data can.
  */
 
 import {
@@ -54,13 +59,15 @@ export const AuthProvider = component$(() => {
   // ============================================
   /**
    * Internal reactive state store
-   * This holds all auth state in a single reactive proxy.
+   * WHAT: A 'useStore' is a reactive object. 
+   * WHY: When any value inside this object changes (like 'user'), Qwik 
+   * automatically re-renders ONLY the parts of the UI that use that specific value.
    */
   const authState = useStore<AuthState>({
-    user: null,
-    session: null,
-    isLoading: true, // Start true so we can check session on mount
-    error: null,
+    user: null, // Starts empty
+    session: null, // Supabase session data
+    isLoading: true, // Start true so we can check if a user is already logged in on refresh
+    error: null, // Stores any error messages (like "Wrong Password")
   });
 
   // ============================================
@@ -108,13 +115,16 @@ export const AuthProvider = component$(() => {
     }
   });
 
-  // ============================================
-  // INITIALIZATION (useVisibleTask$)
-  // ============================================
-  
+  /**
+   * INITIALIZATION (Running on the Browser)
+   * WHY: Supabase needs access to the browser's 'localStorage' and cookies 
+   * to see if a user is already logged in. This code only runs once when the user 
+   * first visits the site or refreshes.
+   */
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(async () => {
-    // Safety timeout: If Supabase takes too long, stop loading so UI shows
+    // Safety timeout: If Supabase takes too long (e.g. bad internet), 
+    // we stop the loading spinner so the user isn't stuck forever.
     const timeoutId = setTimeout(() => {
         if (authState.isLoading) {
             authState.isLoading = false;
@@ -123,25 +133,24 @@ export const AuthProvider = component$(() => {
 
     try {
       /**
-       * Get the current session on page load
+       * Get current session from Supabase
        */
       const { data: { session: currentSession } } = await supabase.auth.getSession();
       
       if (currentSession) {
         authState.session = currentSession;
-        // Load user data (including profile info)
+        // If we found a session, load the user's detailed profile
         await loadUserProfile(currentSession.user.id);
       }
     } catch (err) {
       console.error('Initial session check failed:', err);
     } finally {
-      // Clear timeout and remove loading spinner
       clearTimeout(timeoutId);
       authState.isLoading = false;
     }
 
     /**
-     * Listen for auth state changes
+     * Auth Listener: Updates the app instantly if the user logs in or out in another tab
      */
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
@@ -155,9 +164,6 @@ export const AuthProvider = component$(() => {
       }
     );
 
-    /**
-     * Cleanup function
-     */
     return () => {
       subscription.unsubscribe();
       clearTimeout(timeoutId);

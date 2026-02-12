@@ -1,8 +1,12 @@
 /**
  * Auth Types
  * 
- * This file contains all TypeScript interfaces and types used throughout
- * the authentication system.
+ * WHAT: This file defines the "Blueprint" for our authentication data.
+ * WHY: We use TypeScript interfaces to ensure that every developer uses the same 
+ * names for variables (like 'email' vs 'userEmail'). If someone makes a typo, 
+ * the editor will show a red underline immediately.
+ * 
+ * JUNIOR TIP: Think of an 'interface' like a required checklist for an object.
  */
 
 import type { User, Session } from '@supabase/supabase-js';

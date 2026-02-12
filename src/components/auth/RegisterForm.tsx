@@ -1,18 +1,13 @@
 /**
  * RegisterForm Component
  *
- * This component renders a registration form that allows new users to create an account using:
- * 1. Email, password, and full name (traditional registration)
- * 2. Social registration providers (Google, etc.) via the SocialLoginButtons component
- *
- * For Junior Developers:
- * - Registration creates a new user account in Supabase Auth
- * - After successful registration, Supabase typically sends a confirmation email
- * - We can configure Supabase to auto-confirm emails for development
- * - Password validation happens on both client (for UX) and server (for security)
- *
- * @example
- * <RegisterForm />
+ * WHAT: This is the registration screen where new users sign up.
+ * HOW: It uses "signals" to remember what the user types in each box, 
+ * and calls the `auth.actions.register` function when the button is clicked.
+ * 
+ * JUNIOR TIP: 
+ * We check passwords for strength (length, numbers, etc.) BEFORE sending them 
+ * to the server to give the user instant feedback.
  */
 
 import { component$, useSignal, $ } from "@builder.io/qwik";
@@ -25,12 +20,10 @@ export const RegisterForm = component$(() => {
   // ============================================================================
 
   /**
-   * Form field signals
-   * For registration, we collect more information than login:
-   * - fullName: User's display name (stored in our database, not in Supabase Auth)
-   * - email: Used for login and verification
-   * - password: Must meet strength requirements
-   * - confirmPassword: Must match password (prevents typos)
+   * FORM FIELDS (Signals)
+   * WHAT: `useSignal` creates a piece of data that the UI "watches".
+   * WHY: When the user types, the signal updates. When the signal updates, 
+   * Qwik knows exactly which input box to refresh.
    */
   const fullName = useSignal("");
   const email = useSignal("");
@@ -38,7 +31,9 @@ export const RegisterForm = component$(() => {
   const confirmPassword = useSignal("");
 
   /**
-   * UI state signals
+   * UI REFRESH FLAGS
+   * isLoading: Shows a spinner on the button so the user knows to wait.
+   * error: Shows a red box if something goes wrong (e.g. email already exists).
    */
   const isLoading = useSignal(false);
   const error = useSignal("");

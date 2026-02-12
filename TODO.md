@@ -503,34 +503,55 @@ Benefits: Completes the purchase funnel
 - [x] Social logins (Google [a must have]) (COMPLETED ✅)
 - [x] Header Integration & User Menu (COMPLETED ✅)
 - [x] **Auth Context Refactoring**: Separated reactive state (`AuthState`) from actions (`AuthActions`) to resolve QRL serialization errors. (COMPLETED ✅)
+- [x] **Form Submission Fix**: Added `preventdefault:submit` to all auth forms to prevent native page reloads and clearing of fields. (COMPLETED ✅)
 
 Benefits: Enables personalized features, order tracking, saved addresses, and ensures app stability by following Qwik best practices.
 
 ### Step 7: Checkout Flow 💳
 
-...
+Why seventh? The ultimate goal of an e-commerce site.
 
-## Session Summary (2026-02-12 - Part 7)
+#### What to implement:
+
+- [ ] Multi-step checkout (Shipping → Payment → Review)
+- [ ] Address form with validation
+- [ ] Payment integration (Stripe, PayPal, etc.)
+- [ ] Order summary
+- [ ] Order confirmation page
+- [ ] Email confirmation (via server action)
+
+Benefits: Completes the purchase funnel
+
+## Session Summary (2026-02-12 - Part 8)
 
 ### What's Finished ✅
 
-- **Auth Context Refactoring (Success)**:
-  - Successfully separated reactive state (`AuthState`) from actions (`AuthActions`) in `AuthProvider`.
-  - Updated `AuthActions` to use `PropFunction` for all actions, improving call syntax and serialization.
-  - Refactored 10+ components (`LoginForm`, `RegisterForm`, `Header`, `MobileMenu`, `UserMenu`, `AuthGuard`, etc.) to use the new `{ state, actions }` context structure.
-  - Switched from destructuring at the component level to direct `auth.actions.login(...)` calls inside event handlers. This significantly improves QRL serialization stability in Qwik.
-- **Serialization & Lint Resolution**:
-  - Resolved persistent `qwik/valid-lexical-scope` errors related to capturing non-serializable objects in closures.
-  - Fixed "auth.user is null" and "auth.isLoading" errors across the entire codebase.
-- **Supabase Integration**:
-  - Verified that Supabase authentication and profile loading remain fully functional with the new context architecture.
+- **Critical Bug Fix: Auth Form Submission**:
+  - Found and fixed the root cause of the "clearing fields" issue in the registration form.
+  - Added the **`preventdefault:submit`** attribute to all auth forms (`RegisterForm`, `LoginForm`, `ForgotPasswordForm`, `ResetPasswordForm`).
+  - **WHY?** In Qwik, `event.preventDefault()` inside a `$()` handler is too slow because the handler is lazy-loaded. The browser would refresh the page before the code even downloaded. `preventdefault:submit` tells Qwik to stop the browser reload immediately at the DOM level.
+- **Improved Registration Logic**:
+  - Refactored the `register` action in `AuthContext.tsx` to be more resilient.
+  - Made the `profiles` table update **non-blocking**. If the database has a schema issue, the user is still successfully registered in Supabase Auth.
+  - Fixed a bug where the form would navigate to the "Verify Email" page even if the registration failed. Now it only navigates on success.
+- **Junior-Friendly Documentation**:
+  - Audited the core codebase and added "What / Why / How" style comments for absolute beginners.
+  - Significantly enhanced comments in `AuthContext.tsx`, `types.ts`, `RegisterForm.tsx`, `supabase.ts`, and `layout.tsx`.
+- **Advanced UI Testing**:
+  - Used the browser subagent to perform end-to-end registration tests.
+  - Confirmed the fix works: The page no longer reloads, fields stay filled on error, and loading spinners appear correctly.
 
 ### The "Wall" 🚧
 
-- Encountered some friction when components were still trying to access `auth.user` directly instead of `auth.state.user`. Resolved by a comprehensive grep and update across the `src` directory.
+- **Supabase Rate Limiting**: Repeated tests triggered an "email rate limit exceeded" error from Supabase's API. This is not a code bug, but a server-side safety limit. The UI correctly caught and displayed this error.
+- **Schema Mismatch (PGRST204)**: The browser console detected that the `profiles` table is missing the `display_name` column. This means the user needs to ensure they've run the SQL script in their Supabase Dashboard.
 
 ### Next Steps 📋
 
-1.  **Step 7**: Begin Checkout Flow implementation (Shipping, Payment, Review).
-2.  **Verify UI**: Perform a final visual check of the login/register flows to ensure all messages and redirects are smooth.
-3.  **Task Cleanup**: Move any remaining in-progress auth tasks to `tasks/Done`.
+1. **Step 7**: Begin planning and implementing the **Checkout Flow** (Shipping, Payment, Review).
+2. **Database Verification**: Ensure the `profiles` table in Supabase matches our `display_name` schema.
+3. **Checkout UI Mockups**: Create the initial UI for the multi-step checkout process.
+
+---
+
+Summary complete! See TODO.md for your hand-off notes.
