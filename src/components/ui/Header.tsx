@@ -1,10 +1,10 @@
 // src/components/header/Header.tsx
-import { component$ } from '@builder.io/qwik';
-import { Link } from '@builder.io/qwik-city';
-import { MobileMenu } from './MobileMenu'; // This is our custom slide-in menu for mobile devices
-import { CartBadge } from '../cart/CartBadge'; // This displays the cart icon and the real-time item count
-import { useAuth } from '~/contexts/auth'; // Access auth context to check login state
-import { UserMenu } from '../auth/UserMenu'; // User avatar dropdown menu
+import { component$ } from "@builder.io/qwik";
+import { Link } from "@builder.io/qwik-city";
+import { MobileMenu } from "./MobileMenu"; // This is our custom slide-in menu for mobile devices
+import { CartBadge } from "../cart/CartBadge"; // This displays the cart icon and the real-time item count
+import { useAuth } from "~/contexts/auth"; // Access auth context to check login state
+import { UserMenu } from "../auth/UserMenu"; // User avatar dropdown menu
 
 /**
  * Main Header Component
@@ -15,21 +15,21 @@ export const Header = component$(() => {
   // ============================================================================
   // STATE & HOOKS
   // ============================================================================
-  
+
   /**
    * Get auth state to check if user is logged in
    * The auth context is set up in src/routes/layout.tsx with <AuthProvider>
    */
   const auth = useAuth();
 
-  // We define our navigation links in an array so we can easily add/remove them 
+  // We define our navigation links in an array so we can easily add/remove them
   // in one place and have them update in both Desktop and Mobile views.
   const navLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Shop', href: '/shop' },
-    { label: 'About', href: '/about' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '/contact' },
+    { label: "Home", href: "/" },
+    { label: "Shop", href: "/shop" },
+    { label: "About", href: "/about" },
+    { label: "Blog", href: "/blog" },
+    { label: "Contact", href: "/contact" },
   ];
 
   return (
@@ -38,7 +38,7 @@ export const Header = component$(() => {
     <header class="sticky top-0 z-40 w-full bg-white shadow-sm">
       <div class="container mx-auto px-4">
         {/* We use 'justify-between' to push the Logo to the left and everything else to the right. */}
-        <div class="flex items-center justify-between h-16">
+        <div class="flex h-16 items-center justify-between">
           {/* Logo Section */}
           <Link href="/" class="flex items-center space-x-2">
             <span class="text-2xl font-bold text-gray-900">ReconShop</span>
@@ -56,11 +56,11 @@ export const Header = component$(() => {
                   showing it only from 'medium' (tablet) sizes up.
             */}
             <button
-              class="hidden md:block p-2 text-gray-700 hover:text-black transition-colors"
+              class="hidden p-2 text-gray-700 transition-colors hover:text-black md:block"
               aria-label="Search"
             >
               <svg
-                class="w-5 h-5"
+                class="h-5 w-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -87,13 +87,13 @@ export const Header = component$(() => {
                 - 'hidden lg:flex': This is the magic Tailwind class that hide this navigation 
                   on mobile/tablets and only shows it on 'Large' screens (Desktop).
             */}
-            <nav class="hidden lg:flex items-center space-x-6">
+            <nav class="hidden items-center space-x-6 lg:flex">
               {navLinks.map((link, index) => (
                 <Link
                   key={index}
                   href={link.href}
                   // 'uppercase tracking-widest': Gives that clean, high-end e-commerce aesthetic.
-                  class="text-sm font-bold text-gray-600 hover:text-black uppercase tracking-widest transition-colors"
+                  class="text-sm font-bold uppercase tracking-widest text-gray-600 transition-colors hover:text-black"
                 >
                   {link.label}
                 </Link>
@@ -105,7 +105,7 @@ export const Header = component$(() => {
                 - Show different content based on login state
                 - 'hidden md:flex': Hide on mobile, show on medium screens and up
             */}
-            <div class="hidden md:flex items-center space-x-4">
+            <div class="hidden items-center space-x-4 md:flex">
               {/* 
                 If user is NOT logged in, show Login/Register buttons
               */}
@@ -113,13 +113,13 @@ export const Header = component$(() => {
                 <>
                   <Link
                     href="/auth/login"
-                    class="text-sm font-semibold text-gray-600 hover:text-black transition-colors"
+                    class="text-sm font-semibold text-gray-600 transition-colors hover:text-black"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/auth/register"
-                    class="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors"
+                    class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
                   >
                     Sign Up
                   </Link>
@@ -129,15 +129,13 @@ export const Header = component$(() => {
               {/* 
                 If user IS logged in, show user menu dropdown
               */}
-              {auth.user && !auth.isLoading && (
-                <UserMenu />
-              )}
+              {auth.user && !auth.isLoading && <UserMenu />}
 
               {/* 
                 If auth is loading, show a loading placeholder
               */}
               {auth.isLoading && (
-                <div class="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+                <div class="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
               )}
             </div>
 

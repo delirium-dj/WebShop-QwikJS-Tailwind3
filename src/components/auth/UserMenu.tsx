@@ -1,13 +1,13 @@
 /**
  * UserMenu Component
- * 
+ *
  * This component displays a dropdown menu for authenticated users.
  * It shows the user's avatar and a menu with options like:
  * - My Account
  * - My Orders
  * - Wishlist
  * - Logout
- * 
+ *
  * For Junior Developers:
  * - This component uses useSignal to track whether the dropdown is open
  * - The dropdown is triggered by clicking on the user's avatar
@@ -15,27 +15,27 @@
  * - The logout button uses inline onClick$ to handle logout
  */
 
-import { component$, useSignal, $ } from '@builder.io/qwik';
-import { Link } from '@builder.io/qwik-city';
-import { useAuth } from '~/contexts/auth';
+import { component$, useSignal, $ } from "@builder.io/qwik";
+import { Link } from "@builder.io/qwik-city";
+import { useAuth } from "~/contexts/auth";
 
 /**
  * UserMenu Component
- * 
+ *
  * Displays user avatar and dropdown menu with account options
  */
 export const UserMenu = component$(() => {
   // ============================================================================
   // STATE & HOOKS
   // ============================================================================
-  
+
   const auth = useAuth();
   const isDropdownOpen = useSignal(false);
 
   // ============================================================================
   // EVENT HANDLERS
   // ============================================================================
-  
+
   /**
    * Toggle the dropdown open/closed
    */
@@ -53,20 +53,23 @@ export const UserMenu = component$(() => {
   // ============================================================================
   // RENDER
   // ============================================================================
-  
+
   // Don't render anything if no user is logged in
   if (!auth.user) {
     return null;
   }
 
   // Get user's display name or email
-  const displayName = auth.user.user_metadata?.full_name || auth.user.email?.split('@')[0] || 'User';
-  
+  const displayName =
+    auth.user.user_metadata?.full_name ||
+    auth.user.email?.split("@")[0] ||
+    "User";
+
   // Get initials for avatar fallback
   const initials = displayName
-    .split(' ')
+    .split(" ")
     .map((name: string) => name[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 
@@ -79,7 +82,7 @@ export const UserMenu = component$(() => {
       */}
       <button
         onClick$={toggleDropdown}
-        class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+        class="flex items-center space-x-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-100"
         aria-label="User menu"
         aria-expanded={isDropdownOpen.value}
       >
@@ -88,7 +91,7 @@ export const UserMenu = component$(() => {
           - Shows initials as fallback (covers 99% of cases where no avatar_url)
           - 'w-8 h-8': 32x32px avatar
         */}
-        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm font-semibold">
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
           {initials}
         </div>
 
@@ -97,15 +100,17 @@ export const UserMenu = component$(() => {
           - Shows the user's name or email
           - 'hidden md:block': Only show on medium screens and up
         */}
-        <span class="hidden md:inline text-sm font-medium text-gray-700">{displayName}</span>
+        <span class="hidden text-sm font-medium text-gray-700 md:inline">
+          {displayName}
+        </span>
 
         {/* 
           Chevron Icon (indicates dropdown)
           - Rotates when dropdown is open
         */}
         <svg
-          class={`w-4 h-4 text-gray-600 transition-transform ${
-            isDropdownOpen.value ? 'rotate-180' : ''
+          class={`h-4 w-4 text-gray-600 transition-transform ${
+            isDropdownOpen.value ? "rotate-180" : ""
           }`}
           fill="none"
           stroke="currentColor"
@@ -133,10 +138,7 @@ export const UserMenu = component$(() => {
             - Semi-transparent background that covers the entire screen
             - Clicking it closes the dropdown
           */}
-          <div
-            class="fixed inset-0 z-30"
-            onClick$={closeDropdown}
-          />
+          <div class="fixed inset-0 z-30" onClick$={closeDropdown} />
 
           {/* 
             Dropdown Menu Items
@@ -144,14 +146,13 @@ export const UserMenu = component$(() => {
             - 'right-0': Aligns to the right of the button
             - 'mt-1': Small gap between button and menu
           */}
-          <div class="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg z-40 py-1">
-            
+          <div class="absolute right-0 z-40 mt-1 w-48 rounded-lg bg-white py-1 shadow-lg">
             {/* 
               User Info Header
               - Shows full name and email
               - Helps user confirm they're logged in with correct account
             */}
-            <div class="px-4 py-2 border-b border-gray-200">
+            <div class="border-b border-gray-200 px-4 py-2">
               <p class="text-sm font-semibold text-gray-900">{displayName}</p>
               <p class="text-xs text-gray-600">{auth.user.email}</p>
             </div>
@@ -166,10 +167,10 @@ export const UserMenu = component$(() => {
               <Link
                 href="/account"
                 onClick$={closeDropdown}
-                class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <svg
-                  class="w-4 h-4"
+                  class="h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -188,10 +189,10 @@ export const UserMenu = component$(() => {
               <Link
                 href="/account/orders"
                 onClick$={closeDropdown}
-                class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <svg
-                  class="w-4 h-4"
+                  class="h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -210,10 +211,10 @@ export const UserMenu = component$(() => {
               <Link
                 href="/account/wishlist"
                 onClick$={closeDropdown}
-                class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <svg
-                  class="w-4 h-4"
+                  class="h-4 w-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -229,20 +230,16 @@ export const UserMenu = component$(() => {
               </Link>
 
               {/* Divider */}
-              <div class="border-t border-gray-200 my-1" />
+              <div class="my-1 border-t border-gray-200" />
 
               {/* Logout Button - As a form to avoid serialization issues */}
-              <form
-                method="post"
-                action="/api/auth/logout"
-                class="w-full"
-              >
+              <form method="post" action="/api/auth/logout" class="w-full">
                 <button
                   type="submit"
-                  class="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  class="flex w-full items-center space-x-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                 >
                   <svg
-                    class="w-4 h-4"
+                    class="h-4 w-4"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

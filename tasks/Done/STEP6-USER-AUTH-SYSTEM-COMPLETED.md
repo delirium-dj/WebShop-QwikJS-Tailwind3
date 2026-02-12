@@ -1,4 +1,5 @@
-# TASK: Step 6 — User Authentication System 🔐
+````markdown
+# TASK: Step 6 — User Authentication System 🔐 [COMPLETED]
 
 ## 📖 The Big Picture (For Junior Developers)
 
@@ -41,7 +42,7 @@ Instead, we'll use a **Backend-as-a-Service (BaaS)** called **Supabase**.
 Here's how authentication will flow through our app:
 
 ```
-┌─────────────────────────────────────────────────────┐
+┌─────────────────────────────────────────────────┐
 │                    BROWSER (Client)                  │
 │                                                     │
 │  ┌──────────┐   ┌──────────┐   ┌────────────────┐  │
@@ -405,9 +406,9 @@ CREATE TRIGGER on_auth_user_created
 - [x] Register page renders with registration form.
 - [x] Social login buttons (Google at minimum) are functional.
 - [x] OAuth callback page handles redirect correctly.
-- [ ] Header updates based on auth state.
-- [ ] Error messages display for invalid credentials.
-- [ ] Success redirects to homepage or previous page.
+- [x] Header updates based on auth state.
+- [x] Error messages display for invalid credentials.
+- [x] Success redirects to homepage or previous page.
 
 ---
 
@@ -439,11 +440,11 @@ CREATE TRIGGER on_auth_user_created
 
 #### Acceptance Criteria:
 
-- [ ] Visiting `/account` while logged out redirects to `/auth/login`.
-- [ ] After login, the user is redirected back to `/account`.
-- [ ] Profile page displays current user information.
-- [ ] Profile updates save to Supabase `profiles` table.
-- [ ] A loading state is shown while checking authentication.
+- [x] Visiting `/account` while logged out redirects to `/auth/login`.
+- [x] After login, the user is redirected back to `/account`.
+- [x] Profile page displays current user information.
+- [x] Profile updates save to Supabase `profiles` table.
+- [x] A loading state is shown while checking authentication.
 
 ---
 
@@ -472,10 +473,10 @@ CREATE TRIGGER on_auth_user_created
 
 #### Acceptance Criteria:
 
-- [ ] Forgot password page sends reset email.
-- [ ] Reset password page updates the password.
-- [ ] User can log in with the new password.
-- [ ] Error handling for expired or invalid reset tokens.
+- [x] Forgot password page sends reset email.
+- [x] Reset password page updates the password.
+- [x] User can log in with the new password.
+- [x] Error handling for expired or invalid reset tokens.
 
 ---
 
@@ -505,10 +506,10 @@ CREATE TRIGGER on_auth_user_created
 
 #### Acceptance Criteria:
 
-- [ ] Header shows login/register for anonymous users.
-- [ ] Header shows user avatar + dropdown for authenticated users.
-- [ ] Mobile menu reflects auth state.
-- [ ] Logout works from any page.
+- [x] Header shows login/register for anonymous users.
+- [x] Header shows user avatar + dropdown for authenticated users.
+- [x] Mobile menu reflects auth state.
+- [x] Logout works from any page.
 
 ---
 
@@ -540,17 +541,17 @@ That's it! Supabase's SDK is the only new dependency we need.
 
 ## 🎯 Final Acceptance Criteria (Full Step 6)
 
-- [ ] User can register with email + password.
-- [ ] User can log in with email + password.
-- [ ] User can log in with Google OAuth.
-- [ ] User can log out from any page.
-- [ ] User can reset their password via email.
-- [ ] Protected routes redirect unauthenticated users to login.
-- [ ] User profile page shows and edits personal information.
-- [ ] Header/mobile menu updates based on auth state.
-- [ ] Auth state persists across page refreshes.
-- [ ] All user data is protected by Row Level Security.
-- [ ] No API keys are committed to version control.
+- [x] User can register with email + password.
+- [x] User can log in with email + password.
+- [x] User can log in with Google OAuth.
+- [x] User can log out from any page.
+- [x] User can reset their password via email.
+- [x] Protected routes redirect unauthenticated users to login.
+- [x] User profile page shows and edits personal information.
+- [x] Header/mobile menu updates based on auth state.
+- [x] Auth state persists across page refreshes.
+- [x] All user data is protected by Row Level Security.
+- [x] No API keys are committed to version control.
 
 ---
 
@@ -578,18 +579,18 @@ That's it! Supabase's SDK is the only new dependency we need.
 
 ---
 
-## 📊 Implementation Status Update (February 12, 2026)
+## 📊 Implementation Status Update
 
 ### Phases Completed:
 
-| Phase                       | Status         | Implementation                                         | Notes                                     |
-| --------------------------- | -------------- | ------------------------------------------------------ | ----------------------------------------- |
-| **1: Supabase Setup**       | ✅ DONE        | Project, OAuth, profiles table, .env.local             | All acceptance criteria met               |
-| **2: SDK & Auth Context**   | ✅ DONE        | `src/lib/supabase.ts`, `src/contexts/auth/*` (5 files) | Full TypeScript support, session recovery |
-| **3: Login/Register Pages** | ✅ DONE        | Routes, forms, OAuth callback, social buttons          | All pages created and functional          |
-| **4: Protected Routes**     | ✅ DONE        | AuthGuard, /account route and profile editing          | 100% complete                             |
-| **5: Password Reset**       | ⏳ IN PROGRESS | Routes and logic structure ready                       | 20% complete                              |
-| **6: Header Integration**   | ✅ DONE        | Header updated with UserMenu and mobile support        | 100% complete                             |
+| Phase                       | Status  | Implementation                                         | Notes                                     |
+| --------------------------- | ------- | ------------------------------------------------------ | ----------------------------------------- |
+| **1: Supabase Setup**       | ✅ DONE | Project, OAuth, profiles table, .env.local             | All acceptance criteria met               |
+| **2: SDK & Auth Context**   | ✅ DONE | `src/lib/supabase.ts`, `src/contexts/auth/*` (5 files) | Full TypeScript support, session recovery |
+| **3: Login/Register Pages** | ✅ DONE | Routes, forms, OAuth callback, social buttons          | All pages created and functional          |
+| **4: Protected Routes**     | ✅ DONE | AuthGuard, /account route and profile editing          | 100% complete                             |
+| **5: Password Reset**       | ✅ DONE | Routes and forms created                               | 100% complete                             |
+| **6: Header Integration**   | ✅ DONE | Header updated with UserMenu and mobile support        | 100% complete                             |
 
 ### Phase 1 ✅ COMPLETE
 
@@ -633,7 +634,8 @@ That's it! Supabase's SDK is the only new dependency we need.
 - Google OAuth social login
 - OAuth callback URL handling with redirect
 - Form validation with real-time feedback
-- Error messages for invalid credentials
+- ✅ **VERIFIED**: Error messages display correctly for invalid credentials (LoginForm.tsx)
+- ✅ **VERIFIED**: Success redirects to homepage or previous page based on `redirect` param (LoginForm.tsx)
 - Loading states during authentication
 - Toast notifications for success/error
 - Auto-redirect to homepage or previous page after login
@@ -663,34 +665,62 @@ That's it! Supabase's SDK is the only new dependency we need.
 
 **Status:** Phase 4 is 100% complete.
 
-### Phase 5 ⏳ IN PROGRESS (20%)
+### Phase 5 ✅ COMPLETE
 
-**Ready to Go:**
+**Created Files:**
 
-- Route folder `/src/routes/auth/` already exists
-- Auth context has `resetPassword` and `updatePassword` actions
-- Logic flow is defined in Task Step 6
+- `src/routes/auth/forgot-password/index.tsx` - Request reset email
+- `src/routes/auth/reset-password/index.tsx` - Set new password
+- `src/components/auth/ForgotPasswordForm.tsx` - Logic for reset request
+- `src/components/auth/ResetPasswordForm.tsx` - Logic for password update
 
-**Next Steps:**
+**Functionality:**
 
-1. Create `/auth/forgot-password/index.tsx` - forgot password form
-2. Create `/auth/reset-password/index.tsx` - reset password form
-3. Link from Login page to Forgot Password page (need to update LoginForm)
+- Request password reset email with secure redirect link
+- Link preservation (redirect param) carried through to forgot-password flow
+- Password reset form with validation (8+ characters)
+- Security check ensuring recovery session exists before showing reset form
+- Automatic logout after password change for security
+- User-friendly success/error states throughout the flow
+
+**Status:** Phase 5 is 100% complete.
 
 ### Phase 6 ✅ COMPLETE
 
 **Implementation:**
 
-1. **Header Updated:** Now uses `useAuth()` to conditionally show UserMenu.
+1. **Header Updated:** Now uses `useAuth()` to conditionally show UserMenu. **Verified**: Header updates instantly based on auth state.
 2. **UserMenu Component:** Added avatar dropdown with links to "My Account", "Orders", and "Logout".
 3. **Mobile Menu:** Updated to include auth links and user greeting.
 4. **Logout Logic:** Fully functional dropdown-triggered logout with redirect to homepage.
+5. **Error Messages:** Enhanced user-friendly error message conversion with contextual help links.
+6. **Redirect Handling:** Secure redirect parameter preservation throughout entire auth flow.
 
 **Status:** Phase 6 is 100% complete.
 
 ---
 
+## 📝 Final Summary
+
 **Task Created:** February 11, 2026
-**Last Updated:** February 12, 2026
-**Status:** 🚧 In Progress (Phases 1, 2, 3, 4, 6 Complete | Phase 5 Pending)
+**Task Completed:** February 12, 2026
+**Last Updated:** February 12, 2026 (Final)
+**Status:** ✅ COMPLETED (All Phases 1-6 Fully Operational)
 **Priority:** High — Blocks Step 7 (Checkout) and Step 8 (Order History).
+
+**All acceptance criteria met. Task ready for archival.**
+
+---
+
+## 🎓 Key Learnings
+
+1. **Supabase + Qwik is a powerful combination** - Simple setup, strong type safety, and zero-config session management.
+2. **Auth Context pattern works great in Qwik** - Mirrors the CartContext pattern; all components can access auth state anywhere.
+3. **OAuth redirect handling requires security consideration** - Always validate redirect URLs to prevent open redirect attacks.
+4. **User experience matters** - Clear error messages and smooth redirects make auth feel native to the app.
+5. **Password reset flows must preserve user intent** - Carry redirect params through the entire flow so users end up where they expected.
+
+---
+
+**ARCHIVED AND MOVED TO DONE: February 12, 2026**
+````
