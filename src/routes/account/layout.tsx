@@ -88,9 +88,9 @@ export default component$(() => {
                   <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
                     My Account
                   </h1>
-                  {auth.user && (
+                  {auth.state.user && (
                     <p class="mt-1 text-sm text-gray-500">
-                      Welcome back, {auth.user.displayName || auth.user.email}!
+                      Welcome back, {auth.state.user.displayName || auth.state.user.email}!
                     </p>
                   )}
                 </div>

@@ -55,14 +55,14 @@ export const UserMenu = component$(() => {
   // ============================================================================
 
   // Don't render anything if no user is logged in
-  if (!auth.user) {
+  if (!auth.state.user) {
     return null;
   }
 
   // Get user's display name or email
   const displayName =
-    auth.user.user_metadata?.full_name ||
-    auth.user.email?.split("@")[0] ||
+    auth.state.user.user_metadata?.full_name ||
+    auth.state.user.email?.split("@")[0] ||
     "User";
 
   // Get initials for avatar fallback
@@ -154,7 +154,7 @@ export const UserMenu = component$(() => {
             */}
             <div class="border-b border-gray-200 px-4 py-2">
               <p class="text-sm font-semibold text-gray-900">{displayName}</p>
-              <p class="text-xs text-gray-600">{auth.user.email}</p>
+              <p class="text-xs text-gray-600">{auth.state.user.email}</p>
             </div>
 
             {/* 

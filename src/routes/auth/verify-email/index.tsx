@@ -134,10 +134,10 @@ export default component$(() => {
           <div class="px-6 py-8">
             {/* Main Message */}
             <p class="mb-6 text-center text-gray-700">
-              {/* auth.user is already unwrapped (not a signal), so we access .email directly */}
+              {/* auth.state.user is already unwrapped (not a signal), so we access .email directly */}
               {/* Optional chaining (?.) safely returns undefined if user is null */}
               We've sent a verification email to{" "}
-              <strong>{auth.user?.email || "your email address"}</strong>.
+              <strong>{auth.state.user?.email || "your email address"}</strong>.
             </p>
 
             {/* Instructions */}

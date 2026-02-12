@@ -16,7 +16,6 @@
  */
 
 import { component$, useSignal, $ } from "@builder.io/qwik";
-import { useNavigate, useLocation } from "@builder.io/qwik-city";
 import { useAuth } from "~/contexts/auth";
 import { SocialLoginButtons } from "./SocialLoginButtons";
 
@@ -45,135 +44,73 @@ export const RegisterForm = component$(() => {
   const error = useSignal("");
   const validationErrors = useSignal<string[]>([]);
 
-  // ============================================================================
-  // HOOKS
-  // ============================================================================
-
+  // ============================================
+  // HOOKS & ACTIONS
+  // ============================================
+  // Auth context provides both state and actions (register, login, etc.)
+  // Navigation after registration is handled by AuthContext.register, not by this component
   const auth = useAuth();
-  const nav = useNavigate();
 
-  /**
-   * Get current location to extract redirect URL from query parameters
-   * Example: /auth/register?redirect=/account
-   */
-  const location = useLocation();
 
-  // ============================================================================
+  // ============================================
   // VALIDATION HELPERS
-  // ============================================================================
+  // ============================================
 
   /**
    * Validate password strength
-   *
-   * Requirements:
-   * - At least 8 characters
-   * - Contains uppercase letter
-   * - Contains lowercase letter
-   * - Contains number
-   * - Contains special character
-   *
-   * Returns an array of error messages (empty if valid)
    */
   const validatePassword = $((pwd: string): string[] => {
     const errors: string[] = [];
-
-    if (pwd.length < 8) {
-      errors.push("Password must be at least 8 characters long");
-    }
-
-    if (!/[A-Z]/.test(pwd)) {
-      errors.push("Password must contain at least one uppercase letter");
-    }
-
-    if (!/[a-z]/.test(pwd)) {
-      errors.push("Password must contain at least one lowercase letter");
-    }
-
-    if (!/[0-9]/.test(pwd)) {
-      errors.push("Password must contain at least one number");
-    }
-
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
-      errors.push("Password must contain at least one special character");
-    }
-
+    if (pwd.length < 8) errors.push("Password must be at least 8 characters long");
+    if (!/[A-Z]/.test(pwd)) errors.push("Password must contain at least one uppercase letter");
+    if (!/[a-z]/.test(pwd)) errors.push("Password must contain at least one lowercase letter");
+    if (!/[0-9]/.test(pwd)) errors.push("Password must contain at least one number");
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) errors.push("Password must contain at least one special character");
     return errors;
   });
 
-  // ============================================================================
+  // ============================================
   // EVENT HANDLERS
-  // ============================================================================
+  // ============================================
 
   /**
    * Handle form submission
-   *
-   * This function:
-   * 1. Validates all form fields
-   * 2. Checks password strength and confirmation match
-   * 3. Calls Supabase's signUp method
-   * 4. Optionally creates a user profile in our database
-   * 5. Redirects on success or shows errors
    */
   const handleSubmit$ = $(async (event: Event) => {
+    // 1. Double protection: preventdefault:submit on form + event.preventDefault() here
+    // This ENSURES no page reload happens, resolving the "clears fields" issue.
     event.preventDefault();
 
-    // Clear previous errors
     error.value = "";
     validationErrors.value = [];
 
-    // ============================================================================
-    // CLIENT-SIDE VALIDATION
-    // ============================================================================
-
-    /**
-     * Validate full name
-     * Must be at least 2 characters
-     */
+    // Client-side validation
     if (fullName.value.trim().length < 2) {
-      validationErrors.value = [
-        ...validationErrors.value,
-        "Full name must be at least 2 characters",
-      ];
+      validationErrors.value = [...validationErrors.value, "Full name must be at least 2 characters"];
     }
 
-    /**
-     * Validate password strength
-     */
     const pwdErrors = await validatePassword(password.value);
     if (pwdErrors.length > 0) {
       validationErrors.value = [...validationErrors.value, ...pwdErrors];
     }
 
-    /**
-     * Validate password confirmation
-     */
     if (password.value !== confirmPassword.value) {
-      validationErrors.value = [
-        ...validationErrors.value,
-        "Passwords do not match",
-      ];
+      validationErrors.value = [...validationErrors.value, "Passwords do not match"];
     }
 
-    /**
-     * If there are validation errors, stop here and display them
-     */
-    if (validationErrors.value.length > 0) {
-      return;
-    }
-
-    // ============================================================================
-    // REGISTRATION PROCESS
-    // ============================================================================
+    if (validationErrors.value.length > 0) return;
 
     isLoading.value = true;
 
     try {
       /**
-       * Call the register function from our auth context
-       * This will:
-       * 1. Create a new user in Supabase Auth
-       * 2. Send a confirmation email (if email confirmation is enabled)
-       * 3. Optionally create a profile record in our database
+       * Call the register action from our Auth Context.
+       * The AuthContext.register function handles:
+       * 1. Calling Supabase signUp
+       * 2. Creating profile in our DB (non-critical)
+       * 3. Navigating to '/' (if auto-confirmed) or '/auth/verify-email' (if confirmation needed)
+       * 
+       * If it throws, we catch the error below and display it.
        */
       await auth.actions.register({
         email: email.value,
@@ -182,58 +119,12 @@ export const RegisterForm = component$(() => {
         displayName: fullName.value,
       });
 
-      /**
-       * On successful registration:
-       * - If email confirmation is required, show a message and redirect to email verification
-       * - If auto-confirmed, redirect to home or back to the requested page
-       *
-       * For now, we'll redirect to a success page with instructions.
-       * The redirect parameter is preserved in the URL so after email confirmation,
-       * the user can be directed to the page they originally wanted to access.
-       */
-      const redirectUrl = location.url.searchParams.get("redirect");
-      const verifyEmailUrl = redirectUrl
-        ? `/auth/verify-email?redirect=${encodeURIComponent(redirectUrl)}`
-        : "/auth/verify-email";
-
-      await nav(verifyEmailUrl);
+      // If we reach here without an error, the AuthContext already navigated
+      // No additional navigation needed from the form
     } catch (err) {
-      /**
-       * Handle registration errors
-       *
-       * Common errors:
-       * - "User already registered" - Email is already in use
-       * - "Invalid email" - Email format is wrong
-       * - "Password too weak" - Server-side validation failed
-       */
       console.error("Registration error:", err);
-
-      // Type-safe error message extraction with user-friendly formatting
-      if (err instanceof Error) {
-        const errorMsg = err.message.toLowerCase();
-
-        // Provide user-friendly error messages based on common Supabase errors
-        if (
-          errorMsg.includes("already registered") ||
-          errorMsg.includes("duplicate") ||
-          errorMsg.includes("exist")
-        ) {
-          error.value =
-            "This email is already registered. Please sign in or use a different email.";
-        } else if (errorMsg.includes("invalid") && errorMsg.includes("email")) {
-          error.value = "Please enter a valid email address.";
-        } else if (errorMsg.includes("password") && errorMsg.includes("weak")) {
-          error.value =
-            "Password does not meet security requirements. Please use a stronger password.";
-        } else if (errorMsg.includes("network") || errorMsg.includes("fetch")) {
-          error.value =
-            "Network error. Please check your connection and try again.";
-        } else {
-          error.value = err.message;
-        }
-      } else {
-        error.value = "Registration failed. Please try again.";
-      }
+      // Display the error from Auth Context (set by register action) or use a local fallback
+      error.value = auth.state.error || (err instanceof Error ? err.message : "Registration failed. Please try again.");
     } finally {
       isLoading.value = false;
     }
@@ -327,7 +218,13 @@ export const RegisterForm = component$(() => {
       )}
 
       {/* Registration Form */}
-      <form onSubmit$={handleSubmit$} class="space-y-6">
+      {/* 
+        CRITICAL: 'preventdefault:submit' is Qwik's way to prevent native form submission.
+        In Qwik, event.preventDefault() inside a $() handler is UNRELIABLE because
+        the handler is lazy-loaded — the browser may fire native submit before it runs.
+        This attribute tells Qwik to prevent the default at the framework level FIRST.
+      */}
+      <form preventdefault:submit onSubmit$={handleSubmit$} class="space-y-6">
         {/* Full Name Input */}
         <div>
           <label

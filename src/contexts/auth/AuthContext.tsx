@@ -24,6 +24,8 @@ import { supabase } from '~/lib/supabase';
 import type {
   AuthContextValue,
   AuthUser,
+  AuthState,
+  AuthActions,
   LoginCredentials,
   RegisterCredentials,
   UpdateProfileData,
@@ -53,26 +55,12 @@ export const AuthProvider = component$(() => {
   /**
    * Internal reactive state store
    * This holds all auth state in a single reactive proxy.
-   * Qwik tracks property access (state.user, state.isLoading)
-   * so components re-render only when the used properties change.
    */
-  const authService = useStore<AuthContextValue>({
+  const authState = useStore<AuthState>({
     user: null,
     session: null,
-    isLoading: false, // Start false so Sign In/Sign Up show during SSR; useVisibleTask$ runs client-only
+    isLoading: true, // Start true so we can check session on mount
     error: null,
-    actions: {
-        // Actions will be populated by the Qwik optimizer
-        login: $(() => Promise.resolve()),
-        register: $(() => Promise.resolve()),
-        loginWithProvider: $(() => Promise.resolve()),
-        logout: $(() => Promise.resolve()),
-        updateProfile: $(() => Promise.resolve()),
-        resetPassword: $(() => Promise.resolve()),
-        updatePassword: $(() => Promise.resolve()),
-        refreshSession: $(() => Promise.resolve()),
-        clearError: $(() => {}),
-    }
   });
 
   // ============================================
@@ -88,7 +76,7 @@ export const AuthProvider = component$(() => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       
       if (!authUser) {
-        authService.user = null;
+        authState.user = null;
         return;
       }
       
@@ -100,14 +88,14 @@ export const AuthProvider = component$(() => {
         .single();
       
       if (profileError) {
-        console.error('Error loading profile:', profileError);
-        // Even if profile fails, we still have the basic user
-        authService.user = authUser as AuthUser;
+        console.warn('Profile not found/error:', profileError.message);
+        // Even if profile fails, we still have the basic auth user
+        authState.user = authUser as AuthUser;
         return;
       }
       
       // Combine auth user with profile data
-      authService.user = {
+      authState.user = {
         ...authUser,
         displayName: profile?.display_name || authUser.user_metadata?.full_name,
         avatar: profile?.avatar_url || authUser.user_metadata?.avatar_url,
@@ -116,52 +104,53 @@ export const AuthProvider = component$(() => {
       
     } catch (err) {
       console.error('Failed to load user profile:', err);
-      authService.error = 'Failed to load user profile';
+      authState.error = 'Failed to load user profile';
     }
   });
 
   // ============================================
   // INITIALIZATION (useVisibleTask$)
   // ============================================
-  // This runs ONCE when the component first renders on the CLIENT
   
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(async () => {
     // Safety timeout: If Supabase takes too long, stop loading so UI shows
     const timeoutId = setTimeout(() => {
-        if (authService.isLoading) {
-            authService.isLoading = false;
+        if (authState.isLoading) {
+            authState.isLoading = false;
         }
-    }, 2000);
+    }, 3000);
 
-    /**
-     * Get the current session on page load
-     */
-    const { data: { session: currentSession } } = await supabase.auth.getSession();
-    
-    // Clear timeout since we got a response
-    clearTimeout(timeoutId);
-
-    if (currentSession) {
-      authService.session = currentSession;
-      // Load user data (including profile info)
-      await loadUserProfile(currentSession.user.id);
+    try {
+      /**
+       * Get the current session on page load
+       */
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
+      if (currentSession) {
+        authState.session = currentSession;
+        // Load user data (including profile info)
+        await loadUserProfile(currentSession.user.id);
+      }
+    } catch (err) {
+      console.error('Initial session check failed:', err);
+    } finally {
+      // Clear timeout and remove loading spinner
+      clearTimeout(timeoutId);
+      authState.isLoading = false;
     }
-    
-    // Done checking - remove loading spinner
-    authService.isLoading = false;
 
     /**
      * Listen for auth state changes
      */
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
-        authService.session = currentSession;
+        authState.session = currentSession;
         
         if (currentSession?.user) {
           await loadUserProfile(currentSession.user.id);
         } else {
-          authService.user = null;
+          authState.user = null;
         }
       }
     );
@@ -182,10 +171,10 @@ export const AuthProvider = component$(() => {
   /**
    * Login with email and password
    */
-  authService.actions.login = $(async (credentials: LoginCredentials) => {
+  const login = $(async (credentials: LoginCredentials) => {
     try {
-      authService.error = null;
-      authService.isLoading = true;
+      authState.error = null;
+      authState.isLoading = true;
       
       const { data, error: loginError } = await supabase.auth.signInWithPassword({
         email: credentials.email,
@@ -193,96 +182,116 @@ export const AuthProvider = component$(() => {
       });
       
       if (loginError) {
-        if (loginError.message.includes('Invalid')) {
-          authService.error = 'Invalid email or password';
-        } else if (loginError.message.includes('Email not confirmed')) {
-          authService.error = 'Please verify your email before logging in';
-        } else {
-          authService.error = loginError.message;
-        }
-        return;
+        authState.error = loginError.message;
+        throw loginError;
       }
       
       if (data.session) {
-        authService.session = data.session;
+        authState.session = data.session;
         await loadUserProfile(data.user.id);
         nav('/');
       }
     } catch (err) {
       console.error('Login error:', err);
-      authService.error = 'An unexpected error occurred. Please try again.';
+      throw err;
     } finally {
-      authService.isLoading = false;
+      authState.isLoading = false;
     }
   });
 
   /**
    * Register a new user
+   * 
+   * For Junior Devs:
+   * 1. Validates passwords match (client-side check)
+   * 2. Calls Supabase signUp to create the user in auth.users
+   * 3. Attempts to upsert a row into our custom 'profiles' table
+   *    (this is a "nice-to-have" — registration should still succeed if it fails)
+   * 4. If Supabase returns a session, the user is auto-confirmed → go home
+   * 5. If NO session, email confirmation is required → go to verify-email page
    */
-  authService.actions.register = $(async (credentials: RegisterCredentials) => {
+  const register = $(async (credentials: RegisterCredentials) => {
     try {
-      authService.error = null;
-      authService.isLoading = true;
+      authState.error = null;
+      authState.isLoading = true;
       
+      // Step 1: Client-side password validation
       if (credentials.password !== credentials.confirmPassword) {
-        authService.error = 'Passwords do not match';
-        return;
+        const err = new Error('Passwords do not match');
+        authState.error = err.message;
+        throw err;
       }
       
+      // Step 2: Call Supabase Auth — this is the CRITICAL step
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
         options: {
           data: {
+            // Stored in auth.users.raw_user_meta_data (always works)
             full_name: credentials.displayName,
           },
         },
       });
       
+      // If Supabase returned an error, STOP here — don't navigate anywhere
       if (signUpError) {
-        authService.error = signUpError.message;
-        return;
+        authState.error = signUpError.message;
+        throw signUpError;
       }
       
+      // Step 3: If we have a user, try to create/update their profile
+      // Profile creation is NON-CRITICAL — it should not block registration
       if (data.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            display_name: credentials.displayName,
-            phone: credentials.phone,
-            created_at: new Date().toISOString(),
-          });
-        
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
+        try {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: data.user.id,
+              display_name: credentials.displayName,
+              phone: credentials.phone,
+              updated_at: new Date().toISOString(),
+            });
+          
+          if (profileError) {
+            // Log but DON'T throw — the user was still created in auth.users
+            // The display_name is also saved in user_metadata as a backup
+            console.warn(
+              'Profile upsert failed (non-critical):',
+              profileError.message,
+              '— The user was still registered successfully via Supabase Auth.'
+            );
+          }
+        } catch (profileErr) {
+          // Catch any unexpected errors from the profile upsert
+          console.warn('Profile creation threw unexpectedly:', profileErr);
         }
         
-        authService.error = null;
-        
+        // Step 4: Navigate based on whether Supabase gave us a session
         if (data.session) {
-          authService.session = data.session;
+          // Auto-confirmed (email confirmation OFF in Supabase dashboard)
+          authState.session = data.session;
           await loadUserProfile(data.user.id);
           nav('/');
         } else {
+          // Email confirmation is required (normal production behavior)
           nav('/auth/verify-email');
         }
       }
     } catch (err) {
       console.error('Registration error:', err);
-      authService.error = 'Failed to create account. Please try again.';
+      throw err;
     } finally {
-      authService.isLoading = false;
+      authState.isLoading = false;
     }
   });
 
   /**
    * Login with OAuth provider
    */
-  authService.actions.loginWithProvider = $(async (provider: OAuthProvider) => {
+  const loginWithProvider = $(async (provider: OAuthProvider) => {
     try {
-      authService.error = null;
-      
+      authState.error = null;
       const { error: providerError } = await supabase.auth.signInWithOAuth({
         provider: provider as any,
         options: {
@@ -291,42 +300,38 @@ export const AuthProvider = component$(() => {
       });
       
       if (providerError) {
-        authService.error = `Failed to login with ${provider}`;
-        console.error('OAuth error:', providerError);
+        authState.error = providerError.message;
+        throw providerError;
       }
     } catch (err) {
       console.error('OAuth error:', err);
-      authService.error = 'OAuth login failed. Please try again.';
+      throw err;
     }
   });
 
   /**
    * Logout the current user
    */
-  authService.actions.logout = $(async () => {
+  const logout = $(async () => {
     try {
-      authService.error = null;
+      authState.error = null;
       await supabase.auth.signOut();
-      authService.user = null;
-      authService.session = null;
+      authState.user = null;
+      authState.session = null;
       nav('/');
     } catch (err) {
       console.error('Logout error:', err);
-      authService.error = 'Failed to logout. Please try again.';
+      throw err;
     }
   });
 
   /**
    * Update user profile
    */
-  authService.actions.updateProfile = $(async (data: UpdateProfileData) => {
+  const updateProfile = $(async (data: UpdateProfileData) => {
     try {
-      authService.error = null;
-      
-      if (!authService.user) {
-        authService.error = 'You must be logged in to update your profile';
-        return;
-      }
+      authState.error = null;
+      if (!authState.user) throw new Error('Not logged in');
       
       const { error: updateError } = await supabase
         .from('profiles')
@@ -336,101 +341,101 @@ export const AuthProvider = component$(() => {
           phone: data.phone,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', authService.user.id);
+        .eq('id', authState.user.id);
       
       if (updateError) {
-        authService.error = 'Failed to update profile';
-        console.error('Profile update error:', updateError);
-        return;
+        authState.error = updateError.message;
+        throw updateError;
       }
       
-      await loadUserProfile(authService.user.id);
+      await loadUserProfile(authState.user.id);
     } catch (err) {
       console.error('Update profile error:', err);
-      authService.error = 'Failed to update profile. Please try again.';
+      throw err;
     }
   });
 
   /**
    * Send password reset email
    */
-  authService.actions.resetPassword = $(async (email: string) => {
+  const resetPassword = $(async (email: string) => {
     try {
-      authService.error = null;
-      authService.isLoading = true;
-      
+      authState.error = null;
+      authState.isLoading = true;
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       });
-      
       if (resetError) {
-        authService.error = resetError.message;
-        return;
+        authState.error = resetError.message;
+        throw resetError;
       }
     } catch (err) {
       console.error('Password reset error:', err);
-      authService.error = 'Failed to send reset email. Please try again.';
+      throw err;
     } finally {
-      authService.isLoading = false;
+      authState.isLoading = false;
     }
   });
 
   /**
    * Update password
    */
-  authService.actions.updatePassword = $(async (newPassword: string) => {
+  const updatePassword = $(async (newPassword: string) => {
     try {
-      authService.error = null;
-      authService.isLoading = true;
-      
+      authState.error = null;
+      authState.isLoading = true;
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
-      
       if (updateError) {
-        authService.error = updateError.message;
-        return;
+        authState.error = updateError.message;
+        throw updateError;
       }
-      
-      await authService.actions.logout();
+      await logout();
     } catch (err) {
       console.error('Update password error:', err);
-      authService.error = 'Failed to update password. Please try again.';
+      throw err;
     } finally {
-      authService.isLoading = false;
+      authState.isLoading = false;
     }
   });
 
   /**
-   * Refresh the current session
+   * Refresh session
    */
-  authService.actions.refreshSession = $(async () => {
-    try {
-      const { data, error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError) {
-        console.error('Session refresh error:', refreshError);
-        return;
-      }
-      if (data.session) {
-        authService.session = data.session;
-      }
-    } catch (err) {
-      console.error('Session refresh error:', err);
-    }
+  const refreshSession = $(async () => {
+    const { data: { session }, error } = await supabase.auth.refreshSession();
+    if (error) console.error('Session refresh error:', error);
+    if (session) authState.session = session;
   });
 
   /**
-   * Clear error message
+   * Clear error
    */
-  authService.actions.clearError = $(() => {
-    authService.error = null;
+  const clearError = $(() => {
+    authState.error = null;
   });
 
   // ============================================
-  // PROVIDE CONTEXT VALUE
+  // PROVIDE CONTEXT
   // ============================================
   
-  useContextProvider(AuthContext, authService);
+  const actions: AuthActions = {
+    login,
+    register,
+    loginWithProvider,
+    logout,
+    updateProfile,
+    resetPassword,
+    updatePassword,
+    refreshSession,
+    clearError,
+  };
+
+  useContextProvider(AuthContext, {
+    state: authState,
+    actions,
+  });
 
   return <Slot />;
 });

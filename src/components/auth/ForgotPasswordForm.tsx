@@ -97,7 +97,7 @@ export const ForgotPasswordForm = component$(() => {
         </div>
       )}
 
-      <form onSubmit$={handleSubmit$} class="space-y-6">
+      <form preventdefault:submit onSubmit$={handleSubmit$} class="space-y-6">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
             Email Address

@@ -33,8 +33,8 @@ export default component$(() => {
   // ============================================
   // These track the form inputs for profile editing
   
-  const displayName = useSignal(auth.user?.displayName || '');
-  const phone = useSignal(auth.user?.phone || '');
+  const displayName = useSignal(auth.state.user?.displayName || '');
+  const phone = useSignal(auth.state.user?.phone || '');
   const newPassword = useSignal('');
   const confirmPassword = useSignal('');
   
@@ -48,18 +48,18 @@ export default component$(() => {
   /**
    * Initialize form with user data
    * 
-   * This runs when the component mounts or when auth.user changes.
+   * This runs when the component mounts or when auth.state.user changes.
    * We use useTask$ instead of useVisibleTask$ because this doesn't
    * need browser APIs - it just updates signals.
    */
   useTask$(({ track }) => {
-    // Track auth.user changes
-    track(() => auth.user);
+    // Track auth.state.user changes
+    track(() => auth.state.user);
     
     // Update form fields with latest user data
-    if (auth.user) {
-      displayName.value = auth.user.displayName || '';
-      phone.value = auth.user.phone || '';
+    if (auth.state.user) {
+      displayName.value = auth.state.user.displayName || '';
+      phone.value = auth.state.user.phone || '';
     }
   });
   
@@ -152,9 +152,9 @@ export default component$(() => {
    */
   const handleCancelEdit$ = $(() => {
     // Reset form to original values
-    if (auth.user) {
-      displayName.value = auth.user.displayName || '';
-      phone.value = auth.user.phone || '';
+    if (auth.state.user) {
+      displayName.value = auth.state.user.displayName || '';
+      phone.value = auth.state.user.phone || '';
     }
     isEditingProfile.value = false;
     saveMessage.value = null;
@@ -191,19 +191,19 @@ export default component$(() => {
           <div class="flex items-center">
             {/* Avatar */}
             <div class="flex-shrink-0">
-              {auth.user?.avatar ? (
+              {auth.state.user?.avatar ? (
                 <img
                   class="h-20 w-20 rounded-full object-cover"
-                  src={auth.user.avatar}
+                  src={auth.state.user.avatar}
                   width={80}
                   height={80}
-                  alt={auth.user.displayName || 'User avatar'}
+                  alt={auth.state.user.displayName || 'User avatar'}
                 />
               ) : (
                 // Default avatar with initials
                 <div class="h-20 w-20 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-semibold">
-                  {auth.user?.displayName?.charAt(0).toUpperCase() ||
-                   auth.user?.email?.charAt(0).toUpperCase() ||
+                  {auth.state.user?.displayName?.charAt(0).toUpperCase() ||
+                   auth.state.user?.email?.charAt(0).toUpperCase() ||
                    'U'}
                 </div>
               )}
@@ -212,11 +212,11 @@ export default component$(() => {
             {/* User Info */}
             <div class="ml-5 flex-1">
               <h3 class="text-lg font-medium text-gray-900">
-                {auth.user?.displayName || 'User'}
+                {auth.state.user?.displayName || 'User'}
               </h3>
-              <p class="text-sm text-gray-500">{auth.user?.email}</p>
+              <p class="text-sm text-gray-500">{auth.state.user?.email}</p>
               <p class="mt-1 text-xs text-gray-400">
-                Member since {new Date(auth.user?.created_at || Date.now()).toLocaleDateString()}
+                Member since {new Date(auth.state.user?.created_at || Date.now()).toLocaleDateString()}
               </p>
             </div>
             
@@ -272,7 +272,7 @@ export default component$(() => {
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
               </label>
-              <p class="text-gray-900">{auth.user?.email}</p>
+              <p class="text-gray-900">{auth.state.user?.email}</p>
               <p class="mt-1 text-xs text-gray-500">
                 Email cannot be changed. Contact support if you need to update it.
               </p>

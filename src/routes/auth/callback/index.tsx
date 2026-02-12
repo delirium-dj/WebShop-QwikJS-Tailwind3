@@ -108,10 +108,10 @@ export default component$(() => {
 
       /**
        * Check if we're logged in
-       * If auth.user.value exists, the OAuth login was successful
+       * If auth.state.user exists, the OAuth login was successful
        */
-      if (auth.user) {
-        console.log('User logged in via OAuth:', auth.user.email);
+      if (auth.state.user) {
+        console.log('User logged in via OAuth:', auth.state.user.email);
         
         /**
          * Check for a redirect URL

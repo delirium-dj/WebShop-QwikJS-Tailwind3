@@ -49,107 +49,45 @@ export const LoginForm = component$(() => {
    * Access the authentication context.
    * This gives us access to auth.actions.login() which communicates with Supabase.
    */
+  // ============================================
+  // HOOKS & ACTIONS
+  // ============================================
   const auth = useAuth();
-
-  /**
-   * Navigation function - allows us to programmatically redirect users.
-   * After successful login, we'll redirect them to the homepage or their previous page.
-   */
   const nav = useNavigate();
-
-  /**
-   * Get current location to extract redirect URL from query parameters
-   * Example: /auth/login?redirect=/account
-   */
   const location = useLocation();
 
-  // ============================================================================
+  // ============================================
   // EVENT HANDLERS
-  // ============================================================================
+  // ============================================
 
   /**
    * Handle form submission
-   *
-   * This function:
-   * 1. Prevents the default HTML form submission (which would refresh the page)
-   * 2. Sets loading state to show a spinner
-   * 3. Calls our auth context's login function
-   * 4. Redirects on success or shows an error message on failure
-   *
-   * The `$` suffix tells Qwik to lazy-load this function only when needed.
    */
   const handleSubmit$ = $(async (event: Event) => {
     // Prevent the default form submission behavior (page reload)
     event.preventDefault();
 
-    // Clear any previous error messages
     error.value = "";
-
-    // Show loading spinner
     isLoading.value = true;
 
     try {
-      // Attempt to log in using the auth context
-      // This will call Supabase's signInWithPassword method
+      /**
+       * Call the login function directly from context
+       * This is safer for QRL serialization
+       */
       await auth.actions.login({
         email: email.value,
         password: password.value,
       });
 
-      /**
-       * On successful login, redirect the user.
-       *
-       * Check for a 'redirect' query parameter in the URL so we can send users
-       * back to the page they were trying to access.
-       * Example: /auth/login?redirect=/account
-       *
-       * If no redirect is specified, default to the homepage.
-       */
       const redirectUrl = location.url.searchParams.get("redirect") || "/";
-
-      // Validate the redirect URL to prevent open redirect vulnerabilities
-      // Only allow relative URLs (starting with /)
       const safeRedirectUrl = redirectUrl.startsWith("/") ? redirectUrl : "/";
-
       await nav(safeRedirectUrl);
     } catch (err) {
-      /**
-       * If login fails, Supabase will throw an error.
-       * We catch it here and display a user-friendly message.
-       *
-       * Common errors:
-       * - "Invalid login credentials" - Wrong email or password
-       * - "Email not confirmed" - User hasn't verified their email yet
-       */
       console.error("Login error:", err);
-
-      // Type-safe error message extraction with user-friendly formatting
-      if (err instanceof Error) {
-        const errorMsg = err.message.toLowerCase();
-
-        // Provide user-friendly error messages based on common Supabase errors
-        if (errorMsg.includes("invalid") || errorMsg.includes("credentials")) {
-          error.value = "Invalid email or password. Please try again.";
-        } else if (
-          errorMsg.includes("email") &&
-          errorMsg.includes("not confirmed")
-        ) {
-          error.value =
-            "Please verify your email address first. Check your inbox for the verification link.";
-        } else if (errorMsg.includes("user not found")) {
-          error.value =
-            "No account found with this email address. Please sign up first.";
-        } else if (errorMsg.includes("network") || errorMsg.includes("fetch")) {
-          error.value =
-            "Network error. Please check your connection and try again.";
-        } else {
-          error.value = err.message;
-        }
-      } else {
-        error.value = "An unexpected error occurred. Please try again.";
-      }
+      // Use global error from context or local fallback
+      error.value = auth.state.error || (err instanceof Error ? err.message : "Login failed");
     } finally {
-      // Always hide the loading spinner when done (success or failure)
       isLoading.value = false;
     }
   });
@@ -233,7 +171,11 @@ export const LoginForm = component$(() => {
         - onSubmit$ triggers our handleSubmit$ function
         - The $ suffix tells Qwik to optimize this event handler
       */}
-      <form onSubmit$={handleSubmit$} class="space-y-6">
+      {/* 
+        CRITICAL: 'preventdefault:submit' stops the browser's native form submit.
+        Without this, Qwik's lazy-loaded handler never gets to execute.
+      */}
+      <form preventdefault:submit onSubmit$={handleSubmit$} class="space-y-6">
         {/* Email Input Field */}
         <div>
           <label

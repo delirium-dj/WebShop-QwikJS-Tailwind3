@@ -41,7 +41,7 @@ export const ResetPasswordForm = component$(() => {
   useVisibleTask$(({ cleanup }) => {
     // Small delay to let AuthContext initialize if it's still loading
     const timeout = setTimeout(() => {
-      if (!auth.isLoading && !auth.user) {
+      if (!auth.state.isLoading && !auth.state.user) {
         error.value = 'Invalid or expired reset link. Please request a new one.';
       }
     }, 1000);
@@ -151,7 +151,7 @@ export const ResetPasswordForm = component$(() => {
 
       {/* Only show form if there's no fatal error (like invalid link) */}
       {!error.value.includes('link') && (
-        <form onSubmit$={handleSubmit$} class="space-y-6">
+        <form preventdefault:submit onSubmit$={handleSubmit$} class="space-y-6">
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
               New Password

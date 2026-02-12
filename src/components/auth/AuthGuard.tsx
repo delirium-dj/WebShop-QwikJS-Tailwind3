@@ -98,10 +98,10 @@ export const AuthGuard = component$<AuthGuardProps>((props) => {
    */
   // eslint-disable-next-line qwik/no-use-visible-task
   useVisibleTask$(({ track }) => {
-    // Track auth.isLoading and auth.user
+    // Track auth.state.isLoading and auth.state.user
     // This makes the task re-run when these values change
-    track(() => auth.isLoading);
-    track(() => auth.user);
+    track(() => auth.state.isLoading);
+    track(() => auth.state.user);
 
     /**
      * Redirect logic
@@ -110,7 +110,7 @@ export const AuthGuard = component$<AuthGuardProps>((props) => {
      * 1. We're done checking (isLoading = false)
      * 2. There's no user (user = null)
      */
-    if (!auth.isLoading && !auth.user) {
+    if (!auth.state.isLoading && !auth.state.user) {
       // Build redirect URL with return path
       // This lets the login page redirect back here after login
       const returnUrl = location.url.pathname + location.url.search;
@@ -129,7 +129,7 @@ export const AuthGuard = component$<AuthGuardProps>((props) => {
 
   // CASE 1: Still checking if user is logged in
   // Show a loading spinner
-  if (auth.isLoading) {
+  if (auth.state.isLoading) {
     // Use custom loading component if provided
     if (loadingComponent) {
       return loadingComponent;
@@ -149,7 +149,7 @@ export const AuthGuard = component$<AuthGuardProps>((props) => {
 
   // CASE 2: User is not logged in
   // Show redirecting message (or nothing)
-  if (!auth.user) {
+  if (!auth.state.user) {
     // Use custom redirecting component if provided
     if (redirectingComponent) {
       return redirectingComponent;
@@ -189,7 +189,7 @@ export const RequireAuth = component$(() => {
   const auth = useAuth();
 
   // Show loading state
-  if (auth.isLoading) {
+  if (auth.state.isLoading) {
     return (
       <div class="flex items-center justify-center p-8">
         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -198,7 +198,7 @@ export const RequireAuth = component$(() => {
   }
 
   // Show login prompt if not authenticated
-  if (!auth.user) {
+  if (!auth.state.user) {
     return (
       <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 my-4">
         <div class="flex items-center">
@@ -258,7 +258,7 @@ export const RoleGuard = component$<RoleGuardProps>((props) => {
   // Check if user has required role
   // Note: This assumes your AuthUser has a 'role' field
   // You'll need to add this to your Supabase profiles table
-  const hasRole = auth.user && (auth.user as any).role === props.requiredRole;
+  const hasRole = auth.state.user && (auth.state.user as any).role === props.requiredRole;
   
   if (!hasRole) {
     return props.fallback || (

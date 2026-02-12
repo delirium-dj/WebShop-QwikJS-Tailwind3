@@ -197,7 +197,7 @@ export const MobileMenu = component$<MobileMenuProps>(
             {showAuth && (
               <>
                 {/* If user is NOT logged in, show Sign In and Sign Up buttons */}
-                {!auth.user && !auth.isLoading && (
+                {!auth.state.user && !auth.state.isLoading && (
                   <div class="space-y-2 pt-2">
                     <a
                       href="/auth/login/"
@@ -215,16 +215,16 @@ export const MobileMenu = component$<MobileMenuProps>(
                 )}
 
                 {/* If user IS logged in, show user menu items */}
-                {auth.user && !auth.isLoading && (
+                {auth.state.user && !auth.state.isLoading && (
                   <div class="space-y-2 border-t border-gray-200 pt-2">
                     {/* User Info */}
                     <div class="text-xs text-gray-600">
                       <p class="font-semibold text-gray-900">
-                        {auth.user.user_metadata?.full_name ||
-                          auth.user.email?.split("@")[0] ||
+                        {auth.state.user.user_metadata?.full_name ||
+                          auth.state.user.email?.split("@")[0] ||
                           "User"}
                       </p>
-                      <p class="truncate text-gray-600">{auth.user.email}</p>
+                      <p class="truncate text-gray-600">{auth.state.user.email}</p>
                     </div>
 
                     {/* Account Links */}
@@ -297,7 +297,7 @@ export const MobileMenu = component$<MobileMenuProps>(
                 )}
 
                 {/* Loading state */}
-                {auth.isLoading && (
+                {auth.state.isLoading && (
                   <div class="flex items-center justify-center py-3">
                     <div class="h-6 w-6 animate-spin rounded-full border-b-2 border-indigo-600" />
                   </div>

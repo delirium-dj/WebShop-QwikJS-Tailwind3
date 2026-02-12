@@ -109,7 +109,7 @@ export const Header = component$(() => {
               {/* 
                 If user is NOT logged in, show Login/Register buttons
               */}
-              {!auth.user && !auth.isLoading && (
+              {!auth.state.user && !auth.state.isLoading && (
                 <>
                   <a
                     href="/auth/login/"
@@ -129,12 +129,12 @@ export const Header = component$(() => {
               {/* 
                 If user IS logged in, show user menu dropdown
               */}
-              {auth.user && !auth.isLoading && <UserMenu />}
+              {auth.state.user && !auth.state.isLoading && <UserMenu />}
 
               {/* 
                 If auth is loading, show a loading placeholder
               */}
-              {auth.isLoading && (
+              {auth.state.isLoading && (
                 <div class="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
               )}
             </div>
