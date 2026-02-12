@@ -111,18 +111,18 @@ export const Header = component$(() => {
               */}
               {!auth.user && !auth.isLoading && (
                 <>
-                  <Link
-                    href="/auth/login"
+                  <a
+                    href="/auth/login/"
                     class="text-sm font-semibold text-gray-600 transition-colors hover:text-black"
                   >
                     Sign In
-                  </Link>
-                  <Link
-                    href="/auth/register"
+                  </a>
+                  <a
+                    href="/auth/register/"
                     class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
                   >
                     Sign Up
-                  </Link>
+                  </a>
                 </>
               )}
 

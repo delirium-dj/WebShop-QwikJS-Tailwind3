@@ -105,8 +105,8 @@ export const SocialLoginButtons = component$<SocialLoginButtonsProps>(
          * The redirectTo URL is where users will land after authenticating with the provider.
          * That page needs to handle the OAuth callback (we'll create it next).
          */
-        await auth.actions.signInWithProvider(
-          provider as "google" | "github" | "microsoft",
+        await auth.actions.loginWithProvider(
+          provider as "google" | "github",
         );
 
         /**
