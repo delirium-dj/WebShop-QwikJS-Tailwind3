@@ -2,6 +2,7 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { Link } from '@builder.io/qwik-city';
 import { useCart } from '~/contexts/cart'; // To show item count in the menu
+import { useAuth } from '~/contexts/auth'; // Access auth context
 import { CartIcon } from './icons/CartIcon';
 import { CartCountBadge } from '../cart/CartCountBadge';
 
@@ -14,15 +15,23 @@ type NavLink = {
 // These are the "Props" we expect to receive from the parent Header component.
 type MobileMenuProps = {
   links: NavLink[];
+  /**
+   * Whether to show authentication buttons/menu in the mobile menu
+   * This allows the Header to control whether auth is displayed
+   */
+  showAuth?: boolean;
 };
 
 /**
  * Mobile Hamburger Menu Component
  * This is the magic drawer that slides in from the right when you tap the hamburger icon on a phone.
  */
-export const MobileMenu = component$<MobileMenuProps>(({ links }) => {
+export const MobileMenu = component$<MobileMenuProps>(({ links, showAuth = false }) => {
   // Access the cart state to show the number of items
   const cart = useCart();
+
+  // Access auth state for displaying login/register buttons or user menu
+  const auth = useAuth();
 
   // 'useSignal' is Qwik's way of creating a reactive variable. 
   // 'isOpen' tracks whether our menu drawer is currently visible or hidden.
@@ -161,24 +170,109 @@ export const MobileMenu = component$<MobileMenuProps>(({ links }) => {
           </ul>
         </nav>
 
-        {/* Menu Footer: Quick shortcut to the cart */}
-        <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200">
-          <div class="space-y-3">
-            <Link
-              href="/cart"
-              onClick$={closeMenu}
-              class="flex items-center justify-center w-full px-4 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
-            >
-              <div class="relative mr-2">
-                <CartIcon class="w-5 h-5" />
-                <CartCountBadge 
-                  count={cart.state.totalItems} 
-                  class="absolute -top-2 -right-2 min-w-[16px] h-[16px] text-[10px]" 
-                />
-              </div>
-              View Cart
-            </Link>
-          </div>
+        {/* Menu Footer: Quick shortcut to the cart and auth buttons */}
+        <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 space-y-3">
+          {/* 
+            Cart Link (always shown)
+          */}
+          <Link
+            href="/cart"
+            onClick$={closeMenu}
+            class="flex items-center justify-center w-full px-4 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors font-medium"
+          >
+            <div class="relative mr-2">
+              <CartIcon class="w-5 h-5" />
+              <CartCountBadge 
+                count={cart.state.totalItems} 
+                class="absolute -top-2 -right-2 min-w-[16px] h-[16px] text-[10px]" 
+              />
+            </div>
+            View Cart
+          </Link>
+
+          {/* 
+            Authentication Section (shown only if showAuth is true)
+          */}
+          {showAuth && (
+            <>
+              {/* If user is NOT logged in, show Sign In and Sign Up buttons */}
+              {!auth.user && !auth.isLoading && (
+                <div class="space-y-2 pt-2">
+                  <Link
+                    href="/auth/login"
+                    onClick$={closeMenu}
+                    class="flex items-center justify-center w-full px-4 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors font-medium"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    onClick$={closeMenu}
+                    class="flex items-center justify-center w-full px-4 py-3 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors font-medium"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+
+              {/* If user IS logged in, show user menu items */}
+              {auth.user && !auth.isLoading && (
+                <div class="space-y-2 pt-2 border-t border-gray-200">
+                  {/* User Info */}
+                  <div class="text-xs text-gray-600">
+                    <p class="font-semibold text-gray-900">
+                      {auth.user.user_metadata?.full_name || auth.user.email?.split('@')[0] || 'User'}
+                    </p>
+                    <p class="truncate text-gray-600">{auth.user.email}</p>
+                  </div>
+
+                  {/* Account Links */}
+                  <Link
+                    href="/account"
+                    onClick$={closeMenu}
+                    class="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-md transition-colors font-medium"
+                  >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    My Account
+                  </Link>
+
+                  <Link
+                    href="/account/orders"
+                    onClick$={closeMenu}
+                    class="flex items-center w-full px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-md transition-colors font-medium"
+                  >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    My Orders
+                  </Link>
+
+                  {/* Logout Button */}
+                  <button
+                    onClick$={async () => {
+                      await auth.actions.logout();
+                      closeMenu();
+                    }}
+                    class="flex items-center justify-center w-full px-4 py-3 text-red-600 border border-red-200 hover:bg-red-50 rounded-md transition-colors font-medium"
+                  >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Logout
+                  </button>
+                </div>
+              )}
+
+              {/* Loading state */}
+              {auth.isLoading && (
+                <div class="flex items-center justify-center py-3">
+                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </>

@@ -67,14 +67,27 @@ export const SocialLoginButtons = component$<SocialLoginButtonsProps>(({ mode, o
    * 
    * This function:
    * 1. Sets loading state for the clicked provider
-   * 2. Calls Supabase's OAuth sign-in method
-   * 3. Supabase automatically redirects to the provider's login page
-   * 4. After successful auth, user is redirected to /auth/callback
+   * 2. Saves any redirect parameter to sessionStorage for later use
+   * 3. Calls Supabase's OAuth sign-in method
+   * 4. Supabase automatically redirects to the provider's login page
+   * 5. After successful auth, user is redirected to /auth/callback
    */
   const handleSocialAuth$ = $(async (provider: string) => {
     loadingProvider.value = provider;
     
     try {
+      /**
+       * Preserve the redirect parameter if it exists
+       * This is passed as a query parameter: /auth/login?redirect=/account
+       * We save it to sessionStorage so the callback page can use it after OAuth
+       */
+      if (typeof window !== 'undefined') {
+        const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+        if (redirectUrl) {
+          sessionStorage.setItem('auth_redirect', redirectUrl);
+        }
+      }
+
       /**
        * Call the OAuth sign-in method from our auth context
        * 

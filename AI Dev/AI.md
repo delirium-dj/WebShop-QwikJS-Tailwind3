@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 12, 2026 (Verified Supabase Auth Phases 1&2, Updated Project Structure Map, Added Services/Lib Folders)
+**Last Updated:** February 12, 2026 (Verified Supabase Auth Phases 1-4 & 6, Updated Project Structure Map, Added Account & Auth Guard)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -24,6 +24,8 @@
 - ✅ **Reactive Filtering & Sorting**: Instant grid updates powered by `useComputed$`
 - ✅ **URL State Management**: Shareable search/filter states via URL parameters
 - ✅ **Mobile-First UX**: High-performance animated menus and cart drawers
+- ✅ **Full Authentication System**: Supabase Auth with Google OAuth, Protected Routes (Auth Guard), and Profile Management
+- ✅ **Secure Account Section**: Dedicated `/account` route for user settings and order history (structure ready)
 
 ### Technology Stack
 
@@ -140,8 +142,21 @@ reconshop/
 │   │   ├── products/
 │   │   │   └── [slug]/
 │   │   │       └── index.tsx            # Product by slug page
-│   │   └── shop/
-│   │       └── index.tsx                # Shop listing page
+│   │   ├── shop/
+│   │   │   └── index.tsx                # Shop listing page
+│   │   ├── auth/                        # Auth routes
+│   │   │   ├── login/index.tsx          # Login page
+│   │   │   ├── register/index.tsx       # Register page
+│   │   │   ├── verify-email/index.tsx   # Email verification
+│   │   │   └── callback/index.tsx       # OAuth callback handler
+│   │   ├── account/                     # Protected routes (NEW)
+│   │   │   ├── index.tsx                # User profile/dashboard
+│   │   │   └── layout.tsx               # Auth guard layout
+│   │   └── index.ts                     # Layout exports (if any)
+│   │
+│   ├── routes/                          # Qwik City routes (root)
+│   │   ├── index.tsx                    # Home page (/)
+│   │   ├── layout.tsx                   # Root layout with providers
 │   │
 │   ├── services/                        # API and business logic
 │   │   └── api/                         # API service layer
@@ -300,26 +315,28 @@ All routes inherit this layout which wraps the app with essential context provid
 ```tsx
 export default component$(() => {
   return (
-    <CartProvider>
-      <div class="flex min-h-screen flex-col font-sans">
-        <Header />
-        <main class="flex-1 bg-white">
-          <ToastProvider>
-            <Slot />
-          </ToastProvider>
-        </main>
-        <footer>...</footer>
-      </div>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <div class="flex min-h-screen flex-col font-sans">
+          <Header />
+          <main class="flex-1 bg-white">
+            <ToastProvider>
+              <Slot />
+            </ToastProvider>
+          </main>
+          <footer>...</footer>
+        </div>
+      </CartProvider>
+    </AuthProvider>
   );
 });
 ```
 
 **Provider Hierarchy:**
 
-1. **CartProvider** - Global shopping cart state
-2. **AuthProvider** - User authentication state
-3. **Header** - Navigation component
+1. **AuthProvider** - User authentication state (Outermost for global access)
+2. **CartProvider** - Global shopping cart state
+3. **Header** - Navigation component (Uses useAuth)
 4. **ToastProvider** - Notification system
 5. **Slot** - Route content rendered here
 6. **Footer** - Global footer
@@ -1355,7 +1372,7 @@ When working on this project:
 
 ---
 
-**Document Version:** 1.2  
+**Document Version:** 1.3  
 **Last Updated:** February 12, 2026 (Structure verification and updates)
-**Session:** Verified Supabase Auth implementation (Phases 1&2), Updated project structure map with services/lib folders  
-**Next Update:** After Phase 3 implementation (Login/Register UI)
+**Session:** Verified Supabase Auth implementation (Phases 1-4 & 6), Updated project structure map with account routes and auth guard.  
+**Next Update:** After Phase 5 implementation (Password Reset Flow)

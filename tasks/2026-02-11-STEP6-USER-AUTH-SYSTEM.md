@@ -586,10 +586,10 @@ That's it! Supabase's SDK is the only new dependency we need.
 | --------------------------- | -------------- | ------------------------------------------------------ | ----------------------------------------- |
 | **1: Supabase Setup**       | ✅ DONE        | Project, OAuth, profiles table, .env.local             | All acceptance criteria met               |
 | **2: SDK & Auth Context**   | ✅ DONE        | `src/lib/supabase.ts`, `src/contexts/auth/*` (5 files) | Full TypeScript support, session recovery |
-| **3: Login/Register Pages** | ✅ DONE (95%)  | Routes, forms, OAuth callback, social buttons          | All pages created and functional          |
-| **4: Protected Routes**     | ⏳ IN PROGRESS | useAuth hook ready, needs /account route               | 10% complete                              |
-| **5: Password Reset**       | ⏳ PENDING     | Route structure ready                                  | 0% complete                               |
-| **6: Header Integration**   | ⏳ PENDING     | Context available, needs Header update                 | 5% complete                               |
+| **3: Login/Register Pages** | ✅ DONE        | Routes, forms, OAuth callback, social buttons          | All pages created and functional          |
+| **4: Protected Routes**     | ✅ DONE        | AuthGuard, /account route and profile editing          | 100% complete                             |
+| **5: Password Reset**       | ⏳ IN PROGRESS | Routes and logic structure ready                       | 20% complete                              |
+| **6: Header Integration**   | ✅ DONE        | Header updated with UserMenu and mobile support        | 100% complete                             |
 
 ### Phase 1 ✅ COMPLETE
 
@@ -614,14 +614,14 @@ That's it! Supabase's SDK is the only new dependency we need.
 - Profile data merging (auth + profiles table)
 - Full type safety with TypeScript
 
-### Phase 3 ✅ SUBSTANTIALLY COMPLETE (95%)
+### Phase 3 ✅ COMPLETE
 
 **Created Files:**
 
 - `src/routes/auth/login/index.tsx` - Login page with professional UI
 - `src/routes/auth/register/index.tsx` - Registration page
 - `src/routes/auth/callback/index.tsx` - OAuth callback handler
-- `src/routes/auth/verify-email/index.tsx` - Email verification page (structure ready)
+- `src/routes/auth/verify-email/index.tsx` - Email verification page
 - `src/components/auth/LoginForm.tsx` - Email/password login form
 - `src/components/auth/RegisterForm.tsx` - Registration form with validation
 - `src/components/auth/SocialLoginButtons.tsx` - Google OAuth button
@@ -637,62 +637,60 @@ That's it! Supabase's SDK is the only new dependency we need.
 - Loading states during authentication
 - Toast notifications for success/error
 - Auto-redirect to homepage or previous page after login
+- email verification page with resend functionality
 - Mobile-responsive design with Tailwind CSS
+- Fixed null check error in verify-email page
+- Added redirect parameter preservation to auth forms and verification flow
 
-**Status:** Pages are fully functional and integrated with Supabase Auth service
+**Status:** Phase 3 is 100% complete and verified.
 
-### Phase 4 ⏳ IN PROGRESS (10%)
+### Phase 4 ✅ COMPLETE
 
-**What's Ready:**
+**Created Files:**
 
-- `useAuth()` hook provides user state and can check if logged in
-- Auth context with all needed data
-- All types defined
+- `src/components/auth/AuthGuard.tsx` - Route protection component
+- `src/routes/account/layout.tsx` - Protected layout for all /account routes
+- `src/routes/account/index.tsx` - User profile/account page
 
-**What Still Needs Implementation:**
+**Functionality:**
 
-1. Create `/account/layout.tsx` with `AuthGuard` component
-2. Create `src/components/auth/AuthGuard.tsx` - checks auth and redirects if needed
-3. Create `/account/index.tsx` - user profile/account page
-4. Profile editing form (update name, avatar, phone)
-5. Password change functionality
-6. Loading spinner while auth checking
+- `AuthGuard` checks authentication state and redirects to login if needed
+- `AuthGuard` preserves the requested URL and redirects back after login
+- Profile editing (Display Name and Phone) with validation
+- Password change functionality integrated with Supabase
+- Account statistics (Orders, Wishlist) placeholders in place
+- User initials/avatar display in profile
 
-### Phase 5 ⏳ NOT STARTED (0%)
+**Status:** Phase 4 is 100% complete.
+
+### Phase 5 ⏳ IN PROGRESS (20%)
 
 **Ready to Go:**
 
 - Route folder `/src/routes/auth/` already exists
-- Can create `/forgot-password/` and `/reset-password/` routes
+- Auth context has `resetPassword` and `updatePassword` actions
+- Logic flow is defined in Task Step 6
 
-**Still Needs:**
+**Next Steps:**
 
 1. Create `/auth/forgot-password/index.tsx` - forgot password form
-2. Create `/auth/reset-password/[token]/index.tsx` - reset password form
-3. Email sending configuration
-4. Token validation and password update logic
-5. Link in login page to forgot password
+2. Create `/auth/reset-password/index.tsx` - reset password form
+3. Link from Login page to Forgot Password page (need to update LoginForm)
 
-### Phase 6 ⏳ NOT STARTED (5%)
+### Phase 6 ✅ COMPLETE
 
-**Prerequisites Met:**
+**Implementation:**
 
-- Auth context with user data available
-- `useAuth()` hook can access user globally
+1. **Header Updated:** Now uses `useAuth()` to conditionally show UserMenu.
+2. **UserMenu Component:** Added avatar dropdown with links to "My Account", "Orders", and "Logout".
+3. **Mobile Menu:** Updated to include auth links and user greeting.
+4. **Logout Logic:** Fully functional dropdown-triggered logout with redirect to homepage.
 
-**Still Needs:**
-
-1. Update `src/components/ui/Header.tsx` to use `useAuth()`
-2. Create `UserMenu.tsx` dropdown component
-3. Show "Login" / "Register" buttons when not authenticated
-4. Show user avatar + dropdown when authenticated
-5. Dropdown menu items: "My Account", "My Orders", "Logout"
-6. Update mobile menu with same logic
-7. Logout functionality
+**Status:** Phase 6 is 100% complete.
 
 ---
 
 **Task Created:** February 11, 2026
 **Last Updated:** February 12, 2026
-**Status:** 🚧 In Progress (Phases 1, 2, 3 Complete | Phases 4, 5, 6 Pending)
+**Status:** 🚧 In Progress (Phases 1, 2, 3, 4, 6 Complete | Phase 5 Pending)
 **Priority:** High — Blocks Step 7 (Checkout) and Step 8 (Order History).

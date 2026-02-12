@@ -3,6 +3,8 @@ import { component$ } from '@builder.io/qwik';
 import { Link } from '@builder.io/qwik-city';
 import { MobileMenu } from './MobileMenu'; // This is our custom slide-in menu for mobile devices
 import { CartBadge } from '../cart/CartBadge'; // This displays the cart icon and the real-time item count
+import { useAuth } from '~/contexts/auth'; // Access auth context to check login state
+import { UserMenu } from '../auth/UserMenu'; // User avatar dropdown menu
 
 /**
  * Main Header Component
@@ -10,6 +12,16 @@ import { CartBadge } from '../cart/CartBadge'; // This displays the cart icon an
  * It's "sticky", meaning it stays at the top as the user scrolls.
  */
 export const Header = component$(() => {
+  // ============================================================================
+  // STATE & HOOKS
+  // ============================================================================
+  
+  /**
+   * Get auth state to check if user is logged in
+   * The auth context is set up in src/routes/layout.tsx with <AuthProvider>
+   */
+  const auth = useAuth();
+
   // We define our navigation links in an array so we can easily add/remove them 
   // in one place and have them update in both Desktop and Mobile views.
   const navLinks = [
@@ -89,11 +101,53 @@ export const Header = component$(() => {
             </nav>
 
             {/* 
+                Authentication Section (Desktop Only)
+                - Show different content based on login state
+                - 'hidden md:flex': Hide on mobile, show on medium screens and up
+            */}
+            <div class="hidden md:flex items-center space-x-4">
+              {/* 
+                If user is NOT logged in, show Login/Register buttons
+              */}
+              {!auth.user && !auth.isLoading && (
+                <>
+                  <Link
+                    href="/auth/login"
+                    class="text-sm font-semibold text-gray-600 hover:text-black transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    class="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+
+              {/* 
+                If user IS logged in, show user menu dropdown
+              */}
+              {auth.user && !auth.isLoading && (
+                <UserMenu />
+              )}
+
+              {/* 
+                If auth is loading, show a loading placeholder
+              */}
+              {auth.isLoading && (
+                <div class="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+              )}
+            </div>
+
+            {/* 
                 Mobile Menu (Hamburger):
                 - This component contains the logic for the drawer that slides in from the right.
                 - It only appears when the Desktop Navigation (above) is hidden.
+                - We pass auth state so it can also show auth buttons/menu on mobile
             */}
-            <MobileMenu links={navLinks} />
+            <MobileMenu links={navLinks} showAuth={true} />
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@
  */
 
 import { component$, useSignal, $ } from '@builder.io/qwik';
-import { useNavigate } from '@builder.io/qwik-city';
+import { useNavigate, useLocation } from '@builder.io/qwik-city';
 import { useAuth } from '~/contexts/auth';
 import { SocialLoginButtons } from './SocialLoginButtons';
 
@@ -57,6 +57,12 @@ export const LoginForm = component$(() => {
    */
   const nav = useNavigate();
 
+  /**
+   * Get current location to extract redirect URL from query parameters
+   * Example: /auth/login?redirect=/account
+   */
+  const location = useLocation();
+
   // ============================================================================
   // EVENT HANDLERS
   // ============================================================================
@@ -90,11 +96,19 @@ export const LoginForm = component$(() => {
       /**
        * On successful login, redirect the user.
        * 
-       * Future enhancement: Check for a 'redirect' query parameter in the URL
-       * so we can send users back to the page they were trying to access.
+       * Check for a 'redirect' query parameter in the URL so we can send users 
+       * back to the page they were trying to access.
        * Example: /auth/login?redirect=/account
+       * 
+       * If no redirect is specified, default to the homepage.
        */
-      await nav('/');
+      const redirectUrl = location.url.searchParams.get('redirect') || '/';
+      
+      // Validate the redirect URL to prevent open redirect vulnerabilities
+      // Only allow relative URLs (starting with /)
+      const safeRedirectUrl = redirectUrl.startsWith('/') ? redirectUrl : '/';
+      
+      await nav(safeRedirectUrl);
       
     } catch (err) {
       /**
@@ -107,9 +121,22 @@ export const LoginForm = component$(() => {
        */
       console.error('Login error:', err);
       
-      // Type-safe error message extraction
+      // Type-safe error message extraction with user-friendly formatting
       if (err instanceof Error) {
-        error.value = err.message;
+        const errorMsg = err.message.toLowerCase();
+        
+        // Provide user-friendly error messages based on common Supabase errors
+        if (errorMsg.includes('invalid') || errorMsg.includes('credentials')) {
+          error.value = 'Invalid email or password. Please try again.';
+        } else if (errorMsg.includes('email') && errorMsg.includes('not confirmed')) {
+          error.value = 'Please verify your email address first. Check your inbox for the verification link.';
+        } else if (errorMsg.includes('user not found')) {
+          error.value = 'No account found with this email address. Please sign up first.';
+        } else if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+          error.value = 'Network error. Please check your connection and try again.';
+        } else {
+          error.value = err.message;
+        }
       } else {
         error.value = 'An unexpected error occurred. Please try again.';
       }
@@ -128,10 +155,47 @@ export const LoginForm = component$(() => {
       {/* 
         Error Alert Box
         Only displays when error.value is not empty
+        Shows icon, error message, and helpful context
       */}
       {error.value && (
-        <div class="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200" role="alert">
-          <strong class="font-semibold">Login failed:</strong> {error.value}
+        <div class="mb-4 rounded-lg bg-red-50 p-4 border border-red-200" role="alert">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            <div class="flex-1">
+              <p class="font-semibold text-red-800">{error.value}</p>
+              {(error.value.includes('Invalid email') || error.value.includes('credentials')) && (
+                <p class="mt-1 text-xs text-red-700">
+                  Tip: Check that your email and password are correct.{' '}
+                  <a href="/auth/forgot-password" class="font-semibold underline hover:no-underline">
+                    Forgot your password?
+                  </a>
+                </p>
+              )}
+              {error.value.includes('verify your email') && (
+                <p class="mt-1 text-xs text-red-700">
+                  Didn't receive the email?{' '}
+                  <a href="/auth/verify-email" class="font-semibold underline hover:no-underline">
+                    Click here to resend it
+                  </a>
+                </p>
+              )}
+              {error.value.includes('No account found') && (
+                <p class="mt-1 text-xs text-red-700">
+                  <a href="/auth/register" class="font-semibold underline hover:no-underline">
+                    Create a new account
+                  </a>{' '}
+                  to get started.
+                </p>
+              )}
+              {error.value.includes('Network error') && (
+                <p class="mt-1 text-xs text-red-700">
+                  Please check your internet connection and try again.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

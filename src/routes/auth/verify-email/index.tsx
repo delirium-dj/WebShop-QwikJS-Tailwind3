@@ -8,6 +8,7 @@
  * - The user must click the link in that email to verify their account
  * - Until verified, they can't log in (if email confirmation is required)
  * - This page just shows instructions and a resend button
+ * - If a redirect parameter was passed, it will be preserved and used after verification
  * 
  * Configuration in Supabase:
  * - Dashboard → Authentication → Settings → Email Auth
@@ -19,7 +20,7 @@
  */
 
 import { component$, useSignal, $ } from '@builder.io/qwik';
-import { type DocumentHead } from '@builder.io/qwik-city';
+import { type DocumentHead, useLocation } from '@builder.io/qwik-city';
 import { useAuth } from '~/contexts/auth';
 
 /**
@@ -45,6 +46,12 @@ export default component$(() => {
   // ============================================================================
   
   const auth = useAuth();
+  
+  /**
+   * Get current location to check for redirect parameter
+   * This was set by the register form, e.g., /auth/verify-email?redirect=/account
+   */
+  const location = useLocation();
 
   // ============================================================================
   // EVENT HANDLERS
@@ -229,7 +236,7 @@ export default component$(() => {
             {/* Alternative Actions */}
             <div class="mt-6 space-y-3">
               <a
-                href="/auth/login"
+                href={`/auth/login${location.url.search}`}
                 class="block text-center text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
                 Already verified? Sign in →
