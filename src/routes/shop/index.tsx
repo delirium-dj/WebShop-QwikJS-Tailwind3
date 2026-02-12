@@ -28,6 +28,8 @@ import { routeLoader$, useLocation, useNavigate } from '@builder.io/qwik-city';
 import { ProductCard } from '~/components/product/ProductCard';
 import { getAllProducts, type ApiProduct } from '~/services/api/products';
 import { useCart } from '~/contexts/cart';
+import { mapApiProductsToProducts } from '~/utils/product-mapper';
+import type { Product } from '~/types/product';
 
 /**
  * Server-side data loader
@@ -51,16 +53,20 @@ export const useProductsData = routeLoader$(async () => {
       new Set(products.map((p: ApiProduct) => p.category))
     ).sort();
     
+    // Map raw API products to our internal Product format
+    // This adds simulated discounts (originalPrice) and standardizes image structure
+    const mappedProducts: Product[] = mapApiProductsToProducts(products);
+    
     return {
-      products,
+      products: mappedProducts,
       categories,
     };
   } catch (error) {
     console.error('Failed to load shop products:', error);
     // Return empty data on error instead of crashing the page
     return {
-      products: [],
-      categories: [],
+      products: [] as Product[],
+      categories: [] as string[],
     };
   }
 });
@@ -226,7 +232,7 @@ export default component$(() => {
       
       case 'rating':
         // Highest rated first - quality-conscious shoppers
-        filtered.sort((a, b) => (b.rating?.rate || 0) - (a.rating?.rate || 0));
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       
       default:
@@ -321,13 +327,14 @@ export default component$(() => {
    * 
    * This integrates with the real cart system instead of using alert()
    */
-  const handleAddToCart$ = $((product: ApiProduct) => {
+  const handleAddToCart$ = $((product: Product) => {
     // Add product to cart
-    // Note: The cart expects specific fields, we transform ApiProduct to match
+    // Note: The cart expects specific fields, we transform Product to match
     cart.actions.addItem({
       id: product.id,
       title: product.title,
       price: product.price,
+      // Product uses 'image' string for compatibility, though it also has 'images' array
       image: product.image,
     });
 
@@ -395,7 +402,7 @@ export default component$(() => {
                   
                   {/* Individual categories */}
                   {categories.map((category) => {
-                    const count = products.filter((p: ApiProduct) => p.category === category).length;
+                    const count = products.filter((p: Product) => p.category === category).length;
                     return (
                       <label
                         key={category}
@@ -513,10 +520,8 @@ export default component$(() => {
                 {filteredProducts.value.map((product) => (
                   <ProductCard
                     key={product.id}
-                    // ApiProduct from FakeStore API is compatible with ProductCard
-                    // rating is { rate, count } in API but ProductCard expects just a number
-                    // We pass the whole product and let ProductCard handle the conversion
-                    product={product as any}
+                    // Product is now fully compatible with ProductCard's interface
+                    product={product}
                     showAddToCart={true}
                     onAddToCart$={$(() => handleAddToCart$(product))}
                   />

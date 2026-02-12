@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 10, 2026 (Updated with Reactive Shop Filters & Unified API imports)
+**Last Updated:** February 12, 2026 (Verified Supabase Auth Phases 1&2, Updated Project Structure Map, Added Services/Lib Folders)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -116,10 +116,18 @@ reconshop/
 │   │   │   ├── types.ts                 # TypeScript interfaces
 │   │   │   ├── utils.ts                 # Helper functions
 │   │   │   └── index.ts                 # Barrel exports
+│   │   ├── auth/                        # User authentication context (NEW)
+│   │   │   ├── AuthContext.tsx          # Auth provider component
+│   │   │   ├── useAuth.ts               # Custom hook to access auth
+│   │   │   ├── types.ts                 # TypeScript interfaces
+│   │   │   └── index.ts                 # Barrel exports
 │   │   └── toast/                       # Toast notification context
 │   │       ├── ToastContext.tsx         # Toast provider component
 │   │       ├── useToast.ts              # Custom hook to access toast
 │   │       └── index.ts                 # Barrel exports
+│   │
+│   ├── lib/                             # Library utilities
+│   │   └── supabase.ts                  # Supabase client singleton
 │   │
 │   ├── routes/                          # Qwik City routes
 │   │   ├── index.tsx                    # Home page (/)
@@ -135,15 +143,24 @@ reconshop/
 │   │   └── shop/
 │   │       └── index.tsx                # Shop listing page
 │   │
+│   ├── services/                        # API and business logic
+│   │   └── api/                         # API service layer
+│   │       ├── products.ts              # Product API functions
+│   │       ├── types.ts                 # API type definitions
+│   │       ├── config.ts                # API configuration
+│   │       └── index.ts                 # Barrel exports
+│   │
 │   ├── types/                           # Shared TypeScript interfaces
 │   │   ├── product.ts                   # Product interfaces
 │   │   └── image.types.ts               # Image-related types
 │   │
 │   ├── utils/                           # Utility functions
-│   │   └── image.utils.ts               # Image helper functions
+│   │   ├── image.ts                     # Consolidated image utilities
+│   │   ├── image.utils.ts               # Image helper functions (legacy)
+│   │   └── product-mapper.ts            # Product data transformation
 │   │
 │   └── data/                            # Mock data for development
-│       └── mockProducts.ts              # Sample product data
+│       └── mockProducts.ts              # Sample product data (legacy)
 │
 ├── public/                              # Static files (copied to build)
 │   ├── images/                          # Product and asset images
@@ -196,45 +213,62 @@ reconshop/
 
 ---
 
-- +## ⚡ Reactive Shop Filtering & Sorting
-- +### Core Implementation (src/routes/shop/index.tsx)
-- +The shop uses a fully reactive pattern that combines server-side data loading with client-side reactive filtering.
-- +#### 1. Server Data (routeLoader$)
-+```tsx
-+export const useProductsData = routeLoader$(async () => {
-- const products = await getAllProducts();
-- return { products };
-  +});
-  +```
-- +#### 2. Filtering State (Signals) +`tsx
-+const selectedCategory = useSignal<string>('all');
-+const sortBy = useSignal<string>('featured');
-+const selectedPriceRanges = useSignal<number[]>([]);
-+`
-- +#### 3. Reactive Grid (useComputed$)
-  +The grid is powered by a computed value that automatically tracks and re-runs filtering/sorting logic whenever any input signal changes.
-- +```tsx
-  +const filteredProducts = useComputed$(() => {
-- let filtered = [...products];
--
-- // Reactive Filter Logic
-- if (selectedCategory.value !== 'all') {
-- filtered = filtered.filter(p => p.category === selectedCategory.value);
-- }
--
-- // Sorting Logic...
-- return filtered;
-  +});
-  +```
-- +#### 4. URL Synchronization
-  +Whenever a filter changes, we update the browser URL without a page reload using `useNavigate()`. This makes the current filter state shareable.
-- +```tsx
-  +const updateURL = $(() => {
-- const params = new URLSearchParams();
-- if (selectedCategory.value !== 'all') params.set('category', selectedCategory.value);
-- nav(`/shop?${params.toString()}`);
-  +});
-  +```
+## ⚡ Reactive Shop Filtering & Sorting
+
+### Core Implementation (src/routes/shop/index.tsx)
+
+The shop uses a fully reactive pattern that combines server-side data loading with client-side reactive filtering.
+
+#### 1. Server Data (routeLoader$)
+
+```tsx
+export const useProductsData = routeLoader$(async () => {
+  const products = await getAllProducts();
+  // Map raw API data to standard Product type (adds discounts, standardizes images)
+  const mappedProducts = mapApiProductsToProducts(products);
+  return { products: mappedProducts };
+});
+```
+
+#### 2. Filtering State (Signals)
+
+```tsx
+const selectedCategory = useSignal<string>("all");
+const sortBy = useSignal<string>("featured");
+const selectedPriceRanges = useSignal<number[]>([]);
+```
+
+#### 3. Reactive Grid (useComputed$)
+
+The grid is powered by a computed value that automatically tracks and re-runs filtering/sorting logic whenever any input signal changes.
+
+```tsx
+const filteredProducts = useComputed$(() => {
+  let filtered = [...products];
+
+  // Reactive Filter Logic
+  if (selectedCategory.value !== "all") {
+    filtered = filtered.filter((p) => p.category === selectedCategory.value);
+  }
+
+  // Sorting Logic...
+  return filtered;
+});
+```
+
+#### 4. URL Synchronization
+
+Whenever a filter changes, we update the browser URL without a page reload using `useNavigate()`. This makes the current filter state shareable.
+
+```tsx
+const updateURL = $(() => {
+  const params = new URLSearchParams();
+  if (selectedCategory.value !== "all")
+    params.set("category", selectedCategory.value);
+  nav(`/shop?${params.toString()}`);
+});
+```
+
 - +---
 
 ## 🏗️ Architecture & State Management
@@ -284,10 +318,50 @@ export default component$(() => {
 **Provider Hierarchy:**
 
 1. **CartProvider** - Global shopping cart state
-2. **Header** - Navigation component
-3. **ToastProvider** - Notification system
-4. **Slot** - Route content rendered here
-5. **Footer** - Global footer
+2. **AuthProvider** - User authentication state
+3. **Header** - Navigation component
+4. **ToastProvider** - Notification system
+5. **Slot** - Route content rendered here
+6. **Footer** - Global footer
+
+---
+
+## 🔐 Authentication System
+
+### Core Architecture (src/contexts/auth/)
+
+The authentication system is built on **Supabase Auth** and wrapped in a Qwik Context for global access.
+
+#### 1. Auth Provider (AuthContext.tsx)
+
+- **State**: Manages `user` (profile), `session` (JWT), `isLoading`, and `errors`.
+- **Persistence**: Automatically restores sessions from localStorage on page load.
+- **Reactivity**: Listens for Supabase `onAuthStateChange` events to sync state instantly.
+- **Profile Merging**: Combines basic auth data (email, ID) with extended profile data (name, avatar, phone) from the `profiles` table.
+
+#### 2. Supabase Client (src/lib/supabase.ts)
+
+- **Singleton Pattern**: A single `createClient` instance used throughout the app.
+- **Security**: Uses `VITE_SUPABASE_PUBLISHABLE_KEY` (safe for browser) and `SUPABASE_SECRET_KEY` (server-side only).
+- **Environment**: Keys are loaded from `.env.local` to prevent git commits.
+
+#### 3. Custom Hooks (useAuth.ts)
+
+- `useAuth()`: Access full context (user, actions, loading).
+- `useRequireAuth()`: Helper for protected routes.
+- `useIsAuthenticated()`: Boolean check for UI toggles.
+
+#### 4. Type Safety (types.ts)
+
+- **AuthUser**: Extends Supabase user with custom profile fields.
+- **LoginCredentials**: Typed interface for login forms.
+- **RegisterCredentials**: Typed interface for registration.
+
+### Security Best Practices
+
+- **RLS (Row Level Security)**: Database policies restrict data access (e.g., users can only edit their own profile).
+- **Environment Variables**: Local keys are `.gitignored`.
+- **HttpOnly Cookies**: Session tokens are handled securely by Supabase.
 
 ---
 
@@ -1281,7 +1355,7 @@ When working on this project:
 
 ---
 
-**Document Version:** 1.1  
-**Last Updated:** February 9, 2026 (18:00 UTC)
-**Session:** Expanded mock products (4→16) + dynamic homepage sync + AI context docs  
-**Next Update:** After Step 5.3 (Server-side data fetching) or major feature additions
+**Document Version:** 1.2  
+**Last Updated:** February 12, 2026 (Structure verification and updates)
+**Session:** Verified Supabase Auth implementation (Phases 1&2), Updated project structure map with services/lib folders  
+**Next Update:** After Phase 3 implementation (Login/Register UI)

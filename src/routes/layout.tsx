@@ -4,6 +4,7 @@ import { routeLoader$ } from '@builder.io/qwik-city';
 import { CartProvider } from '~/contexts/cart';
 import { Header } from '~/components/ui/Header';
 import { ToastProvider } from '~/contexts/toast';
+import { AuthProvider } from '~/contexts/auth';
 
 export const useServerTimeLoader = routeLoader$(() => {
   return {
@@ -13,6 +14,7 @@ export const useServerTimeLoader = routeLoader$(() => {
 
 export default component$(() => {
   return (
+    <AuthProvider>
     <CartProvider>
       <div class="min-h-screen flex flex-col font-sans">
         <Header />
@@ -28,5 +30,6 @@ export default component$(() => {
         </footer>
       </div>
     </CartProvider>
+    </AuthProvider>
   );
 });

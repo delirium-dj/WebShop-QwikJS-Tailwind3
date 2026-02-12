@@ -157,12 +157,86 @@ src/
    - `Publishable key` (format: `sb_publishable_...` — safe to use in browsers)
    - `Secret key` (format: `sb_secret_...` — server-side ONLY, never in browser code)
 4. **Enable Email Auth** → `Authentication > Providers > Email` → Toggle ON.
-5. **Enable Google OAuth** → `Authentication > Providers > Google`:
-   - Go to [Google Cloud Console](https://console.cloud.google.com).
-   - Create OAuth 2.0 credentials.
-   - Add `https://xxxx.supabase.co/auth/v1/callback` as an authorized redirect URI.
-   - Copy the Client ID and Client Secret into Supabase.
-6. **(Optional)** Enable GitHub, Microsoft, etc. the same way.
+5. **Enable Google OAuth** — This is the most involved step, so follow carefully:
+
+   > **Junior Note: What is OAuth?**
+   > OAuth is a standard that lets users log into YOUR app using their EXISTING Google account.
+   > Instead of us storing their password, Google handles the login and just tells us "yes, this person is real."
+   > We need to register our app with Google so Google knows to trust us.
+
+   #### Step 5a: Get your Supabase Callback URL FIRST
+
+   Before going to Google, grab the callback URL from Supabase — you'll need it later:
+   1. Open your **Supabase Dashboard** → `Authentication` → `Providers` → `Google`.
+   2. You'll see a field called **"Callback URL (for OAuth)"** — it looks like:
+      ```
+      https://YOUR_PROJECT_ID.supabase.co/auth/v1/callback
+      ```
+   3. **Copy this URL** and keep it handy (paste it into Notepad or keep the tab open).
+
+   #### Step 5b: Create a Google Cloud Project
+   1. Go to [Google Cloud Console](https://console.cloud.google.com).
+   2. If you've never used Google Cloud, you'll see a welcome screen. Accept the Terms of Service.
+   3. In the **top-left**, next to the Google Cloud logo, click the **project dropdown** (it might say "Select a project" or show an existing project name).
+   4. In the popup, click **"NEW PROJECT"** (top-right of the popup).
+   5. Fill in:
+      - **Project name:** `ReconShop` (or any name you like)
+      - **Organization:** Leave as "No organization" (unless you have one)
+   6. Click **"CREATE"**.
+   7. Wait a few seconds, then make sure the new project is **selected** in the top-left dropdown.
+
+   #### Step 5c: Configure the OAuth Consent Screen
+
+   > **What is this?** This is the screen your users will see when they click "Sign in with Google."
+   > It shows your app's name, logo, and what data you're requesting.
+   1. In the left sidebar, go to `APIs & Services` → `OAuth consent screen`.
+      - If you don't see the sidebar, click the **hamburger menu (☰)** in the top-left.
+   2. Choose **User Type**:
+      - Select **"External"** (this allows any Google account to sign in).
+      - Click **"CREATE"**.
+   3. Fill in the **App Information**:
+      - **App name:** `ReconShop`
+      - **User support email:** Select your email from the dropdown.
+      - **App logo:** Optional — you can skip this for now.
+   4. Scroll down to **App domain** (all optional for now):
+      - **Application home page:** `https://your-netlify-site.netlify.app` (or leave blank)
+      - **Privacy policy / Terms of service:** Leave blank for development.
+   5. Scroll down to **Developer contact information**:
+      - **Email address:** Enter your email.
+   6. Click **"SAVE AND CONTINUE"**.
+   7. **Scopes page** → Click **"SAVE AND CONTINUE"** (default scopes are fine — we only need email and profile).
+   8. **Test users page** → Click **"SAVE AND CONTINUE"** (not needed for External type).
+   9. **Summary page** → Click **"BACK TO DASHBOARD"**.
+
+   #### Step 5d: Create OAuth 2.0 Credentials
+
+   > **What are credentials?** They're a pair of keys (Client ID + Client Secret) that Google gives us
+   > so it can identify our app. Think of it like a badge that says "I am ReconShop, let my users in."
+   > Follow first part of this video: https://www.youtube.com/watch?v=XgqCh2FwNVY
+
+   #### Step 5e: Connect Google to Supabase
+   1. Go back to your **Supabase Dashboard** → `Authentication` → `Providers` → `Google`.
+   2. Toggle the **Enabled** switch to ON.
+   3. Paste in:
+      - **Client ID:** (the `...apps.googleusercontent.com` value)
+      - **Client Secret:** (the `GOCSPX-...` value)
+   4. Click **"Save"**.
+
+   #### Step 5f: Test It (Quick Sanity Check)
+   1. Still in Supabase, go to `Authentication` → `Users`.
+   2. Open a new browser tab and go to:
+      ```
+      https://YOUR_PROJECT_ID.supabase.co/auth/v1/authorize?provider=google
+      ```
+   3. You should see the Google sign-in screen with your app name "ReconShop."
+   4. If you sign in, you'll be redirected and a new user should appear in the Supabase Users table.
+
+   > **⚠️ Common Gotcha:** If Google shows "Error 403: access_denied", your OAuth consent screen might still be in "Testing" mode. Go to `OAuth consent screen` → click **"PUBLISH APP"** to move it to production. This does NOT require Google review for basic scopes (email + profile).
+
+6. **(Optional)** Enable GitHub, Microsoft, etc. — The process is similar:
+   - Go to the provider's developer console (e.g., [GitHub Developer Settings](https://github.com/settings/developers)).
+   - Create an OAuth App with the same Supabase callback URL.
+   - Copy the Client ID and Secret into `Supabase > Authentication > Providers > [Provider Name]`.
 7. **Create a `profiles` table** in the Supabase SQL editor:
 
 ```sql
@@ -219,11 +293,11 @@ CREATE TRIGGER on_auth_user_created
 
 #### Acceptance Criteria:
 
-- [ ] Supabase project created and running.
-- [ ] Email/Password auth enabled.
-- [ ] Google OAuth configured and tested in Supabase dashboard.
-- [ ] `profiles` table created with RLS policies.
-- [ ] Environment variables saved locally in `.env.local`.
+- [x] Supabase project created and running.
+- [x] Email/Password auth enabled.
+- [x] Google OAuth configured and tested in Supabase dashboard.
+- [x] `profiles` table created with RLS policies.
+- [x] Environment variables saved locally in `.env.local`.
 
 ---
 
@@ -279,11 +353,11 @@ CREATE TRIGGER on_auth_user_created
 
 #### Acceptance Criteria:
 
-- [ ] `@supabase/supabase-js` installed.
-- [ ] `.env.local` created with Supabase keys (and added to `.gitignore`).
-- [ ] Supabase client singleton created in `src/lib/supabase.ts`.
-- [ ] Auth context created with login, register, logout, and session recovery.
-- [ ] Auth context integrated into the root layout.
+- [x] `@supabase/supabase-js` installed.
+- [x] `.env.local` created with Supabase keys (and added to `.gitignore`).
+- [x] Supabase client singleton created in `src/lib/supabase.ts`.
+- [x] Auth context created with login, register, logout, and session recovery.
+- [x] Auth context integrated into the root layout.
 
 ---
 
@@ -505,5 +579,7 @@ That's it! Supabase's SDK is the only new dependency we need.
 ---
 
 **Task Created:** February 11, 2026
-**Status:** 🔜 Planning — Awaiting your approval to begin Phase 1.
+**Task Created:** February 11, 2026
+**Status:** 🚧 In Progress (Phases 1 & 2 Complete)
+**Priority:** High — Blocks Step 7 (Checkout) and Step 8 (Order History).
 **Priority:** High — Blocks Step 7 (Checkout) and Step 8 (Order History).

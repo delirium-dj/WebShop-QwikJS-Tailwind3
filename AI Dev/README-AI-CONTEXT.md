@@ -8,7 +8,7 @@ The `AI Dev` folder is the centralized "brain" for AI-assisted development on th
 
 | File                       | Purpose                                                                                                                                          |
 | :------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`AI.md`**                | **Primary Context Source.** Contains 1,200+ lines of architecture, components, types, and logic flow. This is the first file any AI should read. |
+| **`AI.md`**                | **Primary Context Source.** Contains 1,300+ lines of architecture, components, types, and logic flow. This is the first file any AI should read. |
 | **`update-ai-context.md`** | **Maintenance Guide.** Steps to take after completing a feature to ensure `AI.md` stays synchronized with the codebase.                          |
 | **`AI-QUICK-START.md`**    | **User Guide.** A fast reference for developers on how to leverage the AI Dev folder.                                                            |
 | **`AI-CONTEXT-SETUP.md`**  | **Configuration log.** A summary of what was implemented during the AI Dev setup process.                                                        |
@@ -17,12 +17,15 @@ The `AI Dev` folder is the centralized "brain" for AI-assisted development on th
 
 ## 🎯 Current Project State for AI
 
-The project has transitioned from a basic client-side demo to a professional **Server-Side Rendered (SSR)** application.
+The project has advanced to **Supabase Authentication integration** (Phases 1 & 2 complete).
 
-- **Data Source**: Switched from `mockProducts.ts` to the **FakeStore API** (`fakestoreapi.com`).
+- **Data Source**: FakeStore API (`fakestoreapi.com`) via `src/services/api/`.
 - **Fetching**: Implemented via Qwik City `routeLoader$`.
-- **Mapping**: Real-time product mapping and imaginary discount variety logic implemented in `src/utils/product-mapper.ts`.
-- **UI Rules**: Sticky elements, fixed aspect ratios (`object-contain`), and badge collision logic are fully documented in `AI.md`.
+- **Auth System**: Supabase Auth configured with Email/Password and OAuth support (Google, etc.)
+- **State Management**: Global `AuthContext` for user state + `CartContext` for shopping cart
+- **Filtering**: Reactive `useComputed$` for shop page with URL state synchronization
+- **Images**: Consolidated image utilities with AVIF/WebP optimization
+- **UI Rules**: Sticky elements, responsive aspect ratios, and badge collision logic fully documented in `AI.md`.
 
 ---
 
@@ -35,5 +38,5 @@ The project has transitioned from a basic client-side demo to a professional **S
 
 ---
 
-**Last Sync:** February 10, 2026  
-**Version:** 2.1 (Post-SSR Implementation)
+**Last Sync:** February 12, 2026  
+**Version:** 2.2 (Supabase Auth Phases 1&2 + Verified Project Structure)
