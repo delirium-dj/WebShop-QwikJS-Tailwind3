@@ -1,6 +1,6 @@
 // src/components/ui/Breadcrumb.tsx
-import { component$ } from '@builder.io/qwik';
-import { Link } from '@builder.io/qwik-city';
+import { component$ } from "@builder.io/qwik";
+import { Link } from "@builder.io/qwik-city";
 
 // Define the structure of a single breadcrumb link.
 type BreadcrumbItem = {
@@ -15,19 +15,23 @@ type BreadcrumbProps = {
 
 /**
  * Breadcrumb Component
- * Purpose: Provides a secondary navigation at the top of the page to help 
+ * Purpose: Provides a secondary navigation at the top of the page to help
  * users understand their location within the site hierarchy.
  */
 export const Breadcrumb = component$<BreadcrumbProps>(({ items }) => {
   return (
-    <nav aria-label="Breadcrumb" class="overflow-x-auto whitespace-nowrap scrollbar-hide">
-      <ol class="flex items-center text-xs md:text-sm font-medium">
+    <nav
+      id="breadcrumb-nav"
+      aria-label="Breadcrumb"
+      class="scrollbar-hide overflow-x-auto whitespace-nowrap"
+    >
+      <ol class="flex items-center text-xs font-medium md:text-sm">
         {items.map((item, index) => (
           <li key={index} class="flex items-center">
             {/* Show a separator icon (chevron) for every item except the first one. */}
             {index > 0 && (
               <svg
-                class="w-4 h-4 text-gray-300 mx-1 md:mx-2 flex-shrink-0"
+                class="mx-1 h-4 w-4 flex-shrink-0 text-gray-300 md:mx-2"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -38,17 +42,17 @@ export const Breadcrumb = component$<BreadcrumbProps>(({ items }) => {
                 />
               </svg>
             )}
-            
+
             {/* If the item has a href, render a Link. Otherwise, render a span for the current page. */}
             {item.href ? (
               <Link
                 href={item.href}
-                class="text-gray-400 hover:text-black transition-colors duration-200"
+                class="text-gray-400 transition-colors duration-200 hover:text-black"
               >
                 {item.label}
               </Link>
             ) : (
-              <span class="text-gray-900 font-extrabold truncate max-w-[150px] md:max-w-none">
+              <span class="max-w-[150px] truncate font-extrabold text-gray-900 md:max-w-none">
                 {item.label}
               </span>
             )}
@@ -58,4 +62,3 @@ export const Breadcrumb = component$<BreadcrumbProps>(({ items }) => {
     </nav>
   );
 });
-

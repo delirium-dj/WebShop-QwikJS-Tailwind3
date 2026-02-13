@@ -86,7 +86,9 @@ export const LoginForm = component$(() => {
     } catch (err) {
       console.error("Login error:", err);
       // Use global error from context or local fallback
-      error.value = auth.state.error || (err instanceof Error ? err.message : "Login failed");
+      error.value =
+        auth.state.error ||
+        (err instanceof Error ? err.message : "Login failed");
     } finally {
       isLoading.value = false;
     }
@@ -175,7 +177,12 @@ export const LoginForm = component$(() => {
         CRITICAL: 'preventdefault:submit' stops the browser's native form submit.
         Without this, Qwik's lazy-loaded handler never gets to execute.
       */}
-      <form preventdefault:submit onSubmit$={handleSubmit$} class="space-y-6">
+      <form
+        id="login-form"
+        preventdefault:submit
+        onSubmit$={handleSubmit$}
+        class="space-y-6"
+      >
         {/* Email Input Field */}
         <div>
           <label
@@ -185,7 +192,7 @@ export const LoginForm = component$(() => {
             Email Address
           </label>
           <input
-            id="email"
+            id="login-email-input"
             type="email"
             required
             autoComplete="email"

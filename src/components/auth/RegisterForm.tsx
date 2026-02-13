@@ -2,11 +2,11 @@
  * RegisterForm Component
  *
  * WHAT: This is the registration screen where new users sign up.
- * HOW: It uses "signals" to remember what the user types in each box, 
+ * HOW: It uses "signals" to remember what the user types in each box,
  * and calls the `auth.actions.register` function when the button is clicked.
- * 
- * JUNIOR TIP: 
- * We check passwords for strength (length, numbers, etc.) BEFORE sending them 
+ *
+ * JUNIOR TIP:
+ * We check passwords for strength (length, numbers, etc.) BEFORE sending them
  * to the server to give the user instant feedback.
  */
 
@@ -22,7 +22,7 @@ export const RegisterForm = component$(() => {
   /**
    * FORM FIELDS (Signals)
    * WHAT: `useSignal` creates a piece of data that the UI "watches".
-   * WHY: When the user types, the signal updates. When the signal updates, 
+   * WHY: When the user types, the signal updates. When the signal updates,
    * Qwik knows exactly which input box to refresh.
    */
   const fullName = useSignal("");
@@ -46,7 +46,6 @@ export const RegisterForm = component$(() => {
   // Navigation after registration is handled by AuthContext.register, not by this component
   const auth = useAuth();
 
-
   // ============================================
   // VALIDATION HELPERS
   // ============================================
@@ -56,11 +55,16 @@ export const RegisterForm = component$(() => {
    */
   const validatePassword = $((pwd: string): string[] => {
     const errors: string[] = [];
-    if (pwd.length < 8) errors.push("Password must be at least 8 characters long");
-    if (!/[A-Z]/.test(pwd)) errors.push("Password must contain at least one uppercase letter");
-    if (!/[a-z]/.test(pwd)) errors.push("Password must contain at least one lowercase letter");
-    if (!/[0-9]/.test(pwd)) errors.push("Password must contain at least one number");
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) errors.push("Password must contain at least one special character");
+    if (pwd.length < 8)
+      errors.push("Password must be at least 8 characters long");
+    if (!/[A-Z]/.test(pwd))
+      errors.push("Password must contain at least one uppercase letter");
+    if (!/[a-z]/.test(pwd))
+      errors.push("Password must contain at least one lowercase letter");
+    if (!/[0-9]/.test(pwd))
+      errors.push("Password must contain at least one number");
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd))
+      errors.push("Password must contain at least one special character");
     return errors;
   });
 
@@ -81,7 +85,10 @@ export const RegisterForm = component$(() => {
 
     // Client-side validation
     if (fullName.value.trim().length < 2) {
-      validationErrors.value = [...validationErrors.value, "Full name must be at least 2 characters"];
+      validationErrors.value = [
+        ...validationErrors.value,
+        "Full name must be at least 2 characters",
+      ];
     }
 
     const pwdErrors = await validatePassword(password.value);
@@ -90,7 +97,10 @@ export const RegisterForm = component$(() => {
     }
 
     if (password.value !== confirmPassword.value) {
-      validationErrors.value = [...validationErrors.value, "Passwords do not match"];
+      validationErrors.value = [
+        ...validationErrors.value,
+        "Passwords do not match",
+      ];
     }
 
     if (validationErrors.value.length > 0) return;
@@ -104,7 +114,7 @@ export const RegisterForm = component$(() => {
        * 1. Calling Supabase signUp
        * 2. Creating profile in our DB (non-critical)
        * 3. Navigating to '/' (if auto-confirmed) or '/auth/verify-email' (if confirmation needed)
-       * 
+       *
        * If it throws, we catch the error below and display it.
        */
       await auth.actions.register({
@@ -119,7 +129,11 @@ export const RegisterForm = component$(() => {
     } catch (err) {
       console.error("Registration error:", err);
       // Display the error from Auth Context (set by register action) or use a local fallback
-      error.value = auth.state.error || (err instanceof Error ? err.message : "Registration failed. Please try again.");
+      error.value =
+        auth.state.error ||
+        (err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again.");
     } finally {
       isLoading.value = false;
     }
@@ -219,7 +233,12 @@ export const RegisterForm = component$(() => {
         the handler is lazy-loaded — the browser may fire native submit before it runs.
         This attribute tells Qwik to prevent the default at the framework level FIRST.
       */}
-      <form preventdefault:submit onSubmit$={handleSubmit$} class="space-y-6">
+      <form
+        id="register-form"
+        preventdefault:submit
+        onSubmit$={handleSubmit$}
+        class="space-y-6"
+      >
         {/* Full Name Input */}
         <div>
           <label
@@ -229,7 +248,7 @@ export const RegisterForm = component$(() => {
             Full Name
           </label>
           <input
-            id="fullName"
+            id="register-fullname-input"
             type="text"
             required
             autoComplete="name"

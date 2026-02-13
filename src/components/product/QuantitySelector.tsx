@@ -1,14 +1,14 @@
 // src/components/product/QuantitySelector.tsx
-import { component$, useSignal, $, type PropFunction } from '@builder.io/qwik';
+import { component$, useSignal, $, type PropFunction } from "@builder.io/qwik";
 
 // Configuration for the QuantitySelector
 // Note: Callback functions in Qwik props must use PropFunction and end with $
 // for proper serialization and "Lazy Loading".
 type QuantitySelectorProps = {
   initialQuantity?: number; // Starting value (default: 1)
-  max?: number;             // Upper limit (e.g., stock count)
-  min?: number;             // Lower limit (usually 1)
-  onChange$: PropFunction<(quantity: number) => void>; 
+  max?: number; // Upper limit (e.g., stock count)
+  min?: number; // Lower limit (usually 1)
+  onChange$: PropFunction<(quantity: number) => void>;
 };
 
 /**
@@ -50,38 +50,41 @@ export const QuantitySelector = component$<QuantitySelectorProps>(
     });
 
     return (
-      <div class="flex items-center border border-gray-200 rounded-xl w-fit overflow-hidden shadow-sm">
+      <div class="flex w-fit items-center overflow-hidden rounded-xl border border-gray-200 shadow-sm">
         {/* Decrease Button */}
         <button
+          id="qty-decrease-btn"
           onClick$={handleDecrease}
           disabled={quantity.value <= min}
-          class="px-5 py-2 text-xl font-bold bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors border-r border-gray-100"
+          class="border-r border-gray-100 bg-white px-5 py-2 text-xl font-bold transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
           aria-label="Decrease quantity"
         >
           −
         </button>
-        
+
         {/* Value Display / Input */}
         <input
+          id="qty-input"
           type="number"
           value={quantity.value}
           onInput$={handleInputChange}
           min={min}
           max={max}
-          class="w-16 text-center py-2 font-black text-gray-900 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          class="w-16 py-2 text-center font-black text-gray-900 [appearance:textfield] focus:outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           aria-label="Quantity"
         />
-        
+
         {/* Increase Button */}
         <button
+          id="qty-increase-btn"
           onClick$={handleIncrease}
           disabled={quantity.value >= max}
-          class="px-5 py-2 text-xl font-bold bg-white hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors border-l border-gray-100"
+          class="border-l border-gray-100 bg-white px-5 py-2 text-xl font-bold transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30"
           aria-label="Increase quantity"
         >
           +
         </button>
       </div>
     );
-  }
+  },
 );

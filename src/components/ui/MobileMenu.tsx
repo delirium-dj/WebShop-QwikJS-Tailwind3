@@ -73,6 +73,7 @@ export const MobileMenu = component$<MobileMenuProps>(
             On large desktop screens, the standard navigation is shown instead.
       */}
         <button
+          id="mobile-menu-toggle"
           onClick$={toggleMenu}
           class="relative z-50 p-2 text-gray-700 transition-colors hover:text-black lg:hidden"
           aria-label="Toggle menu"
@@ -111,6 +112,7 @@ export const MobileMenu = component$<MobileMenuProps>(
       */}
         {isOpen.value && (
           <div
+            id="mobile-menu-overlay"
             onClick$={closeMenu}
             class="fixed bottom-0 left-0 right-0 top-0 z-40 h-[100vh] w-[100vw] bg-black bg-opacity-50 transition-opacity duration-300 lg:hidden"
             style="margin-left: calc(50% - 50vw);"
@@ -126,6 +128,7 @@ export const MobileMenu = component$<MobileMenuProps>(
             or fully visible based on our 'isOpen' state.
       */}
         <div
+          id="mobile-menu-drawer"
           class={`fixed right-0 top-0 z-50 h-full w-80 transform bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
             isOpen.value ? "translate-x-0" : "translate-x-full"
           }`}
@@ -134,6 +137,7 @@ export const MobileMenu = component$<MobileMenuProps>(
           <div class="flex items-center justify-between border-b border-gray-200 p-6">
             <h2 class="text-xl font-bold text-gray-900">Menu</h2>
             <button
+              id="mobile-menu-close-btn"
               onClick$={closeMenu}
               class="p-2 text-gray-500 transition-colors hover:text-gray-900"
               aria-label="Close menu"
@@ -224,7 +228,9 @@ export const MobileMenu = component$<MobileMenuProps>(
                           auth.state.user.email?.split("@")[0] ||
                           "User"}
                       </p>
-                      <p class="truncate text-gray-600">{auth.state.user.email}</p>
+                      <p class="truncate text-gray-600">
+                        {auth.state.user.email}
+                      </p>
                     </div>
 
                     {/* Account Links */}

@@ -1,7 +1,7 @@
 // src/components/cart/AddToCartButton.tsx
-import { component$, useSignal, $ } from '@builder.io/qwik';
-import { useCart } from '~/contexts/cart';
-import { useToast } from '~/contexts/toast';
+import { component$, useSignal, $ } from "@builder.io/qwik";
+import { useCart } from "~/contexts/cart";
+import { useToast } from "~/contexts/toast";
 
 /**
  * Product Type for Add to Cart Button
@@ -17,24 +17,24 @@ type AddToCartButtonProps = {
     selectedSize?: string;
     selectedColor?: string;
   };
-  quantity?: number;  // How many to add (default: 1)
-  variant?: 'primary' | 'secondary' | 'outline';  // Visual style
-  size?: 'sm' | 'md' | 'lg';  // Button size
-  fullWidth?: boolean;  // Should button take full width?
-  disabled?: boolean;  // Is button disabled (e.g., out of stock)?
-  showIcon?: boolean;  // Show cart icon?
-  onSuccess?: () => void;  // Optional callback after successful add
+  quantity?: number; // How many to add (default: 1)
+  variant?: "primary" | "secondary" | "outline"; // Visual style
+  size?: "sm" | "md" | "lg"; // Button size
+  fullWidth?: boolean; // Should button take full width?
+  disabled?: boolean; // Is button disabled (e.g., out of stock)?
+  showIcon?: boolean; // Show cart icon?
+  onSuccess?: () => void; // Optional callback after successful add
 };
 
 /**
  * Enhanced Add to Cart Button Component
- * 
+ *
  * This is a "smart" button that handles the entire add-to-cart flow:
  * 1. Shows a loading spinner while adding
  * 2. Displays a success checkmark when done
  * 3. Shows a toast notification with product details
  * 4. Prevents duplicate clicks during loading
- * 
+ *
  * Junior Dev Note:
  * This component demonstrates "optimistic UI" - we show visual feedback immediately
  * even before the cart state finishes updating, making the app feel faster.
@@ -43,8 +43,8 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
   ({
     product,
     quantity = 1,
-    variant = 'primary',
-    size = 'md',
+    variant = "primary",
+    size = "md",
     fullWidth = false,
     disabled = false,
     showIcon = true,
@@ -53,10 +53,10 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
     // Access our global cart and toast systems
     const cart = useCart();
     const toast = useToast();
-    
+
     // Reactive state for button animations
-    const isLoading = useSignal(false);  // True while adding to cart
-    const isSuccess = useSignal(false);  // True briefly after successful add
+    const isLoading = useSignal(false); // True while adding to cart
+    const isSuccess = useSignal(false); // True briefly after successful add
 
     /**
      * Handle Add to Cart Click
@@ -85,7 +85,7 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
             selectedSize: product.selectedSize,
             selectedColor: product.selectedColor,
           },
-          quantity
+          quantity,
         );
 
         // Show success state
@@ -96,15 +96,15 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
           product.selectedSize || product.selectedColor
             ? ` (${[product.selectedSize, product.selectedColor]
                 .filter(Boolean)
-                .join(', ')})`
-            : '';
-        
+                .join(", ")})`
+            : "";
+
         // Show toast notification with product details
         // eslint-disable-next-line qwik/valid-lexical-scope
         toast.showToast(
-          `${quantity > 1 ? `${quantity}x ` : ''}${product.title}${variantText} added to cart`,
-          'success',
-          3000
+          `${quantity > 1 ? `${quantity}x ` : ""}${product.title}${variantText} added to cart`,
+          "success",
+          3000,
         );
 
         // Call success callback if provided
@@ -118,8 +118,8 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
       } catch (error) {
         // Show error toast
         // eslint-disable-next-line qwik/valid-lexical-scope
-        toast.showToast('Failed to add item to cart', 'error');
-        console.error('Add to cart error:', error);
+        toast.showToast("Failed to add item to cart", "error");
+        console.error("Add to cart error:", error);
       } finally {
         isLoading.value = false;
       }
@@ -127,30 +127,32 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
 
     // Button size classes
     const sizeClasses = {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
+      sm: "px-3 py-1.5 text-sm",
+      md: "px-4 py-2 text-base",
+      lg: "px-6 py-3 text-lg",
     };
 
     // Button variant classes
     const variantClasses = {
-      primary: 'bg-black text-white hover:bg-gray-800 disabled:bg-gray-300',
-      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100',
+      primary: "bg-black text-white hover:bg-gray-800 disabled:bg-gray-300",
+      secondary:
+        "bg-gray-200 text-gray-900 hover:bg-gray-300 disabled:bg-gray-100",
       outline:
-        'bg-transparent border-2 border-black text-black hover:bg-black hover:text-white disabled:border-gray-300 disabled:text-gray-300',
+        "bg-transparent border-2 border-black text-black hover:bg-black hover:text-white disabled:border-gray-300 disabled:text-gray-300",
     };
 
     const baseClasses = `
       inline-flex items-center justify-center gap-2 font-semibold rounded-md
       transition-all duration-200 disabled:cursor-not-allowed
-      ${fullWidth ? 'w-full' : ''}
+      ${fullWidth ? "w-full" : ""}
       ${sizeClasses[size]}
       ${variantClasses[variant]}
-      ${isSuccess.value ? 'scale-95' : 'scale-100'}
+      ${isSuccess.value ? "scale-95" : "scale-100"}
     `;
 
     return (
       <button
+        id="add-to-cart-main-btn"
         onClick$={handleAddToCart}
         disabled={disabled || isLoading.value}
         class={baseClasses}
@@ -159,7 +161,7 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
         {/* Loading Spinner */}
         {isLoading.value && (
           <svg
-            class="animate-spin h-5 w-5"
+            class="h-5 w-5 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -215,14 +217,14 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
         {/* Button Text */}
         <span>
           {isLoading.value
-            ? 'Adding...'
+            ? "Adding..."
             : isSuccess.value
-            ? 'Added!'
-            : disabled
-            ? 'Out of Stock'
-            : 'Add to Cart'}
+              ? "Added!"
+              : disabled
+                ? "Out of Stock"
+                : "Add to Cart"}
         </span>
       </button>
     );
-  }
+  },
 );

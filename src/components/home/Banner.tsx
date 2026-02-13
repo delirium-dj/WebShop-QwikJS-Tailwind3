@@ -2,7 +2,7 @@ import { component$ } from "@builder.io/qwik";
 
 export const Banner = component$(() => {
   return (
-    <section class="relative my-20 h-[60vh] w-full">
+    <section id="banner-section" class="relative my-20 h-[60vh] w-full">
       <picture>
         <img
           src="/images/banner/banner.jpg"
@@ -22,7 +22,10 @@ export const Banner = component$(() => {
           Check out all the trends you don’t want to miss this season.
         </p>
 
-        <button class="rounded-md bg-white px-8 py-3 text-black transition hover:bg-gray-200">
+        <button
+          id="banner-cta-btn"
+          class="rounded-md bg-white px-8 py-3 text-black transition hover:bg-gray-200"
+        >
           Shop Collection
         </button>
       </div>

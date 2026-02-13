@@ -75,6 +75,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
           {images.length > 1 && (
             <>
               <button
+                id="gallery-prev-btn"
                 onClick$={handlePrevious}
                 class="absolute left-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white/90 p-2.5 opacity-0 shadow-md transition-all duration-200 hover:scale-110 hover:bg-white group-hover:opacity-100"
                 aria-label="Previous image"
@@ -94,6 +95,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
                 </svg>
               </button>
               <button
+                id="gallery-next-btn"
                 onClick$={handleNext}
                 class="absolute right-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white/90 p-2.5 opacity-0 shadow-md transition-all duration-200 hover:scale-110 hover:bg-white group-hover:opacity-100"
                 aria-label="Next image"
@@ -128,6 +130,7 @@ export const ProductGallery = component$<ProductGalleryProps>(
           <div class="grid grid-cols-4 gap-4">
             {images.map((image, index) => (
               <button
+                id={`gallery-thumbnail-${index}`}
                 key={index}
                 onClick$={() => handleThumbnailClick(index)}
                 class={`relative aspect-square overflow-hidden rounded-md border-2 transition-all duration-200 ${

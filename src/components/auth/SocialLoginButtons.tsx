@@ -106,9 +106,7 @@ export const SocialLoginButtons = component$<SocialLoginButtonsProps>(
          * That page needs to handle the OAuth callback (we'll create it next).
          */
         const { loginWithProvider } = auth.actions;
-        await loginWithProvider(
-          provider as any,
-        );
+        await loginWithProvider(provider as any);
 
         /**
          * Note: If this succeeds, the user will be redirected away from this page,
@@ -166,6 +164,7 @@ export const SocialLoginButtons = component$<SocialLoginButtonsProps>(
         The button uses Google's brand colors (white background with blue text).
       */}
         <button
+          id="google-login-btn"
           type="button"
           onClick$={() => handleSocialAuth$("google")}
           disabled={loadingProvider.value !== null}

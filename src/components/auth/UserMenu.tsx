@@ -81,6 +81,7 @@ export const UserMenu = component$(() => {
         - Shows either an avatar image or initials fallback
       */}
       <button
+        id="user-menu-toggle"
         onClick$={toggleDropdown}
         class="flex items-center space-x-2 rounded-lg px-3 py-2 transition-colors hover:bg-gray-100"
         aria-label="User menu"
@@ -138,7 +139,11 @@ export const UserMenu = component$(() => {
             - Semi-transparent background that covers the entire screen
             - Clicking it closes the dropdown
           */}
-          <div class="fixed inset-0 z-30" onClick$={closeDropdown} />
+          <div
+            id="user-menu-overlay"
+            class="fixed inset-0 z-30"
+            onClick$={closeDropdown}
+          />
 
           {/* 
             Dropdown Menu Items
@@ -146,7 +151,10 @@ export const UserMenu = component$(() => {
             - 'right-0': Aligns to the right of the button
             - 'mt-1': Small gap between button and menu
           */}
-          <div class="absolute right-0 z-40 mt-1 w-48 rounded-lg bg-white py-1 shadow-lg">
+          <div
+            id="user-menu-dropdown"
+            class="absolute right-0 z-40 mt-1 w-48 rounded-lg bg-white py-1 shadow-lg"
+          >
             {/* 
               User Info Header
               - Shows full name and email
@@ -165,6 +173,7 @@ export const UserMenu = component$(() => {
             <div class="py-1">
               {/* My Account */}
               <Link
+                id="user-menu-account-link"
                 href="/account"
                 onClick$={closeDropdown}
                 class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
@@ -187,6 +196,7 @@ export const UserMenu = component$(() => {
 
               {/* My Orders */}
               <Link
+                id="user-menu-orders-link"
                 href="/account/orders"
                 onClick$={closeDropdown}
                 class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
@@ -209,6 +219,7 @@ export const UserMenu = component$(() => {
 
               {/* Wishlist */}
               <Link
+                id="user-menu-wishlist-link"
                 href="/account/wishlist"
                 onClick$={closeDropdown}
                 class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
@@ -234,6 +245,7 @@ export const UserMenu = component$(() => {
 
               {/* Logout Button */}
               <button
+                id="user-menu-logout-btn"
                 onClick$={auth.actions.logout}
                 class="flex w-full items-center space-x-3 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
               >

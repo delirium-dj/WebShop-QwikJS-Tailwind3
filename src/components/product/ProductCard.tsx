@@ -142,6 +142,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
 
   return (
     <div
+      id={`product-card-${id}`}
       class={`product-card group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-xl ${className} flex h-full flex-col`}
     >
       {/* Product link wrapper */}
@@ -180,6 +181,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
 
           {/* Wishlist button - Moved to bottom-right of image section */}
           <button
+            id={`wishlist-btn-${id}`}
             class="absolute bottom-2 right-2 z-20 rounded-full bg-white bg-opacity-80 p-2 shadow-md transition-all hover:scale-110 hover:bg-opacity-100 active:scale-95"
             onClick$={(e) => {
               e.preventDefault();
@@ -275,6 +277,7 @@ export const ProductCard = component$<ProductCardProps>((props) => {
             {/* Add to cart button */}
             {showAddToCart && isAvailable && (
               <button
+                id={`add-to-cart-btn-${id}`}
                 class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 active:scale-95"
                 onClick$={handleAddToCart$}
               >

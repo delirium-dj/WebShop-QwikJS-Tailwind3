@@ -35,12 +35,15 @@ export const Header = component$(() => {
   return (
     // 'sticky top-0': Keeps the header locked at the top of the browser window.
     // 'z-40': Ensures it stays above page content but below heavy overlays like the mobile drawer.
-    <header class="sticky top-0 z-40 w-full bg-white shadow-sm">
+    <header
+      id="main-header"
+      class="sticky top-0 z-40 w-full bg-white shadow-sm"
+    >
       <div class="container mx-auto px-4">
         {/* We use 'justify-between' to push the Logo to the left and everything else to the right. */}
         <div class="flex h-16 items-center justify-between">
           {/* Logo Section */}
-          <Link href="/" class="flex items-center space-x-2">
+          <Link id="header-logo" href="/" class="flex items-center space-x-2">
             <span class="text-2xl font-bold text-gray-900">ReconShop</span>
           </Link>
 
@@ -56,6 +59,7 @@ export const Header = component$(() => {
                   showing it only from 'medium' (tablet) sizes up.
             */}
             <button
+              id="header-search-btn"
               class="hidden p-2 text-gray-700 transition-colors hover:text-black md:block"
               aria-label="Search"
             >
