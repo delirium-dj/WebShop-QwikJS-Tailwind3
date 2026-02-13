@@ -24,7 +24,6 @@
 
 import { component$, useVisibleTask$ } from '@builder.io/qwik';
 import { useNavigate, type DocumentHead } from '@builder.io/qwik-city';
-import { useAuth } from '~/contexts/auth';
 
 /**
  * Callback Page Component
@@ -34,7 +33,6 @@ import { useAuth } from '~/contexts/auth';
  */
 export default component$(() => {
   const nav = useNavigate();
-  const auth = useAuth();
 
   /**
    * useVisibleTask$ runs client-side code when the component becomes visible
@@ -70,11 +68,6 @@ export default component$(() => {
 
       if (error) {
         console.error('OAuth error:', error, errorDescription);
-        
-        /**
-         * Redirect to login page with error message
-         * We use URL parameters to pass the error to the login page
-         */
         await nav(
           `/auth/login?error=${encodeURIComponent(errorDescription || 'Authentication failed')}`
         );
@@ -82,67 +75,59 @@ export default component$(() => {
       }
 
       /**
-       * Extract the access token from URL
-       * Different OAuth flows put it in different places:
-       * - Implicit flow: in the hash (#access_token=xxx)
-       * - Authorization code flow: Supabase handles it automatically
+       * IMPORTANT FIX: Instead of a single 500ms timeout, we poll Supabase
+       * directly using supabase.auth.getSession() in a loop.
+       *
+       * WHY? The old code waited 500ms and then checked auth.state.user.
+       * But Google OAuth often takes longer than 500ms for Supabase to:
+       *   1. Exchange the OAuth code for tokens
+       *   2. Create or find the user record
+       *   3. Fire onAuthStateChange (which updates our AuthContext)
+       *
+       * If the 500ms expired before step 3 finished, auth.state.user was
+       * still null, and the user got a false "Authentication failed" error.
+       *
+       * JUNIOR TIP: Think of this like checking your mailbox every 30 seconds
+       * instead of checking once after 30 seconds and giving up.
        */
-      const accessToken = hashParams.get('access_token');
-      const refreshToken = hashParams.get('refresh_token');
+      const { supabase } = await import('~/lib/supabase');
 
-      /**
-       * If we have tokens in the URL, Supabase has already set the session
-       * This happens automatically with Supabase's SDK
-       * 
-       * The auth context should now have the user data
-       */
-      if (accessToken && refreshToken) {
-        console.log('OAuth tokens found, session should be set');
+      // Poll up to 10 times (every 500ms = max 5 seconds total)
+      const MAX_ATTEMPTS = 10;
+      let session = null;
+
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          session = data.session;
+          console.log('OAuth session confirmed on attempt', attempt + 1);
+          break;
+        }
+        // Wait 500ms before next check
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
-      /**
-       * Give Supabase a moment to process the session
-       * This ensures auth.user.value is populated before we check it
-       */
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (session) {
+        console.log('User logged in via OAuth:', session.user.email);
 
-      /**
-       * Check if we're logged in
-       * If auth.state.user exists, the OAuth login was successful
-       */
-      if (auth.state.user) {
-        console.log('User logged in via OAuth:', auth.state.user.email);
-        
         /**
-         * Check for a redirect URL
-         * Before OAuth, we might have stored where the user was trying to go
-         * Example: User tries to access /account → redirected to login → 
+         * Check for a redirect URL stored before OAuth redirect
+         * Example: User tries to access /account → redirected to login →
          *          login with Google → return to /account
          */
         const redirectTo = sessionStorage.getItem('auth_redirect') || '/';
         sessionStorage.removeItem('auth_redirect');
-        
+
         await nav(redirectTo);
       } else {
         /**
-         * If we're not logged in at this point, something went wrong
-         * This could happen if:
-         * - The OAuth session wasn't set properly
-         * - The user's email isn't verified (if required)
-         * - There was a network issue
-         * 
-         * Redirect to login with an error
+         * If we still don't have a session after all attempts, something
+         * genuinely went wrong (network issue, revoked tokens, etc.)
          */
-        console.error('OAuth callback completed but no user session found');
-        await nav('/auth/login?error=Authentication failed. Please try again.');
+        console.error('OAuth callback: no session found after polling');
+        await nav('/auth/login?error=' + encodeURIComponent('Authentication failed. Please try again.'));
       }
     },
-    /**
-     * Strategy options:
-     * - 'eager': Run as soon as possible (what we want for auth)
-     * - 'visible': Run when component is visible (default)
-     * - 'idle': Run when browser is idle
-     */
     { strategy: 'document-ready' }
   );
 
