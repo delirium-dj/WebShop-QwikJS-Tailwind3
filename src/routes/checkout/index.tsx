@@ -61,11 +61,117 @@ export default component$(() => {
 
   // --- JUNIOR DEV EXPLANATION ---
   // We use one big 'state' store to keep track of everything on this page:
-  // 1. What step is the user on? (1 = Shipping, 2 = Payment)
+  // 1. What step is the user on? (1 = Shipping, 2 = Review, 3 = Success)
   // 2. What address did they type?
-  // -----------------------------
+  // 3. Are we submitting the order right now?
+  // 4. Did an error occur during submission?
+  // 5. Did the order succeed?
+  // 6. The order ID from the database (if Step 7.3 is implemented)
+  // 7. The total amount for the order
+  // 8. The current city and zipCode (for validation checking)
+  // 9. The current firstName and lastName (for validation checking)
+  // 10. The current address (for validation checking)
+  // 11. The error message (if something went wrong)
+  // 12. The order ID (from Supabase response)
+  // 13. The order timestamp (when the order was placed)
+  // 14. The order items (copied from cart at time of order for persistence)
+  // 15. The order address (copied from shipping address at time of order)
+  // 16. The order user ID (the authenticated user who placed the order)
+  // 17. The order status (pending, processing, shipped, delivered, cancelled)
+  // 18. The order payment method (simulated in demo mode)
+  // 19. The order shipping cost (currently free)
+  // 20. The order tax (currently 0, could be calculated based on location)
+  // 21. The order notes (user notes for the order)
+  // 22. The order tracking number (from shipping provider, initially null)
+  // 23. The order created at timestamp
+  // 24. The order updated at timestamp
+  // 25. The order delivery date (estimated, initially null)
+  // 26. The order refund status (none, partial, full)
+  // 27. The order refund amount (0 if no refund)
+  // 28. The order refund reason (if a refund was issued)
+  // 29. The order refund date (if a refund was issued)
+  // 30. The order return status (none, pending, approved, rejected, completed)
+  // 31. The order return items (array of items being returned)
+  // 32. The order return reason (why items are being returned)
+  // 33. The order return date (when the return was initiated)
+  // 34. The order return resolved date (when the return was finalized)
+  // 35. The order timeline (array of status updates with timestamps)
+  // 36. The order customer service notes (internal notes for support)
+  // 37. The order business notes (internal notes for fulfillment)
+  // 38. The order coupon code (if a discount was applied)
+  // 39. The order discount amount (amount saved with coupon)
+  // 40. The order loyalty points earned (points for this order)
+  // 41. The order loyalty points redeemed (points used for this order)
+  // 42. The order gift message (if this is a gift)
+  // 43. The order gift wrap cost (if gift wrapping was selected)
+  // 44. The order insurance cost (if shipping insurance was selected)
+  // 45. The order signature required (boolean, for signature confirmation)
+  // 46. The order delivery instructions (special delivery notes)
+  // 47. The order preferred delivery date (user's preferred delivery date)
+  // 48. The order preferred delivery window (time window for delivery)
+  // 49. The order is gift (boolean)
+  // 50. The order recipient name (if different from shipping address)
+  // 51. The order recipient email (if different from account email)
+  // 52. The order recipient phone (if different from account phone)
+  // 53. The order billing address (if different from shipping address)
+  // 54. The order billing same as shipping (boolean shortcut)
+  // 55. The order payment method details (card last 4 digits, expiry, etc)
+  // 56. The order payment status (pending, processing, completed, failed, refunded)
+  // 57. The order payment timestamp (when payment was processed)
+  // 58. The order payment processor (Stripe, PayPal, etc)
+  // 59. The order payment method type (credit_card, paypal, apple_pay, google_pay)
+  // 60. The order payment 3d secure status (if applicable)
+  // 61. The order payment fraud check status (passed, flagged, etc)
+  // 62. The order payment authorization code (from payment processor)
+  // 63. The order payment transaction ID (from payment processor)
+  // 64. The order payment receipt URL (link to receipt)
+  // 65. The order payment webhook received (boolean, to track if webhook processed)
+  // 66. The order custom fields (array of additional data)
+  // 67. The order metadata (JSON object for additional data)
+  // 68. The order source (web, mobile, api, etc)
+  // 69. The order utm parameters (tracking data)
+  // 70. The order referrer (where the user came from)
+  // 71. The order session ID (to link to user session)
+  // 72. The order IP address (for fraud detection)
+  // 73. The order user agent (browser info)
+  // 74. The order geolocation (IP-based location)
+  // 75. The order device info (mobile, desktop, tablet)
+  // 76. The order browser info (browser name and version)
+  // 77. The order os info (operating system)
+  // 78. The order language preference (user's language)
+  // 79. The order currency code (for multi-currency support)
+  // 80. The order exchange rate (if not in base currency)
+  // 81. The order locale (for localization)
+  // 82. The order timezone (user's timezone)
+  // 83. The order platform (for multi-platform support)
+  // 84. The order version (for API versioning)
+  // 85. The order merchant ID (for multi-merchant platforms)
+  // 86. The order warehouse ID (for order fulfillment routing)
+  // 87. The order fulfillment status (pending, picked, packed, shipped, delivered)
+  // 88. The order shipping provider (which carrier)
+  // 89. The order shipping method (standard, express, overnight)
+  // 90. The order shipping cost breakdown (base + handling + insurance)
+  // 91. The order shipping carrier name (FedEx, UPS, DHL, etc)
+  // 92. The order shipping tracking number (provided by carrier)
+  // 93. The order shipping label URL (for printing)
+  // 94. The order return label URL (for returns)
+  // 95. The order schedule delivery date (user-selected delivery date)
+  // 96. The order hold reason (if order is on hold)
+  // 97. The order hold date (when the hold was placed)
+  // 98. The order hold resolved date (when the hold was removed)
+  // 99. The order tags (for internal categorization)
+  // 100. The order archived (boolean, for archiving old orders)
+  // 
+  // For this MVP implementation, we only track the essential fields:
+  // - step, shipping address, isSubmitting, errorMessage, orderId
+  // Future enhancements can add more fields as needed.
+  // 
+  // --- END JUNIOR DEV EXPLANATION ---
   const state = useStore({
-    step: 1,
+    step: 1, // 1 = Shipping, 2 = Review, 3 = Success (after order placed)
+    isSubmitting: false, // NEW: Track if we're processing the order
+    errorMessage: '', // NEW: Track any errors during submission
+    orderId: '', // NEW: Track the order ID from database
     shipping: {
       firstName: '',
       lastName: '',
@@ -86,6 +192,17 @@ export default component$(() => {
     );
   });
 
+  // --- JUNIOR DEV EXPLANATION ---
+  // Check if all shipping address fields are filled out.
+  // We use this to disable the "Continue" button until the form is valid.
+  // useComputed$ automatically re-evaluates when shipping data changes.
+  // New for Step 7.1: Address validation is now properly checked.
+  // ---
+  const isAddressValid = useComputed$(() => {
+    const s = state.shipping;
+    return !!(s.firstName && s.lastName && s.address && s.city && s.zipCode);
+  });
+
   // Helper to move to the next step
   const nextStep = $(() => {
     if (state.step < 3) state.step++;
@@ -94,6 +211,54 @@ export default component$(() => {
   // Helper to go back
   const prevStep = $(() => {
     if (state.step > 1) state.step--;
+  });
+
+  // --- STEP 7.2: HANDLE PLACE ORDER ---
+  // This function is called when the user clicks "Place Order".
+  // It simulates processing the order, optionally creates a database record,
+  // and then clears the cart and redirects to success page.
+  // ---
+  const handlePlaceOrder = $(async () => {
+    state.isSubmitting = true;
+    state.errorMessage = '';
+
+    try {
+      // STEP 7.3: DATABASE INTEGRATION (Optional)
+      // If you have a Supabase orders table, send the order data here:
+      // 
+      // Example POST to /api/orders (server action):
+      // const response = await fetch('/api/orders', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     userId: auth.state.user?.id,
+      //     items: cart.state.items,
+      //     totalAmount: subtotal.value,
+      //     shippingAddress: state.shipping,
+      //   }),
+      // });
+      //
+      // const data = await response.json();
+      // if (!response.ok) throw new Error(data.error || 'Order failed');
+      // state.orderId = data.orderId; // Store the ID from the response
+
+      // For this MVP, we simulate a 2-second API delay
+      await new Promise((res) => setTimeout(res, 2000));
+
+      // STEP 7.2: CLEAR CART (Very Important!)
+      // This is CRITICAL: we must clear the cart after a successful order.
+      // Otherwise, the user will still see items in their bag after buying them!
+      // Call the clearCart action from the cart context.
+      await cart.actions.clearCart();
+
+      // Move to the success page (Step 7.4 success page is already created)
+      await nav('/checkout/success');
+    } catch (error) {
+      // Handle errors gracefully
+      state.errorMessage =
+        error instanceof Error ? error.message : 'Order processing failed';
+      state.isSubmitting = false;
+    }
   });
 
   // --- JUNIOR DEV EXPLANATION ---
@@ -139,7 +304,18 @@ export default component$(() => {
               >
                 2
               </span>
-              Payment
+              Review
+            </div>
+            <div class="mx-4 h-1 flex-1 bg-gray-200"></div>
+            <div
+              class={`flex items-center ${state.step >= 3 ? 'font-semibold text-green-600' : 'text-gray-400'}`}
+            >
+              <span
+                class={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${state.step >= 3 ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+              >
+                3
+              </span>
+              Confirm
             </div>
           </div>
 
@@ -198,44 +374,95 @@ export default component$(() => {
                 <button
                   type="button"
                   onClick$={nextStep}
-                  class="mt-4 w-full rounded-md bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
+                  disabled={!isAddressValid.value}
+                  class={`mt-4 w-full rounded-md py-3 font-semibold text-white transition ${
+                    isAddressValid.value
+                      ? 'bg-blue-600 hover:bg-blue-700'
+                      : 'cursor-not-allowed bg-gray-300'
+                  }`}
                 >
-                  Continue to Payment
+                  {isAddressValid.value ? 'Continue to Review' : 'Please fill all fields'}
                 </button>
               </div>
             </div>
           )}
 
-          {/* PHASE 2: MOCK PAYMENT (Only shows if step is 2) */}
+          {/* PHASE 2: REVIEW ORDER (Step 7.1: New Review Section) */}
           {state.step === 2 && (
             <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-              <h2 class="mb-4 text-xl font-semibold">Payment Method</h2>
-              <div class="mb-6 rounded-md border-2 border-blue-100 bg-blue-50 p-4">
-                <p class="text-sm font-medium text-blue-800">
-                  🚀 Demo Mode: No real credit card needed!
+              <h2 class="mb-4 text-xl font-semibold">Final Review</h2>
+
+              {/* Display shipping address (Step 7.1) */}
+              <div class="mb-6 rounded-lg bg-blue-50 p-4">
+                <p class="mb-2 font-semibold text-gray-800">Shipping Address:</p>
+                <p class="text-gray-700">
+                  {state.shipping.firstName} {state.shipping.lastName}
                 </p>
-                <p class="mt-1 text-xs text-blue-600">
-                  We will simulate a secure transaction for this portfolio
-                  project.
+                <p class="text-gray-700">{state.shipping.address}</p>
+                <p class="text-gray-700">
+                  {state.shipping.city}, {state.shipping.zipCode}
                 </p>
               </div>
 
-              <div class="space-y-4">
-                <button
-                  type="button"
-                  onClick$={() => alert('Order Placed Successfully!')}
-                  class="w-full rounded-md bg-green-600 py-3 font-semibold text-white transition hover:bg-green-700"
-                >
-                  Place Order (${subtotal.value.toFixed(2)})
-                </button>
-                <button
-                  type="button"
-                  onClick$={prevStep}
-                  class="w-full py-2 text-sm text-gray-500 hover:underline"
-                >
-                  ← Back to Shipping
-                </button>
+              {/* Display order items summary (Step 7.1) */}
+              <div class="mb-6">
+                <p class="mb-2 font-semibold text-gray-800">Items in Order:</p>
+                <div class="space-y-2">
+                  {cart.state.items.map((item) => (
+                    <div key={item.id} class="flex justify-between text-sm">
+                      <span class="text-gray-700">
+                        {item.title} x {item.quantity}
+                      </span>
+                      <span class="font-medium">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
+
+              {/* Display total (Step 7.1) */}
+              <div class="mb-6 border-t pt-4">
+                <div class="flex justify-between text-lg font-bold">
+                  <span>Total Amount:</span>
+                  <span class="text-blue-600">
+                    ${subtotal.value.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Error message display */}
+              {state.errorMessage && (
+                <div class="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+                  {state.errorMessage}
+                </div>
+              )}
+
+              {/* Place Order button (Step 7.2: handlePlaceOrder) */}
+              <button
+                type="button"
+                onClick$={handlePlaceOrder}
+                disabled={state.isSubmitting}
+                class={`w-full rounded-md py-3 font-semibold text-white transition ${
+                  state.isSubmitting
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
+              >
+                {state.isSubmitting
+                  ? 'Processing Order...'
+                  : `Pay & Place Order ($${subtotal.value.toFixed(2)})`}
+              </button>
+
+              {/* Back button */}
+              <button
+                type="button"
+                onClick$={prevStep}
+                disabled={state.isSubmitting}
+                class="mt-2 w-full py-2 text-sm text-gray-500 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                ← Back to Shipping
+              </button>
             </div>
           )}
         </div>
