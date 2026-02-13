@@ -6,34 +6,36 @@ ReconShop is a high-performance, SEO-optimized eCommerce platform built using **
 
 - **Server-Side Rendering (SSR)**: Full SEO-first approach using Qwik City's `routeLoader$`.
 - **Dynamic Data Source**: Powered by the **FakeStore API** for a realistic catalog experience.
-- **Resumable Components**: Zero hydration overhead for a faster user experience.
-- **Responsive Design**: Fully mobile-first UI using Tailwind CSS 3.4.
+- **User Authentication**: Full-featured system using **Supabase Auth** featuring:
+  - Email & Password registration/login.
+  - **Google OAuth** integration.
+  - **Account Management**: Profile editing (name, phone) and password resets.
+  - **Protected Routes**: Secure `/account` area via `AuthGuard`.
 - **Shopping Cart System**: Complex global state managed with Qwik Context and `useStore$`, featuring:
   - LocalStorage persistence.
   - Variant support (size/color).
   - Optimistic UI updates.
+- **Reactive Filtering & Sorting**: Instant, client-side dynamic grid updates with URL parameter synchronization.
 - **Image Optimization**: Professional-grade optimization (AVIF/WebP) using `vite-plugin-image-optimizer`.
-- **Toast Notifications**: Custom notification system for user actions.
-- **Reactive Filtering & Sorting**: Instant, client-side filtering and sorting with URL state synchronization.
-- **Mobile UX**: High-performance animated hamburger menu and slide-in cart drawer.
+- **Mobile UX**: High-performance animated hamburger menu, user profile menu, and slide-in cart drawer.
 
 ## 🛠️ Tech Stack
 
 - **Framework**: [QwikJS](https://qwik.dev/) & [Qwik City](https://qwik.dev/docs/qwikcity/)
+- **Backend / Auth**: [Supabase](https://supabase.com/)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS3
 - **State Management**: Context API + `useStore$`
-- **Animations**: CSS Transitions & Lucide-like SVG icons
 - **Deployment**: Netlify Edge Functions
 
 ## 📂 Project Structure
 
-- `src/routes/`: File-based routing (Home, Shop, Product Detail, Cart).
-- `src/components/`: Modular UI components (UI, Product, Cart, Home).
-- `src/services/api/`: Centralized API layer for interacting with FakeStore API.
-- `src/contexts/`: Global state providers (Cart, Toast).
+- `src/routes/`: File-based routing (Home, Shop, Auth, Account, Cart).
+- `src/components/`: Modular UI components (Auth, Product, UI, Cart, Home).
+- `src/services/api/`: Centralized API layer for interacting with external APIs.
+- `src/contexts/`: Global state providers (Auth, Cart, Toast).
+- `src/lib/`: Library initializations (Supabase client).
 - `src/utils/`: Shared helper functions (Image optimization, Product mapping).
-- `src/data/`: Legacy mock data and local testing utilities.
 
 ## 🚦 Getting Started
 
@@ -42,11 +44,19 @@ ReconShop is a high-performance, SEO-optimized eCommerce platform built using **
 - `node.js` >= 18.x
 - `pnpm` >= 10.x
 
-### Installation
+### Installation & Environment
 
-```bash
-pnpm install
-```
+1. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+2. Create a `.env.local` file in the root directory and add your Supabase credentials:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_PUBLISHABLE_KEY=your_publishable_key
+   ```
 
 ### Development
 
