@@ -23,13 +23,19 @@
 
 import { component$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
-import { Link } from '@builder.io/qwik-city';
+import { Link, useNavigate } from '@builder.io/qwik-city';
 import { useCart } from '~/contexts/cart';
 
 export default component$(() => {
   // Get cart state and actions from context
   // This gives us access to all cart items and functions to modify them
   const cart = useCart();
+
+  /* 
+    NAVIGATION HOOK
+    In Qwik City, we use useNavigate() to move between pages programmatically
+  */
+  const nav = useNavigate();
 
   /* 
     EMPTY CART STATE
@@ -113,8 +119,8 @@ export default component$(() => {
               {cart.state.items.map((item) => {
                 // Calculate price considering discount
                 const itemPrice = item.discount
-                  ? item.price - (item.price * item.discount) / 100
-                  : item.price;
+                   ? item.price - (item.price * item.discount) / 100
+                   : item.price;
                 
                 // Calculate total for this item (price × quantity)
                 const itemTotal = itemPrice * item.quantity;
@@ -334,8 +340,8 @@ export default component$(() => {
               {/* CHECKOUT BUTTON */}
               <button
                 onClick$={() => {
-                  // TODO: Navigate to checkout in Step 7
-                  alert('Checkout functionality coming in Step 7!');
+                  // Redirect to the checkout page
+                  nav('/checkout');
                 }}
                 class="w-full bg-black text-white py-4 rounded-md font-semibold hover:bg-gray-800 transition mb-4"
               >

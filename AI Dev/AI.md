@@ -162,6 +162,9 @@ reconshop/
 │   │   ├── account/                     # Protected routes (NEW)
 │   │   │   ├── index.tsx                # User profile/dashboard
 │   │   │   └── layout.tsx               # Auth guard layout
+│   │   ├── checkout/                    # Checkout flow (NEW)
+│   │   │   ├── index.tsx                # Multi-step checkout page
+│   │   │   └── success/index.tsx        # Success/Confirmation page
 │   │   └── index.ts                     # Layout exports (if any)
 │   │
 │   ├── routes/                          # Qwik City routes (root)
@@ -810,6 +813,72 @@ All images in `public/` are automatically optimized during build.
 
 ---
 
+## 💳 Checkout Flow
+
+### Core Implementation (src/routes/checkout/index.tsx)
+
+The checkout process is a multi-step experience designed to be secure, informative, and simple for the user. It is protected by a client-side authentication guard.
+
+#### 1. Multi-Step State (`state.step`)
+
+- **Step 1: Shipping** - Collects user's physical address.
+- **Step 2: Review** - Displays address and items for final confirmation.
+- **Step 3: Confirm** - Final order placement and redirection.
+
+#### 2. Client-Side Auth Guard
+
+Since Supabase uses `localStorage` for sessions, we protect the checkout route using a client-side check rather than a server-side loader:
+
+```tsx
+useVisibleTask$(({ track }) => {
+  const isLoading = track(() => auth.state.isLoading);
+  const user = track(() => auth.state.user);
+
+  if (!isLoading && !user) {
+    nav("/auth/login?redirectTo=/checkout");
+  }
+});
+```
+
+#### 3. Address Validation
+
+Uses `useComputed$` for instant feedback on form validity:
+
+```tsx
+const isAddressValid = useComputed$(() => {
+  const s = state.shipping;
+  return !!(s.firstName && s.lastName && s.address && s.city && s.zipCode);
+});
+```
+
+#### 4. Order Submission (`handlePlaceOrder`)
+
+Simulates API interaction, clears the cart upon success, and navigates to the success page:
+
+```tsx
+const handlePlaceOrder = $(async () => {
+  state.isSubmitting = true;
+  try {
+    // API Simulation (2s delay)
+    await new Promise((res) => setTimeout(res, 2000));
+
+    // CRITICAL: Clear cart before redirect
+    await cart.actions.clearCart();
+
+    await nav("/checkout/success");
+  } catch (error) {
+    state.errorMessage = "Order failed";
+    state.isSubmitting = false;
+  }
+});
+```
+
+#### 5. Success Page (src/routes/checkout/success/index.tsx)
+
+A distraction-free confirmation page that thanks the user and offers a clear path back to the shop via a "Continue Shopping" button.
+
+---
+
 ## 🛣️ Routing Structure
 
 ### Qwik City Routes
@@ -1409,10 +1478,11 @@ When working on this project:
 
 ---
 
-**Document Version:** 1.5  
-**Last Updated:** February 13, 2026 FINAL (Step 7 Checkout Complete - 70% Project Complete)
+**Document Version:** 1.6  
+**Last Updated:** February 13, 2026 (Step 7 Checkout Flow Complete - 70% Project Complete)
 **Session:** Completed Step 7 Checkout Flow System (100%):
 
+- ✅ Fixed "Proceed to Checkout" button redirection in `CartPage` and `CartDrawer`.
 - ✅ Step 7.1: Review section with shipping address and items display
 - ✅ Step 7.2: handlePlaceOrder function with cart clearing
 - ✅ Step 7.2: Address validation with isAddressValid computed signal
@@ -1422,11 +1492,13 @@ When working on this project:
 - ✅ Additional: 3-step indicator, error handling, button state management
 
 **Previous Session Completion (Step 6):**
+
 - ✅ Phase 1-6: Full Supabase Auth with Google OAuth
 - ✅ Protected routes, user profiles, password reset
 - ✅ Header integration with user menu
 
 **Completed Task File Organization:**
+
 - ✅ Moved Step 6 to tasks/Done/STEP6-USER-AUTH-SYSTEM-COMPLETED.md
 - ✅ Moved Step 7 to tasks/Done/STEP7-CHECKOUT-FLOW-COMPLETED.md
 - ✅ Verified 31 total task files now organized in tasks/Done/

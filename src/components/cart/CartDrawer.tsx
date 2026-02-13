@@ -20,7 +20,7 @@
  */
 
 import { component$, $, useTask$, type PropFunction } from '@builder.io/qwik';
-import { Link } from '@builder.io/qwik-city';
+import { Link, useNavigate } from '@builder.io/qwik-city';
 import { useCart } from '~/contexts/cart';
 
 // Define the props (properties) this component accepts
@@ -78,6 +78,9 @@ export const CartDrawer = component$<CartDrawerProps>(({ isOpen, onClose }) => {
   const handleRemoveItem = $((itemId: number, size?: string, color?: string) => {
     cart.actions.removeItem(itemId, size, color);
   });
+
+  // In Qwik City, we use useNavigate() to move between pages programmatically
+  const nav = useNavigate();
 
   return (
     <>
@@ -335,8 +338,8 @@ export const CartDrawer = component$<CartDrawerProps>(({ isOpen, onClose }) => {
               <button
                 onClick$={() => {
                   handleClose();
-                  // TODO: Navigate to checkout page (Step 7)
-                  alert('Checkout functionality coming in Step 7!');
+                  // Redirect to the checkout page
+                  nav('/checkout');
                 }}
                 class="w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-800 transition-colors"
               >
