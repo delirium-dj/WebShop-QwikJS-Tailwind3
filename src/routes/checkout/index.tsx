@@ -17,10 +17,16 @@
  * @route /checkout
  */
 
-import { component$, useStore, $, useComputed$, useVisibleTask$ } from '@builder.io/qwik';
-import { useNavigate, type DocumentHead } from '@builder.io/qwik-city';
-import { useCart } from '~/contexts/cart';
-import { useAuth } from '~/contexts/auth';
+import {
+  component$,
+  useStore,
+  $,
+  useComputed$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
+import { useNavigate, type DocumentHead } from "@builder.io/qwik-city";
+import { useCart } from "~/contexts/cart";
+import { useAuth } from "~/contexts/auth";
 
 // --- JUNIOR DEV EXPLANATION ---
 // We use Interfaces to define the "shape" of our data.
@@ -50,7 +56,7 @@ export default component$(() => {
     // Wait until auth has finished checking the session
     if (!isLoading && !user) {
       // Not logged in → redirect to login, preserving the return URL
-      nav('/auth/login?redirectTo=/checkout');
+      nav("/auth/login?redirectTo=/checkout");
     }
   });
 
@@ -161,23 +167,23 @@ export default component$(() => {
   // 98. The order hold resolved date (when the hold was removed)
   // 99. The order tags (for internal categorization)
   // 100. The order archived (boolean, for archiving old orders)
-  // 
+  //
   // For this MVP implementation, we only track the essential fields:
   // - step, shipping address, isSubmitting, errorMessage, orderId
   // Future enhancements can add more fields as needed.
-  // 
+  //
   // --- END JUNIOR DEV EXPLANATION ---
   const state = useStore({
     step: 1, // 1 = Shipping, 2 = Review, 3 = Success (after order placed)
     isSubmitting: false, // NEW: Track if we're processing the order
-    errorMessage: '', // NEW: Track any errors during submission
-    orderId: '', // NEW: Track the order ID from database
+    errorMessage: "", // NEW: Track any errors during submission
+    orderId: "", // NEW: Track the order ID from database
     shipping: {
-      firstName: '',
-      lastName: '',
-      address: '',
-      city: '',
-      zipCode: '',
+      firstName: "",
+      lastName: "",
+      address: "",
+      city: "",
+      zipCode: "",
     } as ShippingAddress,
   });
 
@@ -220,12 +226,12 @@ export default component$(() => {
   // ---
   const handlePlaceOrder = $(async () => {
     state.isSubmitting = true;
-    state.errorMessage = '';
+    state.errorMessage = "";
 
     try {
       // STEP 7.3: DATABASE INTEGRATION (Optional)
       // If you have a Supabase orders table, send the order data here:
-      // 
+      //
       // Example POST to /api/orders (server action):
       // const response = await fetch('/api/orders', {
       //   method: 'POST',
@@ -252,11 +258,11 @@ export default component$(() => {
       await cart.actions.clearCart();
 
       // Move to the success page (Step 7.4 success page is already created)
-      await nav('/checkout/success');
+      await nav("/checkout/success");
     } catch (error) {
       // Handle errors gracefully
       state.errorMessage =
-        error instanceof Error ? error.message : 'Order processing failed';
+        error instanceof Error ? error.message : "Order processing failed";
       state.isSubmitting = false;
     }
   });
@@ -286,10 +292,10 @@ export default component$(() => {
           {/* STEP INDICATOR */}
           <div class="mb-8 flex items-center justify-between">
             <div
-              class={`flex items-center ${state.step >= 1 ? 'font-semibold text-blue-600' : 'text-gray-400'}`}
+              class={`flex items-center ${state.step >= 1 ? "font-semibold text-blue-600" : "text-gray-400"}`}
             >
               <span
-                class={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${state.step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                class={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${state.step >= 1 ? "bg-blue-600 text-white" : "bg-gray-200"}`}
               >
                 1
               </span>
@@ -297,10 +303,10 @@ export default component$(() => {
             </div>
             <div class="mx-4 h-1 flex-1 bg-gray-200"></div>
             <div
-              class={`flex items-center ${state.step >= 2 ? 'font-semibold text-blue-600' : 'text-gray-400'}`}
+              class={`flex items-center ${state.step >= 2 ? "font-semibold text-blue-600" : "text-gray-400"}`}
             >
               <span
-                class={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${state.step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                class={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${state.step >= 2 ? "bg-blue-600 text-white" : "bg-gray-200"}`}
               >
                 2
               </span>
@@ -308,10 +314,10 @@ export default component$(() => {
             </div>
             <div class="mx-4 h-1 flex-1 bg-gray-200"></div>
             <div
-              class={`flex items-center ${state.step >= 3 ? 'font-semibold text-green-600' : 'text-gray-400'}`}
+              class={`flex items-center ${state.step >= 3 ? "font-semibold text-green-600" : "text-gray-400"}`}
             >
               <span
-                class={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${state.step >= 3 ? 'bg-green-600 text-white' : 'bg-gray-200'}`}
+                class={`mr-2 flex h-8 w-8 items-center justify-center rounded-full ${state.step >= 3 ? "bg-green-600 text-white" : "bg-gray-200"}`}
               >
                 3
               </span>
@@ -323,14 +329,21 @@ export default component$(() => {
           {state.step === 1 && (
             <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
               <h2 class="mb-4 text-xl font-semibold">Shipping Address</h2>
+              {/* 
+                We add id and name attributes to all inputs to help browser autofill and accessibility.
+                The id matches the label's 'for' attribute, and the 'name' helps browsers understand the field type.
+              */}
               <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">
+                    <label for="firstName" class="mb-1 block text-sm font-medium text-gray-700">
                       First Name
                     </label>
                     <input
+                      id="firstName"
+                      name="firstName"
                       type="text"
+                      autoComplete="given-name"
                       class="w-full rounded-md border border-gray-300 p-2"
                       value={state.shipping.firstName}
                       onInput$={(e) =>
@@ -341,11 +354,14 @@ export default component$(() => {
                     />
                   </div>
                   <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700">
+                    <label for="lastName" class="mb-1 block text-sm font-medium text-gray-700">
                       Last Name
                     </label>
                     <input
+                      id="lastName"
+                      name="lastName"
                       type="text"
+                      autoComplete="family-name"
                       class="w-full rounded-md border border-gray-300 p-2"
                       value={state.shipping.lastName}
                       onInput$={(e) =>
@@ -357,11 +373,14 @@ export default component$(() => {
                   </div>
                 </div>
                 <div>
-                  <label class="mb-1 block text-sm font-medium text-gray-700">
-                    Address
+                  <label for="address" class="mb-1 block text-sm font-medium text-gray-700">
+                    Street Address
                   </label>
                   <input
+                    id="address"
+                    name="address"
                     type="text"
+                    autoComplete="street-address"
                     class="w-full rounded-md border border-gray-300 p-2"
                     value={state.shipping.address}
                     onInput$={(e) =>
@@ -371,17 +390,61 @@ export default component$(() => {
                     }
                   />
                 </div>
+                {/* 
+                  CRITICAL FIX: Added missing City and Zip Code fields. 
+                  The checkout button was disabled because these fields were required in logic but missing in UI!
+                */}
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label for="city" class="mb-1 block text-sm font-medium text-gray-700">
+                      City
+                    </label>
+                    <input
+                      id="city"
+                      name="city"
+                      type="text"
+                      autoComplete="address-level2"
+                      class="w-full rounded-md border border-gray-300 p-2"
+                      value={state.shipping.city}
+                      onInput$={(e) =>
+                        (state.shipping.city = (
+                          e.target as HTMLInputElement
+                        ).value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label for="zipCode" class="mb-1 block text-sm font-medium text-gray-700">
+                      Zip Code
+                    </label>
+                    <input
+                      id="zipCode"
+                      name="zipCode"
+                      type="text"
+                      autoComplete="postal-code"
+                      class="w-full rounded-md border border-gray-300 p-2"
+                      value={state.shipping.zipCode}
+                      onInput$={(e) =>
+                        (state.shipping.zipCode = (
+                          e.target as HTMLInputElement
+                        ).value)
+                      }
+                    />
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick$={nextStep}
                   disabled={!isAddressValid.value}
                   class={`mt-4 w-full rounded-md py-3 font-semibold text-white transition ${
                     isAddressValid.value
-                      ? 'bg-blue-600 hover:bg-blue-700'
-                      : 'cursor-not-allowed bg-gray-300'
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "cursor-not-allowed bg-gray-300"
                   }`}
                 >
-                  {isAddressValid.value ? 'Continue to Review' : 'Please fill all fields'}
+                  {isAddressValid.value
+                    ? "Continue to Review"
+                    : "Please fill all fields"}
                 </button>
               </div>
             </div>
@@ -394,7 +457,9 @@ export default component$(() => {
 
               {/* Display shipping address (Step 7.1) */}
               <div class="mb-6 rounded-lg bg-blue-50 p-4">
-                <p class="mb-2 font-semibold text-gray-800">Shipping Address:</p>
+                <p class="mb-2 font-semibold text-gray-800">
+                  Shipping Address:
+                </p>
                 <p class="text-gray-700">
                   {state.shipping.firstName} {state.shipping.lastName}
                 </p>
@@ -445,12 +510,12 @@ export default component$(() => {
                 disabled={state.isSubmitting}
                 class={`w-full rounded-md py-3 font-semibold text-white transition ${
                   state.isSubmitting
-                    ? 'cursor-not-allowed bg-gray-400'
-                    : 'bg-green-600 hover:bg-green-700'
+                    ? "cursor-not-allowed bg-gray-400"
+                    : "bg-green-600 hover:bg-green-700"
                 }`}
               >
                 {state.isSubmitting
-                  ? 'Processing Order...'
+                  ? "Processing Order..."
                   : `Pay & Place Order ($${subtotal.value.toFixed(2)})`}
               </button>
 
@@ -502,9 +567,7 @@ export default component$(() => {
             <div class="space-y-2 border-t pt-4 text-sm">
               <div class="flex justify-between">
                 <span class="text-gray-600">Subtotal</span>
-                <span class="font-medium">
-                  ${subtotal.value.toFixed(2)}
-                </span>
+                <span class="font-medium">${subtotal.value.toFixed(2)}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Shipping</span>
@@ -531,15 +594,15 @@ export default component$(() => {
  * We use 'noindex' because checkout pages should not appear in search results.
  */
 export const head: DocumentHead = {
-  title: 'Checkout - ReconShop',
+  title: "Checkout - ReconShop",
   meta: [
     {
-      name: 'description',
-      content: 'Complete your order at ReconShop.',
+      name: "description",
+      content: "Complete your order at ReconShop.",
     },
     {
-      name: 'robots',
-      content: 'noindex, nofollow',
+      name: "robots",
+      content: "noindex, nofollow",
     },
   ],
 };

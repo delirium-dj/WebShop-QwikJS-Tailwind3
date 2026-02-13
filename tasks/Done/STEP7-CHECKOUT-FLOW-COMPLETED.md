@@ -22,58 +22,62 @@
 **File:** `src/routes/checkout/index.tsx`
 
 **What was added:**
+
 - Review section (step 2) showing shipping address with full name, street, city, zipcode
 - Itemized list of all cart items with quantities and prices
 - Total amount display
 - Three-step indicator: Shipping → Review → Confirm
 
 **Code changes:**
+
 ```tsx
-{/* PHASE 2: REVIEW ORDER (Step 7.1: New Review Section) */}
-{state.step === 2 && (
-  <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-    <h2 class="mb-4 text-xl font-semibold">Final Review</h2>
+{
+  /* PHASE 2: REVIEW ORDER (Step 7.1: New Review Section) */
+}
+{
+  state.step === 2 && (
+    <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+      <h2 class="mb-4 text-xl font-semibold">Final Review</h2>
 
-    {/* Display shipping address */}
-    <div class="mb-6 rounded-lg bg-blue-50 p-4">
-      <p class="mb-2 font-semibold text-gray-800">Shipping Address:</p>
-      <p class="text-gray-700">
-        {state.shipping.firstName} {state.shipping.lastName}
-      </p>
-      <p class="text-gray-700">{state.shipping.address}</p>
-      <p class="text-gray-700">
-        {state.shipping.city}, {state.shipping.zipCode}
-      </p>
-    </div>
+      {/* Display shipping address */}
+      <div class="mb-6 rounded-lg bg-blue-50 p-4">
+        <p class="mb-2 font-semibold text-gray-800">Shipping Address:</p>
+        <p class="text-gray-700">
+          {state.shipping.firstName} {state.shipping.lastName}
+        </p>
+        <p class="text-gray-700">{state.shipping.address}</p>
+        <p class="text-gray-700">
+          {state.shipping.city}, {state.shipping.zipCode}
+        </p>
+      </div>
 
-    {/* Display order items summary */}
-    <div class="mb-6">
-      <p class="mb-2 font-semibold text-gray-800">Items in Order:</p>
-      <div class="space-y-2">
-        {cart.state.items.map((item) => (
-          <div key={item.id} class="flex justify-between text-sm">
-            <span class="text-gray-700">
-              {item.title} x {item.quantity}
-            </span>
-            <span class="font-medium">
-              ${(item.price * item.quantity).toFixed(2)}
-            </span>
-          </div>
-        ))}
+      {/* Display order items summary */}
+      <div class="mb-6">
+        <p class="mb-2 font-semibold text-gray-800">Items in Order:</p>
+        <div class="space-y-2">
+          {cart.state.items.map((item) => (
+            <div key={item.id} class="flex justify-between text-sm">
+              <span class="text-gray-700">
+                {item.title} x {item.quantity}
+              </span>
+              <span class="font-medium">
+                ${(item.price * item.quantity).toFixed(2)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Display total */}
+      <div class="mb-6 border-t pt-4">
+        <div class="flex justify-between text-lg font-bold">
+          <span>Total Amount:</span>
+          <span class="text-blue-600">${subtotal.value.toFixed(2)}</span>
+        </div>
       </div>
     </div>
-
-    {/* Display total */}
-    <div class="mb-6 border-t pt-4">
-      <div class="flex justify-between text-lg font-bold">
-        <span>Total Amount:</span>
-        <span class="text-blue-600">
-          ${subtotal.value.toFixed(2)}
-        </span>
-      </div>
-    </div>
-  </div>
-)}
+  );
+}
 ```
 
 ---
@@ -83,6 +87,7 @@
 **File:** `src/routes/checkout/index.tsx`
 
 **What was implemented:**
+
 - `handlePlaceOrder` function that:
   1. Sets `isSubmitting` to true (shows "Processing..." state)
   2. Simulates a 2-second API call (ready for Supabase integration)
@@ -91,10 +96,11 @@
   5. Handles errors and displays error messages
 
 **Code implementation:**
+
 ```tsx
 const handlePlaceOrder = $(async () => {
   state.isSubmitting = true;
-  state.errorMessage = '';
+  state.errorMessage = "";
 
   try {
     // Simulate API delay (2 seconds)
@@ -105,17 +111,18 @@ const handlePlaceOrder = $(async () => {
     await cart.actions.clearCart();
 
     // Navigate to success page
-    await nav('/checkout/success');
+    await nav("/checkout/success");
   } catch (error) {
     // Handle errors gracefully
     state.errorMessage =
-      error instanceof Error ? error.message : 'Order processing failed';
+      error instanceof Error ? error.message : "Order processing failed";
     state.isSubmitting = false;
   }
 });
 ```
 
 **Key feature:** Button state management
+
 ```tsx
 <button
   type="button"
@@ -123,12 +130,12 @@ const handlePlaceOrder = $(async () => {
   disabled={state.isSubmitting}
   class={`w-full rounded-md py-3 font-semibold text-white transition ${
     state.isSubmitting
-      ? 'cursor-not-allowed bg-gray-400'
-      : 'bg-green-600 hover:bg-green-700'
+      ? "cursor-not-allowed bg-gray-400"
+      : "bg-green-600 hover:bg-green-700"
   }`}
 >
   {state.isSubmitting
-    ? 'Processing Order...'
+    ? "Processing Order..."
     : `Pay & Place Order ($${subtotal.value.toFixed(2)})`}
 </button>
 ```
@@ -142,6 +149,7 @@ const handlePlaceOrder = $(async () => {
 **File:** `src/routes/checkout/index.tsx`
 
 **Implementation notes:**
+
 - The `handlePlaceOrder` function includes commented code showing how to integrate with Supabase
 - Structure ready to send POST request to future `/api/orders` endpoint
 - Would pass:
@@ -152,6 +160,7 @@ const handlePlaceOrder = $(async () => {
 - Response would contain `orderId` which is stored in `state.orderId`
 
 **Commented example provided:**
+
 ```tsx
 // Example POST to /api/orders (server action):
 // const response = await fetch('/api/orders', {
@@ -179,30 +188,36 @@ const handlePlaceOrder = $(async () => {
 **File:** `src/routes/checkout/success/index.tsx`
 
 **Features:**
+
 - Green checkmark icon in circular badge
 - "Order Confirmed!" heading
 - Confirmation message about email
 - "Continue Shopping" button linking back to homepage
 
 **Code structure:**
+
 ```tsx
 export default component$(() => {
   return (
-    <div class="min-h-[70vh] flex items-center justify-center bg-white px-4">
-      <div class="max-w-md w-full text-center">
+    <div class="flex min-h-[70vh] items-center justify-center bg-white px-4">
+      <div class="w-full max-w-md text-center">
         {/* Green checkmark icon */}
-        <div class="mb-6 inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full">
-          <svg class="w-10 h-10 text-green-600">
+        <div class="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+          <svg class="h-10 w-10 text-green-600">
             <path d="M5 13l4 4L19 7"></path>
           </svg>
         </div>
-        
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Order Confirmed!</h1>
-        <p class="text-gray-600 mb-8">
-          Thank you for your purchase. We've sent a confirmation email with your order details.
+
+        <h1 class="mb-2 text-3xl font-bold text-gray-900">Order Confirmed!</h1>
+        <p class="mb-8 text-gray-600">
+          Thank you for your purchase. We've sent a confirmation email with your
+          order details.
         </p>
 
-        <Link href="/" class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg">
+        <Link
+          href="/"
+          class="inline-block rounded-lg bg-indigo-600 px-8 py-3 font-semibold text-white shadow-lg transition hover:bg-indigo-700"
+        >
           Continue Shopping
         </Link>
       </div>
@@ -216,22 +231,26 @@ export default component$(() => {
 ## Additional Enhancements Made
 
 ### Address Validation ✅
+
 - Added `isAddressValid` computed signal
 - "Continue" button is disabled until all fields are filled
 - Button text changes based on validation status: "Continue to Review" or "Please fill all fields"
 
 ### Step Indicator Update ✅
+
 - Changed from 2-step (Shipping → Payment) to 3-step (Shipping → Review → Confirm)
 - Step 3 uses green color for confirmation
 - All steps properly track current progress
 
 ### Error Handling ✅
+
 - Added `errorMessage` state tracking
 - Error display UI in review section
 - Try-catch block in `handlePlaceOrder` with user-friendly messages
 - `isSubmitting` prevents duplicate submissions
 
 ### State Management Enhancements ✅
+
 - Added `isSubmitting` flag to prevent double-clicking
 - Added `errorMessage` for error feedback
 - Added `orderId` for future Supabase integration
@@ -242,6 +261,7 @@ export default component$(() => {
 ## Testing the Checkout Flow
 
 ### User Journey:
+
 1. **Step 1 - Shipping:** Fill in first name, last name, address, city, zip code
    - Button is disabled until all fields are filled
    - Click "Continue to Review"
@@ -264,28 +284,28 @@ export default component$(() => {
 
 ## Files Modified
 
-| File | Changes |
-|:-----|:--------|
-| `src/routes/checkout/index.tsx` | ✅ Added state fields, validation, handlePlaceOrder, review section, 3-step indicator |
-| `src/routes/checkout/success/index.tsx` | ✅ Already complete (no changes needed) |
+| File                                    | Changes                                                                               |
+| :-------------------------------------- | :------------------------------------------------------------------------------------ |
+| `src/routes/checkout/index.tsx`         | ✅ Added state fields, validation, handlePlaceOrder, review section, 3-step indicator |
+| `src/routes/checkout/success/index.tsx` | ✅ Already complete (no changes needed)                                               |
 
 ---
 
 ## Project Status After Step 7
 
-| Step | Feature | Status |
-|:-----|:--------|:-------|
-| 0 | Hamburger Menu | ✅ DONE |
-| 1 | Product Details | ✅ DONE |
-| 2 | Cart Context | ✅ DONE |
-| 3 | Add to Cart UX | ✅ DONE |
-| 4 | Cart Page/Drawer | ✅ DONE |
-| 5 | Images & Filters | ✅ DONE |
-| 6 | User Authentication | ✅ DONE |
-| **7** | **Checkout Flow** | **✅ DONE** |
-| 8 | Order History | ⏳ Next Priority |
-| 9 | Wishlist | 📋 Future |
-| 10 | Reviews & Ratings | 📋 Future |
+| Step  | Feature             | Status           |
+| :---- | :------------------ | :--------------- |
+| 0     | Hamburger Menu      | ✅ DONE          |
+| 1     | Product Details     | ✅ DONE          |
+| 2     | Cart Context        | ✅ DONE          |
+| 3     | Add to Cart UX      | ✅ DONE          |
+| 4     | Cart Page/Drawer    | ✅ DONE          |
+| 5     | Images & Filters    | ✅ DONE          |
+| 6     | User Authentication | ✅ DONE          |
+| **7** | **Checkout Flow**   | **✅ DONE**      |
+| 8     | Order History       | ⏳ Next Priority |
+| 9     | Wishlist            | 📋 Future        |
+| 10    | Reviews & Ratings   | 📋 Future        |
 
 ---
 
@@ -326,4 +346,3 @@ After Step 7, the recommended next features are:
 **Status:** COMPLETED ✅  
 **Implementation Date:** February 13, 2026  
 **Ready for:** Step 8 Order History Implementation
-
