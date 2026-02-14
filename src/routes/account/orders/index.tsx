@@ -29,7 +29,6 @@ import { OrderCard } from '~/components/orders/OrderCard';
  * This runs on the SERVER before the page loads.
  * It fetches the initial order history.
  */
-  // eslint-disable-next-line qwik/loader-location
 export const useOrderHistory = routeLoader$(async () => {
   // In a real app, you'd get userId from session/cookie
   // For now, we'll return null and load client-side

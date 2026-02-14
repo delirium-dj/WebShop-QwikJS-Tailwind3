@@ -29,7 +29,6 @@ import { OrderStatusBadge } from '~/components/orders/OrderStatusBadge';
  * 
  * Extracts the order ID from the URL.
  */
-// eslint-disable-next-line qwik/loader-location
 export const useOrderId = routeLoader$(({ params }) => {
   return params.id;
 });
