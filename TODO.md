@@ -580,4 +580,29 @@ Benefits: Completes the purchase funnel
 
 ---
 
+## Session Summary (2026-02-14 - Part 2)
+
+### What's Finished ✅
+
+- **Address Management (Step 8 Verified)**:
+  - **CRUD Operations**: Implemented full Create, Read, Delete functionality for user addresses.
+  - **Server-Side Auth Integration**: Created `src/lib/supabase-server.ts` with a manual cookie parser to handle Supabase authentication in Qwik City loaders (`routeLoader$`).
+  - **Client-Server Sync**: Updated `AuthContext.tsx` to automatically sync the Supabase session to an `sb-access-token` cookie, resolving 401 Unauthorized errors in server-side loaders.
+  - **UI/UX**: Built a responsive address list and "Add New Address" form with validation and toast notifications.
+  - **Asset Fixes**: Populated missing category and banner images to resolve 404 errors.
+  - **Production Debugging**: Investigated "localhost:3000" redirect issue; confirmed code uses `window.location.origin` correctly and identified Supabase Dashboard configuration as the root cause.
+
+### The "Wall" 🚧
+
+- **Supabase Auth Helpers**: The standard `@supabase/auth-helpers-qwik` package proved unreliable/unavailable, necessitating a custom server-side client implementation using raw cookie parsing.
+- **Generative AI Limits**: Attempted to generate custom assets but hit service availability issues (503); successfully fell back to high-quality placeholders.
+
+### Next Steps 📋
+
+1. **Step 9**: Implement **Wishlist Feature** (Context, UI, Database).
+2. **Step 10**: Reviews & Ratings.
+3. **Deployment Config**: User needs to update Supabase "Site URL" to the production domain.
+
+---
+
 Summary complete! See TODO.md for your hand-off notes.

@@ -375,13 +375,20 @@ The authentication system is built on **Supabase Auth** and wrapped in a Qwik Co
 - **Reactivity**: Listens for Supabase `onAuthStateChange` events to sync state instantly.
 - **Profile Merging**: Combines basic auth data (email, ID) with extended profile data (name, avatar, phone) from the `profiles` table.
 
-#### 2. Supabase Client (src/lib/supabase.ts)
+#### 2. Supabase Client (Client-Side) (src/lib/supabase.ts)
 
 - **Singleton Pattern**: A single `createClient` instance used throughout the app.
 - **Security**: Uses `VITE_SUPABASE_PUBLISHABLE_KEY` (safe for browser) and `SUPABASE_SECRET_KEY` (server-side only).
 - **Environment**: Keys are loaded from `.env.local` to prevent git commits.
 
-#### 3. Custom Hooks (useAuth.ts)
+#### 3. Supabase Server Client (src/lib/supabase-server.ts)
+
+- **Purpose**: Handles authentication in Qwik City `routeLoader$` and `routeAction$` (Server-Side).
+- **Mechanism**: Manually parses `sb-access-token` from request cookies to authenticate the Supabase client.
+- **Why**: Standard auth helpers were unavailable/unreliable in this stack.
+- **Cookie Sync**: `AuthContext.tsx` automatically sets an `sb-access-token` cookie whenever the client-side session changes, ensuring the server always has access to the user's state.
+
+#### 4. Custom Hooks (useAuth.ts)
 
 - `useAuth()`: Access full context (user, actions, loading).
 - `useRequireAuth()`: Helper for protected routes.
@@ -1491,6 +1498,13 @@ When working on this project:
 - ✅ **Addresses Page**: Created `src/routes/account/addresses/index.tsx` placeholder.
 - ✅ **Database Verification**: Verified `orders` table functionality in Supabase; page now handles data without "relation missing" errors.
 - ✅ **Build Quality**: Verified zero errors after link restoration.
+
+**Latest Session (Feb 14, 2026 - Part 2):**
+
+- ✅ **Address Management**: Full CRUD for addresses with server-side auth validation.
+- ✅ **Server-Side Auth**: Implemented manual cookie syncing to fix 401 errors in loaders.
+- ✅ **Asset Restoration**: Fixed 404 errors by adding placeholder images for categories.
+- ✅ **Production Debugging**: Identified Supabase Dashboard config as cause of OAuth redirect issues.
 
 **Previous Session Completion (ID Attributes):**
 
