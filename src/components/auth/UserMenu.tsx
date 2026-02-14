@@ -15,8 +15,8 @@
  * - The logout button uses inline onClick$ to handle logout
  */
 
-import { component$, useSignal, $ } from "@builder.io/qwik";
-import { Link } from "@builder.io/qwik-city";
+import { component$, useSignal, $, useTask$ } from "@builder.io/qwik";
+import { Link, useLocation } from "@builder.io/qwik-city";
 import { useAuth } from "~/contexts/auth";
 
 /**
@@ -32,9 +32,13 @@ export const UserMenu = component$(() => {
   const auth = useAuth();
   const isDropdownOpen = useSignal(false);
 
-  // ============================================================================
-  // EVENT HANDLERS
-  // ============================================================================
+  const location = useLocation();
+
+  // Close dropdown when location changes (navigation occurs)
+  useTask$(({ track }) => {
+    track(() => location.url.pathname);
+    isDropdownOpen.value = false;
+  });
 
   /**
    * Toggle the dropdown open/closed
@@ -175,7 +179,6 @@ export const UserMenu = component$(() => {
               <Link
                 id="user-menu-account-link"
                 href="/account"
-                onClick$={closeDropdown}
                 class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <svg
@@ -198,7 +201,6 @@ export const UserMenu = component$(() => {
               <Link
                 id="user-menu-orders-link"
                 href="/account/orders"
-                onClick$={closeDropdown}
                 class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <svg
@@ -221,7 +223,6 @@ export const UserMenu = component$(() => {
               <Link
                 id="user-menu-wishlist-link"
                 href="/account/wishlist"
-                onClick$={closeDropdown}
                 class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <svg

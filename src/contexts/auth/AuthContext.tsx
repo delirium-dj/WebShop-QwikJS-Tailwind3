@@ -157,8 +157,19 @@ export const AuthProvider = component$(() => {
         authState.session = currentSession;
         
         if (currentSession?.user) {
+          // Sync session to cookie for server-side access (Loaders/Actions)
+          if (currentSession.access_token) {
+            document.cookie = `sb-access-token=${currentSession.access_token}; path=/; max-age=${currentSession.expires_in}; SameSite=Lax; Secure`;
+            // Also store refresh token if needed, but access token is enough for short-lived requests
+            if (currentSession.refresh_token) {
+               document.cookie = `sb-refresh-token=${currentSession.refresh_token}; path=/; max-age=${currentSession.expires_in}; SameSite=Lax; Secure`;
+            }
+          }
           await loadUserProfile(currentSession.user.id);
         } else {
+          // Clear cookies on logout
+          document.cookie = 'sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+          document.cookie = 'sb-refresh-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
           authState.user = null;
         }
       }

@@ -12,7 +12,7 @@
 
 import { component$, useSignal } from '@builder.io/qwik';
 import { routeLoader$, routeAction$, Form, z, zod$ } from '@builder.io/qwik-city';
-import { supabase } from '~/lib/supabase';
+import { getSupabaseServer } from '~/lib/supabase-server';
 
 /**
  * Address Interface
@@ -32,9 +32,10 @@ interface Address {
 /**
  * Server Loader: Fetch Addresses
  */
-export const useAddressesLoader = routeLoader$(async ({ fail }) => {
-  // Get user from sharedMap (populated by AuthGuard/layout)
-  // We can also double-check with supabase.auth.getUser() on server
+export const useAddressesLoader = routeLoader$(async (requestEv) => {
+  const supabase = getSupabaseServer(requestEv);
+  const { fail } = requestEv;
+
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
@@ -59,7 +60,10 @@ export const useAddressesLoader = routeLoader$(async ({ fail }) => {
  * Server Action: Add Address
  */
 export const useAddAddressAction = routeAction$(
-  async (data, { fail }) => {
+  async (data, requestEv) => {
+    const supabase = getSupabaseServer(requestEv);
+    const { fail } = requestEv;
+
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -102,7 +106,10 @@ export const useAddAddressAction = routeAction$(
 /**
  * Server Action: Delete Address
  */
-export const useDeleteAddressAction = routeAction$(async ({ id }, { fail }) => {
+export const useDeleteAddressAction = routeAction$(async ({ id }, requestEv) => {
+  const supabase = getSupabaseServer(requestEv);
+  const { fail } = requestEv;
+  
   const { data: { user } } = await supabase.auth.getUser();
     
   if (!user) {
