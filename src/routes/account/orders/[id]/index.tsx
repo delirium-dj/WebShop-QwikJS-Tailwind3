@@ -16,12 +16,13 @@
 import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
 import { routeLoader$, useNavigate } from '@builder.io/qwik-city';
 import { useAuth } from '~/contexts/auth';
+// Using the ~ alias (maps to src/) for clean imports that work regardless of file depth
 import {
   getOrderById,
   cancelOrder,
-} from '../services/orders.service';
-import type { Order } from '../types/order.types';
-import { OrderStatusBadge } from '../components/OrderStatusBadge';
+} from '~/services/orders.service';
+import type { Order } from '~/types/order.types';
+import { OrderStatusBadge } from '~/components/orders/OrderStatusBadge';
 
 /**
  * Server-side data loader
