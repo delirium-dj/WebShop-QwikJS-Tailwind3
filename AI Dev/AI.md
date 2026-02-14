@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 13, 2026 (Step 7 Checkout Flow Complete - 70% Project Complete)
+**Last Updated:** February 14, 2026 (Step 8 Account Fixes & SPA Restoration - 75% Project Complete)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -27,6 +27,7 @@
 - ✅ **Full Authentication System**: Supabase Auth with Google OAuth, Protected Routes (Auth Guard), and Profile Management
 - ✅ **Secure Account Section**: Dedicated `/account` route for user settings and order history (structure ready)
 - ✅ **Multi-Step Checkout**: Shipping address validation → Order review → Confirmation with cart clearing
+- ✅ **SPA Navigation & Layout Fixes**: Resolved hydration issues by refactoring `AuthGuard` placement and restored smooth SPA routing for the account section (Feb 14, 2026)
 - ✅ **Semantic ID Attributes**: 40+ unique IDs on all interactive elements (Feb 13, 2026)
 
 ### Technology Stack
@@ -160,9 +161,11 @@ reconshop/
 │   │   │   ├── register/index.tsx       # Register page
 │   │   │   ├── verify-email/index.tsx   # Email verification
 │   │   │   └── callback/index.tsx       # OAuth callback handler
-│   │   ├── account/                     # Protected routes (NEW)
+│   │   ├── account/                     # Protected routes (UPDATED)
 │   │   │   ├── index.tsx                # User profile/dashboard
-│   │   │   └── layout.tsx               # Auth guard layout
+│   │   │   ├── layout.tsx               # Auth guard layout (Slot refactored)
+│   │   │   ├── orders/                  # Order listing & details
+│   │   │   └── addresses/               # Managed addresses (NEW)
 │   │   ├── checkout/                    # Checkout flow (NEW)
 │   │   │   ├── index.tsx                # Multi-step checkout page
 │   │   │   └── success/index.tsx        # Success/Confirmation page
@@ -1479,42 +1482,26 @@ When working on this project:
 
 ---
 
-**Document Version:** 1.7  
-**Last Updated:** February 13, 2026 (ID Attributes Added - 70% Project Complete)
-**Session:** Added Semantic ID Attributes to All Components:
+**Document Version:** 1.8  
+**Last Updated:** February 14, 2026 (Account Fixes & SPA Restoration - 75% Project Complete)
+**Session:** Fixed Account Layout & Navigation:
 
-- ✅ **40+ unique ID attributes** added to interactive components
-- ✅ Header: `main-header`, `header-logo`, `header-search-btn` (3 IDs)
-- ✅ Hero & Banner: `hero-section`, `hero-shop-btn`, `banner-section`, `banner-cta-btn` (4 IDs)
-- ✅ Cart System: `cart-badge-btn`, `cart-drawer`, `cart-drawer-overlay`, `cart-checkout-btn`, `cart-clear-btn` (5 IDs)
-- ✅ Mobile Menu: `mobile-menu-toggle`, `mobile-menu-overlay`, `mobile-menu-drawer`, `mobile-menu-close-btn` (4 IDs)
-- ✅ Product Components: `product-card-{id}`, `add-to-cart-btn-{id}`, `wishlist-btn-{id}`, `gallery-prev-btn`, `gallery-next-btn` (5+ IDs)
-- ✅ Auth Components: `login-form`, `register-form`, `google-login-btn`, `user-menu-toggle`, `user-menu-logout-btn` (5 IDs)
-- ✅ Form Elements: `qty-decrease-btn`, `qty-input`, `qty-increase-btn`, category cards, color/size selectors (10+ IDs)
-- ✅ Browser accessibility warnings eliminated
-- ✅ All IDs follow kebab-case naming convention
-- ✅ Build quality: ✅ Zero errors, Zero warnings
+- ✅ **Fixed "Blank Page" Issue**: Moved `AuthGuard` in `account/layout.tsx` to wrap only the inner content `<Slot />`. This ensures layout shell renders immediately and solves hydration mismatches.
+- ✅ **Restored SPA Navigation**: Reverted `UserMenu.tsx` links from `<a>` to `<Link>` components, eliminating header flicker and preserved auth state during account routing.
+- ✅ **Addresses Page**: Created `src/routes/account/addresses/index.tsx` placeholder.
+- ✅ **Database Verification**: Verified `orders` table functionality in Supabase; page now handles data without "relation missing" errors.
+- ✅ **Build Quality**: Verified zero errors after link restoration.
+
+**Previous Session Completion (ID Attributes):**
+
+- ✅ **40+ unique ID attributes** added to interactive components (Feb 13, 2026)
+- ✅ Enhanced accessibility and browser testing compatibility.
 
 **Previous Session Completion (Step 7):**
 
 - ✅ Multi-step Checkout Flow (Shipping → Review → Confirmation)
-- ✅ Step 7.1-7.4: All checkout tasks completed
 - ✅ Cart clearing, order validation, success page
 
-**Previous Session Completion (Step 6):**
+**Project Status:** 75% Feature Complete (Step 8 User Dashboard partially complete)
 
-- ✅ Phase 1-6: Full Supabase Auth with Google OAuth
-- ✅ Protected routes, user profiles, password reset
-- ✅ Header integration with user menu
-
-**Completed Task File Organization:**
-
-- ✅ Moved Step 6 to tasks/Done/STEP6-USER-AUTH-SYSTEM-COMPLETED.md
-- ✅ Moved Step 7 to tasks/Done/STEP7-CHECKOUT-FLOW-COMPLETED.md
-- ✅ Verified 31 total task files now organized in tasks/Done/
-- ✅ Updated TODO.md with session summaries
-- ✅ Zero active tasks remaining in tasks/ root
-
-**Project Status:** 70% Feature Complete (7/10 major steps complete) + Accessibility Enhanced
-
-**Next Priority:** Step 8 - Order History Dashboard
+**Next Priority:** Step 8 Finalize - Order details page & Step 9 - Wishlist Feature

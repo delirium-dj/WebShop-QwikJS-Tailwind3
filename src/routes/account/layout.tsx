@@ -101,6 +101,7 @@ export default component$(() => {
           <nav class="-mb-px flex space-x-8" aria-label="Account sections">
             {/* Profile Tab */}
             <Link
+              id="account-tab-profile"
               href="/account"
               class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
               aria-current="page"
@@ -125,6 +126,7 @@ export default component$(() => {
 
             {/* Orders Tab (Future) */}
             <Link
+              id="account-tab-orders"
               href="/account/orders"
               class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
             >
@@ -150,6 +152,7 @@ export default component$(() => {
 
             {/* Wishlist Tab (Future) */}
             <Link
+              id="account-tab-wishlist"
               href="/account/wishlist"
               class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
             >
@@ -173,6 +176,7 @@ export default component$(() => {
 
             {/* Addresses Tab (Future) */}
             <Link
+              id="account-tab-addresses"
               href="/account/addresses"
               class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
             >
