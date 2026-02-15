@@ -20,7 +20,7 @@ import { useAuth } from '~/contexts/auth';
 import {
   getOrderHistory,
 } from '~/services/orders.service';
-import type { OrderFilters, OrderStatus, OrderHistoryResponse } from '~/types/order.types';
+import type { OrderFilters, OrderStatus, OrderHistoryResponse } from '~/types/order';
 import { OrderCard } from '~/components/orders/OrderCard';
 
 /**

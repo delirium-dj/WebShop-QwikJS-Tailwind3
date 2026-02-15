@@ -17,7 +17,7 @@
  */
 
 import { component$ } from '@builder.io/qwik';
-import { ORDER_STATUS_CONFIG, type OrderStatus } from '~/types/order.types';
+import { ORDER_STATUS_CONFIG, type OrderStatus } from '~/types/order';
 
 /**
  * Props for OrderStatusBadge

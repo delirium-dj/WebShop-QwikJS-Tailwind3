@@ -1,4 +1,5 @@
 import { component$ } from "@builder.io/qwik";
+import { Link } from "@builder.io/qwik-city";
 
 export const Hero = component$(() => {
   return (
@@ -13,12 +14,13 @@ export const Hero = component$(() => {
           Discover the best outfits curated just for you.
         </p>
 
-        <button
+        <Link
+          href="/shop"
           id="hero-shop-btn"
-          class="rounded-md bg-white px-6 py-3 text-black transition hover:bg-gray-200"
+          class="rounded-md bg-white px-6 py-3 text-center text-black transition hover:bg-gray-200"
         >
           Shop Now
-        </button>
+        </Link>
       </div>
     </section>
   );

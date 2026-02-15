@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 14, 2026 (Step 8 Account Fixes & SPA Restoration - 75% Project Complete)
+**Last Updated:** February 15, 2026 (Step 8 Complete - Order Types Consolidation & Order Details Page)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -25,7 +25,7 @@
 - ✅ **URL State Management**: Shareable search/filter states via URL parameters
 - ✅ **Mobile-First UX**: High-performance animated menus and cart drawers
 - ✅ **Full Authentication System**: Supabase Auth with Google OAuth, Protected Routes (Auth Guard), and Profile Management
-- ✅ **Secure Account Section**: Dedicated `/account` route for user settings and order history (structure ready)
+- ✅ **Secure Account Section**: Dedicated `/account` route for user settings, order history, and order details
 - ✅ **Multi-Step Checkout**: Shipping address validation → Order review → Confirmation with cart clearing
 - ✅ **SPA Navigation & Layout Fixes**: Resolved hydration issues by refactoring `AuthGuard` placement and restored smooth SPA routing for the account section (Feb 14, 2026)
 - ✅ **Semantic ID Attributes**: 40+ unique IDs on all interactive elements (Feb 13, 2026)
@@ -116,6 +116,9 @@ reconshop/
 │   │   │   ├── ForgotPasswordForm.tsx   # Recovery request form
 │   │   │   ├── ResetPasswordForm.tsx    # New password form
 │   │   │   └── index.ts                 # Barrel exports
+│   │   ├── orders/                      # Order display components
+│   │   │   ├── OrderCard.tsx            # Order summary card for lists
+│   │   │   └── OrderStatusBadge.tsx     # Status badge (pending/shipped/etc.)
 │   │   └── cart/                        # Shopping cart components
 │   │       ├── AddToCartButton.tsx      # Add to cart button
 │   │       ├── CartBadge.tsx            # Cart icon with count badge
@@ -165,6 +168,8 @@ reconshop/
 │   │   │   ├── index.tsx                # User profile/dashboard
 │   │   │   ├── layout.tsx               # Auth guard layout (Slot refactored)
 │   │   │   ├── orders/                  # Order listing & details
+│   │   │   │   ├── index.tsx            # Order history page
+│   │   │   │   └── [id]/index.tsx       # Order details page (dynamic)
 │   │   │   └── addresses/               # Managed addresses (NEW)
 │   │   ├── checkout/                    # Checkout flow (NEW)
 │   │   │   ├── index.tsx                # Multi-step checkout page
@@ -176,7 +181,8 @@ reconshop/
 │   │   ├── layout.tsx                   # Root layout with providers
 │   │
 │   ├── services/                        # API and business logic
-│   │   └── api/                         # API service layer
+│   │   ├── api/                         # API service layer (products)
+│   │   └── orders.service.ts            # Order CRUD (createOrder, getOrderById, etc.)
 │   │       ├── products.ts              # Product API functions
 │   │       ├── types.ts                 # API type definitions
 │   │       ├── config.ts                # API configuration
@@ -184,6 +190,7 @@ reconshop/
 │   │
 │   ├── types/                           # Shared TypeScript interfaces
 │   │   ├── product.ts                   # Product interfaces
+│   │   ├── order.ts                     # Order types (Order, OrderItem, OrderStatus, etc.)
 │   │   └── image.types.ts               # Image-related types
 │   │
 │   ├── utils/                           # Utility functions

@@ -14,14 +14,15 @@
  */
 
 import { component$, useSignal, useTask$, $ } from '@builder.io/qwik';
-import { routeLoader$, useNavigate } from '@builder.io/qwik-city';
+import { routeLoader$, Link } from '@builder.io/qwik-city';
+import type { DocumentHead } from '@builder.io/qwik-city';
 import { useAuth } from '~/contexts/auth';
 // Using the ~ alias (maps to src/) for clean imports that work regardless of file depth
 import {
   getOrderById,
   cancelOrder,
 } from '~/services/orders.service';
-import type { Order } from '~/types/order.types';
+import type { Order } from '~/types/order';
 import { OrderStatusBadge } from '~/components/orders/OrderStatusBadge';
 
 /**
@@ -43,9 +44,6 @@ export default component$(() => {
   
   // Get auth context
   const auth = useAuth();
-  
-  // Navigation
-  const nav = useNavigate();
   
   // State
   const order = useSignal<Order | null>(null);
@@ -154,12 +152,13 @@ export default component$(() => {
         <h3 class="text-lg font-medium text-gray-900 mb-2">
           {error.value || 'Order not found'}
         </h3>
-        <button
-          onClick$={() => nav('/account/orders')}
-          class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        <Link
+          href="/account/orders"
+          id="order-details-back-to-orders"
+          class="mt-4 inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
         >
           Back to Orders
-        </button>
+        </Link>
       </div>
     );
   }
@@ -174,8 +173,9 @@ export default component$(() => {
   return (
     <div class="space-y-6">
       {/* Back Button */}
-      <button
-        onClick$={() => nav('/account/orders')}
+      <Link
+        href="/account/orders"
+        id="order-details-back-link"
         class="flex items-center gap-2 text-blue-600 hover:text-blue-700"
       >
         <svg
@@ -192,7 +192,7 @@ export default component$(() => {
           />
         </svg>
         Back to Orders
-      </button>
+      </Link>
       
       {/* Page Header */}
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -381,13 +381,33 @@ export default component$(() => {
         )}
         
         {/* Contact Support */}
-        <a
+        <Link
           href="/contact"
+          id="order-details-contact-support"
           class="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
         >
           Contact Support
-        </a>
+        </Link>
       </div>
     </div>
   );
 });
+
+/**
+ * SEO metadata for the order details page
+ */
+export const head: DocumentHead = ({ resolveValue }) => {
+  const orderId = resolveValue(useOrderId);
+  return {
+    title: orderId
+      ? `Order Details - ReconShop`
+      : 'Order Not Found - ReconShop',
+    meta: [
+      {
+        name: 'description',
+        content:
+          'View your order details, track shipping status, and manage your purchase.',
+      },
+    ],
+  };
+};

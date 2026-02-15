@@ -29,7 +29,7 @@ import type {
   OrderFilters,
   OrderHistoryResponse,
   OrderStatistics,
-} from '~/types/order.types';
+} from '~/types/order';
 
 /**
  * Generate a unique order number

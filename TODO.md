@@ -170,15 +170,15 @@ Why seventh? The ultimate goal of an e-commerce site.
 
 Benefits: Completes the purchase funnel ✅
 
-### Step 8: User Dashboard & Order History 📊
+### Step 8: User Dashboard & Order History 📊 (COMPLETED ✅)
 
 #### What to implement:
 
 - [x] User dashboard route (COMPLETED ✅)
 - [x] Order history with status (COMPLETED ✅ - Database verified)
-- [ ] Order details page
-- [ ] Track shipments
-- [ ] Reorder functionality
+- [x] Order details page (COMPLETED ✅ - /account/orders/[id])
+- [ ] Track shipments (future enhancement)
+- [ ] Reorder functionality (placeholder - coming soon)
 - [x] Saved addresses management (COMPLETED ✅ - Placeholder created)
 
 ### Step 9: Wishlist Feature ❤️
@@ -602,6 +602,31 @@ Benefits: Completes the purchase funnel
 1. **Step 9**: Implement **Wishlist Feature** (Context, UI, Database).
 2. **Step 10**: Reviews & Ratings.
 3. **Deployment Config**: User needs to update Supabase "Site URL" to the production domain.
+
+---
+
+## Session Summary (2026-02-15)
+
+### What's Finished ✅
+
+- **Step 8: User Dashboard & Order History (COMPLETED)**:
+  - **Order Types Consolidation**: Merged `order.ts` and `order.types.ts` into single `src/types/order.ts`.
+  - **OrderStatusBadge Consolidation**: Removed duplicate `account/OrderStatusBadge`, using `orders/OrderStatusBadge` everywhere.
+  - **Order Details Page**: Enhanced with DocumentHead, Link for SPA navigation, and accessibility IDs.
+- **Codebase Cleanup**:
+  - Deleted `order.types.ts` and `account/OrderStatusBadge.tsx`.
+  - Archived `tasks/order-details-page.tsx` template to `tasks/Done/`.
+- **AI Context**: Updated `AI.md` with order components, types, and route structure.
+
+### The "Wall" 🚧
+
+- No blockers encountered.
+
+### Next Steps 📋
+
+1. **Step 9**: Begin **Wishlist Feature** implementation.
+2. **Track shipments**: Future enhancement for order details.
+3. **Reorder functionality**: Placeholder exists; implement adding items from past order to cart.
 
 ---
 

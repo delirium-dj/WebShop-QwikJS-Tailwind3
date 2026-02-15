@@ -16,7 +16,7 @@
  */
 
 import { component$ } from '@builder.io/qwik';
-import type { OrderSummary } from '~/types/order.types';
+import type { OrderSummary } from '~/types/order';
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 /**
