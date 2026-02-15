@@ -20,6 +20,7 @@
 
 import { component$, useSignal, $, useTask$ } from '@builder.io/qwik';
 import { useAuth } from '~/contexts/auth';
+import { useToast } from '~/contexts/toast';
 
 /**
  * Profile Page Component
@@ -27,6 +28,8 @@ import { useAuth } from '~/contexts/auth';
 export default component$(() => {
   // Get auth context
   const auth = useAuth();
+  // Get toast context
+  const toast = useToast();
   
   // ============================================
   // FORM STATE (Signals)
@@ -40,9 +43,11 @@ export default component$(() => {
   
   // UI state signals
   const isEditingProfile = useSignal(false);
+  const isChangingPhone = useSignal(false);
   const isChangingPassword = useSignal(false);
   const isSaving = useSignal(false);
   const saveMessage = useSignal<string | null>(null);
+  const phoneMessage = useSignal<string | null>(null);
   const passwordMessage = useSignal<string | null>(null);
   
   /**
@@ -84,21 +89,40 @@ export default component$(() => {
       // Update profile via auth context
       await auth.actions.updateProfile({
         displayName: displayName.value.trim(),
-        phone: phone.value.trim() || undefined,
       });
       
       // Success!
-      saveMessage.value = 'Profile updated successfully!';
+      await toast.showToast('Profile updated successfully!', 'success');
       isEditingProfile.value = false;
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        saveMessage.value = null;
-      }, 3000);
       
     } catch (error) {
       console.error('Profile update error:', error);
-      saveMessage.value = 'Failed to update profile. Please try again.';
+      await toast.showToast('Failed to update profile. Please try again.', 'error');
+    } finally {
+      isSaving.value = false;
+    }
+  });
+
+  /**
+   * Handle phone update (Dedicated)
+   */
+  const handleSavePhone$ = $(async () => {
+    try {
+      isSaving.value = true;
+      phoneMessage.value = null;
+
+      // Update phone via auth context
+      await auth.actions.updateProfile({
+        phone: phone.value.trim() || undefined,
+      });
+
+      // Success!
+      await toast.showToast('Phone number updated successfully!', 'success');
+      isChangingPhone.value = false;
+
+    } catch (error) {
+      console.error('Phone update error:', error);
+      await toast.showToast('Failed to update phone number.', 'error');
     } finally {
       isSaving.value = false;
     }
@@ -127,21 +151,16 @@ export default component$(() => {
       await auth.actions.updatePassword(newPassword.value);
       
       // Success!
-      passwordMessage.value = 'Password changed successfully!';
+      await toast.showToast('Password changed successfully!', 'success');
       isChangingPassword.value = false;
       
       // Clear form
       newPassword.value = '';
       confirmPassword.value = '';
       
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        passwordMessage.value = null;
-      }, 3000);
-      
     } catch (error) {
       console.error('Password change error:', error);
-      passwordMessage.value = 'Failed to change password. Please try again.';
+      await toast.showToast('Failed to change password. Please try again.', 'error');
     } finally {
       isSaving.value = false;
     }
@@ -160,6 +179,17 @@ export default component$(() => {
     saveMessage.value = null;
   });
   
+  /**
+   * Cancel phone change
+   */
+  const handleCancelPhoneChange$ = $(() => {
+    if (auth.state.user) {
+      phone.value = auth.state.user.phone || '';
+    }
+    isChangingPhone.value = false;
+    phoneMessage.value = null;
+  });
+
   /**
    * Cancel password change
    */
@@ -278,25 +308,8 @@ export default component$(() => {
               </p>
             </div>
 
-            {/* Phone Field */}
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
-              {isEditingProfile.value ? (
-                <input
-                  type="tel"
-                  value={phone.value}
-                  onInput$={(e) => (phone.value = (e.target as HTMLInputElement).value)}
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="+1 (555) 123-4567"
-                />
-              ) : (
-                <p class="text-gray-900">{phone.value || 'Not set'}</p>
-              )}
-            </div>
 
-            {/* Action Buttons (when editing) */}
+            {/* Action Buttons (when editing profile) */}
             {isEditingProfile.value && (
               <div class="flex gap-3">
                 <button
@@ -317,6 +330,86 @@ export default component$(() => {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Phone Number Section */}
+      <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-5 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900">Phone Number</h3>
+              <p class="mt-1 text-sm text-gray-600">
+                Manage your phone number for account security and communications
+              </p>
+            </div>
+            {!isChangingPhone.value && (
+              <button
+                id="phone-action-button"
+                onClick$={() => (isChangingPhone.value = true)}
+                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                {phone.value ? 'Change Number' : 'Set Number'}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {isChangingPhone.value && (
+          <div class="px-6 py-5">
+            {/* Phone Message */}
+            {phoneMessage.value && (
+              <div
+                class={`mb-4 p-4 rounded-md ${
+                  phoneMessage.value.includes('success')
+                    ? 'bg-green-50 text-green-800 border border-green-200'
+                    : 'bg-red-50 text-red-800 border border-red-200'
+                }`}
+              >
+                {phoneMessage.value}
+              </div>
+            )}
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number
+                </label>
+                <input
+                  id="phone-input"
+                  type="tel"
+                  value={phone.value}
+                  onInput$={(e) => (phone.value = (e.target as HTMLInputElement).value)}
+                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div class="flex gap-3">
+                <button
+                  onClick$={handleSavePhone$}
+                  disabled={isSaving.value}
+                  class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSaving.value ? 'Saving...' : 'Save Phone'}
+                </button>
+                <button
+                  onClick$={handleCancelPhoneChange$}
+                  disabled={isSaving.value}
+                  class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!isChangingPhone.value && (
+          <div class="px-6 py-5">
+            <p class="text-gray-900">{phone.value || 'Not set'}</p>
+          </div>
+        )}
       </div>
 
       {/* Password Change Section */}

@@ -25,8 +25,8 @@ export interface ToastMessage {
  */
 export interface ToastContextType {
   messages: ToastMessage[];  // Array of currently visible toast notifications
-  showToast: (message: string, type?: ToastType, duration?: number) => void;  // Function to display a new toast
-  removeToast: (id: string) => void;  // Function to manually dismiss a toast
+  showToast: PropFunction<(message: string, type?: ToastType, duration?: number) => void>;  // Function to display a new toast
+  removeToast: PropFunction<(id: string) => void>;  // Function to manually dismiss a toast
 }
 
 // Create a unique Context ID for Qwik's dependency injection system
@@ -77,7 +77,7 @@ export const ToastProvider = component$(() => {
     // Auto-remove after duration:
     // We add 300ms extra to allow the slide-out animation to complete before removal
     setTimeout(() => {
-      toastState.messages = toastState.messages.filter((t) => t.id !== id);
+      toastState.messages = toastState.messages.filter((t: ToastMessage) => t.id !== id);
     }, duration + 300);
   });
 
@@ -86,7 +86,7 @@ export const ToastProvider = component$(() => {
    * Allows manual dismissal when the user clicks the "X" button
    */
   const removeToast = $((id: string) => {
-    toastState.messages = toastState.messages.filter((t) => t.id !== id);
+    toastState.messages = toastState.messages.filter((t: ToastMessage) => t.id !== id);
   });
 
   // Package everything into the context value
@@ -116,7 +116,7 @@ export const ToastProvider = component$(() => {
         aria-live="polite"
         aria-atomic="true"
       >
-        {toastState.messages.map((toast) => (
+        {toastState.messages.map((toast: ToastMessage) => (
           <ToastItem
             key={toast.id}
             message={toast}
@@ -189,12 +189,12 @@ const ToastItem = component$<{
   return (
     <div
       class={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg max-w-md pointer-events-auto animate-slide-in-right ${
-        colorsByType[message.type]
+        colorsByType[message.type as ToastType]
       }`}
       role="alert"
     >
       {/* Icon */}
-      <div class="flex-shrink-0">{iconsByType[message.type]}</div>
+      <div class="flex-shrink-0">{iconsByType[message.type as ToastType]}</div>
       
       {/* Message Text */}
       <p class="flex-1 text-sm font-medium">{message.message}</p>
