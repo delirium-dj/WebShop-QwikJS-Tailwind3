@@ -1,14 +1,12 @@
 import { component$ } from "@builder.io/qwik";
+import ImgBanner from '~/media/images/banner/banner.jpg?jsx';
 
 export const Banner = component$(() => {
   return (
     <section id="banner-section" class="relative my-20 h-[60vh] w-full">
       <picture>
-        <img
-          src="/images/banner/banner.jpg"
+        <ImgBanner 
           alt="Banner"
-          width={1920}
-          height={1080}
           class="absolute inset-0 h-full w-full object-cover"
         />
       </picture>
