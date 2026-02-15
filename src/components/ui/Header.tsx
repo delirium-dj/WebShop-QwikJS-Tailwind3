@@ -148,8 +148,12 @@ export const Header = component$(() => {
                 - This component contains the logic for the drawer that slides in from the right.
                 - It only appears when the Desktop Navigation (above) is hidden.
                 - We pass auth state so it can also show auth buttons/menu on mobile
+                - JUNIOR NOTE: We filter the links here to hide 'About' on mobile ONLY.
             */}
-            <MobileMenu links={navLinks} showAuth={true} />
+            <MobileMenu 
+              links={navLinks.filter(link => link.label !== "About")} 
+              showAuth={true} 
+            />
           </div>
         </div>
       </div>

@@ -10,15 +10,15 @@ import { component$, Slot } from "@builder.io/qwik";
  */
 export default component$(() => {
   return (
-    <div class="bg-gray-50 min-h-screen py-12">
-      <div class="container mx-auto px-4 max-w-4xl">
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden p-8 md:p-16">
+    <div class="bg-gray-50 min-h-screen py-4 md:py-12">
+      <div class="container mx-auto md:px-4 max-w-4xl">
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden p-4 md:p-16">
           {/* 
             'prose prose-indigo lg:prose-xl': 
              This is the magic class from the Typography plugin. 
              It automatically styles the <Slot /> (the MDX content).
           */}
-          <article class="prose prose-indigo prose-lg max-w-none">
+          <article class="prose prose-indigo prose-sm md:prose-lg max-w-none">
             <Slot />
           </article>
           
