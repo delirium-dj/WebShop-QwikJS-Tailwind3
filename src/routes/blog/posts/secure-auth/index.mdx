@@ -1,0 +1,39 @@
+---
+title: Secure Auth with Supabase
+description: Implementing Google OAuth and protected routes in the ReconShop account section.
+thumbnail: ./secure-auth.jpg
+tags:
+  - security
+  - auth
+author: ReconShop Team
+---
+
+import blogImage from "./secure-auth.jpg?as=picture&w=400;800;1200&format=avif;webp;jpg&quality=85&placeholder=blur";
+
+# Secure Auth with Supabase
+
+<div class="relative mx-auto my-8">
+  <picture>
+    {Object.entries(blogImage.sources).map(([key, value]) => (
+      <source key={key} srcset={value} type={"image/" + key} />
+    ))}
+    <img
+      src={blogImage.img.src}
+      class="w-full rounded-2xl shadow-xl"
+      alt="Secure Auth"
+      width={blogImage.img.w}
+      height={blogImage.img.h}
+      fetchpriority="high"
+    />
+  </picture>
+</div>
+
+Security is a top priority for ReconShop. We use Supabase to handle authentication, ensuring that user data is protected with industry-standard protocols.
+
+## Key Features
+
+- **Google OAuth**: Seamless login with a trusted provider.
+- **Protected Routes**: Ensuring only authorized users can access sensitive account information.
+- **Resilient Sessions**: Managing user state effectively across the application.
+
+Trust is built with security, and Supabase helps us maintain that trust with every interaction.

@@ -24,6 +24,9 @@ importers:
       '@netlify/edge-functions':
         specifier: ^3.0.0
         version: 3.0.3
+      '@tailwindcss/typography':
+        specifier: ^0.5.16
+        version: 0.5.19(tailwindcss@3.4.19(yaml@2.8.2))
       '@types/node':
         specifier: 20.19.0
         version: 20.19.0
@@ -75,6 +78,9 @@ importers:
       vite:
         specifier: 7.3.1
         version: 7.3.1(@types/node@20.19.0)(jiti@1.21.7)(less@4.5.1)(sass@1.97.3)(stylus@0.62.0)(yaml@2.8.2)
+      vite-imagetools:
+        specifier: ^7.0.5
+        version: 7.1.1(rollup@4.57.1)
       vite-plugin-image-optimizer:
         specifier: ^2.0.3
         version: 2.0.3(sharp@0.34.5)(svgo@4.0.0)(vite@7.3.1(@types/node@20.19.0)(jiti@1.21.7)(less@4.5.1)(sass@1.97.3)(stylus@0.62.0)(yaml@2.8.2))
@@ -1396,6 +1402,11 @@ packages:
   '@szmarczak/http-timer@5.0.1':
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
     engines: {node: '>=14.16'}
+
+  '@tailwindcss/typography@0.5.19':
+    resolution: {integrity: sha512-w31dd8HOx3k9vPtcQh5QHP9GwKcgbMp87j58qi6xgiBnFFtKEAgCWnDw4qUT8aHwkCp8bKvb/KGKWWHedP0AAg==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
@@ -3209,6 +3220,10 @@ packages:
     engines: {node: '>=16.x'}
     hasBin: true
 
+  imagetools-core@7.1.0:
+    resolution: {integrity: sha512-8Aa4NecBBGmTkaAUjcuRYgTPKHCsBEWYmCnvKCL6/bxedehtVVFyZPdXe8DD0Nevd6UWBq85ifUaJ8498lgqNQ==}
+    engines: {node: '>=18.0.0'}
+
   imagetools-core@9.1.0:
     resolution: {integrity: sha512-xQjs+2vrxLnAjCq+omuNkd5UQTld9/bP8+YT0LyYTlKfuSQtgUBvqhUwGugzSAh6sCdN+LnROMuLswn5hZ9Fhg==}
     engines: {node: '>=20.0.0'}
@@ -4497,6 +4512,10 @@ packages:
     peerDependencies:
       postcss: ^8.2.14
 
+  postcss-selector-parser@6.0.10:
+    resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
+    engines: {node: '>=4'}
+
   postcss-selector-parser@6.1.2:
     resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
     engines: {node: '>=4'}
@@ -5636,6 +5655,10 @@ packages:
 
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
+
+  vite-imagetools@7.1.1:
+    resolution: {integrity: sha512-6Dz0ZD2u1u59dw0ryid4beaDcCNNiTfLXUg6XLxx9n7Qm4BgAAm8TozYUnIH0aT4FDAADZqHsh9ZtISzAs4eKA==}
+    engines: {node: '>=18.0.0'}
 
   vite-imagetools@9.0.3:
     resolution: {integrity: sha512-FwjApRNZyN+RucPW9Z9kf0dyzyi3r3zlDfrTnzHXNaYpmT3pZ5w//d6QkApy1iypbDm+3fq+Gwfv+PYA4j4uYw==}
@@ -7261,6 +7284,11 @@ snapshots:
   '@szmarczak/http-timer@5.0.1':
     dependencies:
       defer-to-connect: 2.0.1
+
+  '@tailwindcss/typography@0.5.19(tailwindcss@3.4.19(yaml@2.8.2))':
+    dependencies:
+      postcss-selector-parser: 6.0.10
+      tailwindcss: 3.4.19(yaml@2.8.2)
 
   '@tokenizer/token@0.3.0': {}
 
@@ -9453,6 +9481,8 @@ snapshots:
 
   image-size@2.0.2: {}
 
+  imagetools-core@7.1.0: {}
+
   imagetools-core@9.1.0: {}
 
   immutable@5.1.4: {}
@@ -11018,6 +11048,11 @@ snapshots:
       postcss: 8.5.6
       postcss-selector-parser: 6.1.2
 
+  postcss-selector-parser@6.0.10:
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
+
   postcss-selector-parser@6.1.2:
     dependencies:
       cssesc: 3.0.0
@@ -12281,6 +12316,14 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
+
+  vite-imagetools@7.1.1(rollup@4.57.1):
+    dependencies:
+      '@rollup/pluginutils': 5.3.0(rollup@4.57.1)
+      imagetools-core: 7.1.0
+      sharp: 0.34.5
+    transitivePeerDependencies:
+      - rollup
 
   vite-imagetools@9.0.3(rollup@4.57.1):
     dependencies:

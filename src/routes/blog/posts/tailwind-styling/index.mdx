@@ -1,0 +1,39 @@
+---
+title: Styling with Tailwind CSS 3
+description: How to maintain a premium design system using utility-first CSS in Qwik components.
+thumbnail: ./tailwind-styling.jpg
+tags:
+  - design
+  - tailwind
+author: ReconShop Team
+---
+
+import blogImage from "./tailwind-styling.jpg?as=picture&w=400;800;1200&format=avif;webp;jpg&quality=85&placeholder=blur";
+
+# Styling with Tailwind CSS 3
+
+<div class="relative mx-auto my-8">
+  <picture>
+    {Object.entries(blogImage.sources).map(([key, value]) => (
+      <source key={key} srcset={value} type={"image/" + key} />
+    ))}
+    <img
+      src={blogImage.img.src}
+      class="w-full rounded-2xl shadow-xl"
+      alt="Styling with Tailwind"
+      width={blogImage.img.w}
+      height={blogImage.img.h}
+      fetchpriority="high"
+    />
+  </picture>
+</div>
+
+Tailwind CSS provides a utility-first approach to styling that perfectly complements Qwik's component model. It allows us to build a premium, consistent design system without writing massive amounts of custom CSS.
+
+## Our Design System
+
+- **Consistency**: Using predefined tokens for colors, spacing, and typography.
+- **Speed**: Rapidly iterate on UI changes.
+- **Optimization**: Tailwind's JIT engine ensures that only the CSS we use is included in the final bundle.
+
+Design is not just how it looks, it's how it works. And with Tailwind, it works beautifully.

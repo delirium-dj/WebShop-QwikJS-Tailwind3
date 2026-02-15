@@ -1,0 +1,39 @@
+---
+title: The Power of Resumability
+description: Understanding how Qwik eliminates hydration to achieve near-instant interactivity.
+thumbnail: ./power-resumability.jpg
+tags:
+  - qwikjs
+  - core
+author: ReconShop Team
+---
+
+import blogImage from "./power-resumability.jpg?as=picture&w=400;800;1200&format=avif;webp;jpg&quality=85&placeholder=blur";
+
+# The Power of Resumability
+
+<div class="relative mx-auto my-8">
+  <picture>
+    {Object.entries(blogImage.sources).map(([key, value]) => (
+      <source key={key} srcset={value} type={"image/" + key} />
+    ))}
+    <img
+      src={blogImage.img.src}
+      class="w-full rounded-2xl shadow-xl"
+      alt="The Power of Resumability"
+      width={blogImage.img.w}
+      height={blogImage.img.h}
+      fetchpriority="high"
+    />
+  </picture>
+</div>
+
+Resumability is the core innovation of Qwik. Unlike traditional frameworks that require "hydration" (re-executing the entire app on the client to make it interactive), Qwik simply resumes where the server left off.
+
+## How it Works
+
+1. **Server Side**: The application is rendered to HTML on the server.
+2. **Serialization**: The state of the application is serialized into the HTML.
+3. **Resumption**: When the user interacts, Qwik downloads only the necessary code and resumes execution using the serialized state.
+
+This means zero initial JavaScript execution, leading to a perfect lighthouse score and a superior user experience.

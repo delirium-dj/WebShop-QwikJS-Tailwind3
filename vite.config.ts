@@ -22,6 +22,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // Import the image optimizer plugin
 // This will automatically optimize images during the build process
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
+import { imagetools } from 'vite-imagetools';
 
 /**
  * VITE CONFIGURATION
@@ -46,6 +47,7 @@ export default defineConfig({
        * Must come first to set up the Qwik environment
        */
       qwikCity(),
+      imagetools(),
 
       /**
        * QWIK VITE PLUGIN

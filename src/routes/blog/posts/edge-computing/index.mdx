@@ -1,0 +1,39 @@
+---
+title: Edge Computing with Qwik City
+description: Deploying your ReconShop to the edge for global performance and reliability.
+thumbnail: ./edge-computing.jpg
+tags:
+  - cloud
+  - performance
+author: ReconShop Team
+---
+
+import blogImage from "./edge-computing.jpg?as=picture&w=400;800;1200&format=avif;webp;jpg&quality=85&placeholder=blur";
+
+# Edge Computing with Qwik City
+
+<div class="relative mx-auto my-8">
+  <picture>
+    {Object.entries(blogImage.sources).map(([key, value]) => (
+      <source key={key} srcset={value} type={"image/" + key} />
+    ))}
+    <img
+      src={blogImage.img.src}
+      class="w-full rounded-2xl shadow-xl"
+      alt="Edge Computing"
+      width={blogImage.img.w}
+      height={blogImage.img.h}
+      fetchpriority="high"
+    />
+  </picture>
+</div>
+
+Deploying to the edge means running your server code as close to the user as possible. Qwik City is designed from the ground up to take advantage of edge environments like Netlify Edge Functions or Cloudflare Workers.
+
+## Why the Edge?
+
+- **Reduced Latency**: Seconds matter in e-commerce.
+- **Global Availability**: Your shop is fast everywhere in the world.
+- **Scalability**: Handle traffic spikes with ease.
+
+By combining Qwik's resumability with edge computing, ReconShop delivers a truly global, ultra-fast shopping experience.

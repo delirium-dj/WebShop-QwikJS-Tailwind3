@@ -53,7 +53,21 @@ export default {
           },
         },
       },
+      // Target the Typography (prose) plugin settings
+      typography: {
+        DEFAULT: {
+          css: {
+            // Override headings to be bold (700) instead of extrabold (800)
+            h1: { fontWeight: '700' },
+            h2: { fontWeight: '700' },
+            h3: { fontWeight: '700' },
+            h4: { fontWeight: '700' },
+          },
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };
