@@ -628,6 +628,30 @@ Benefits: Completes the purchase funnel
 2. **Track shipments**: Future enhancement for order details.
 3. **Reorder functionality**: Placeholder exists; implement adding items from past order to cart.
 
+## Session Summary (2026-02-15)
+
+### What's Finished ✅
+
+- **Blog Image Optimization Fix**:
+  - Implemented `src/types/imagetools.d.ts` to resolve TypeScript "module not found" errors for Vite optimized image imports (`?as=picture`).
+  - Identified and fixed a build-crashing bug where `edge-computing.jpg` was actually a 404 HTML file; replaced it with a valid placeholder.
+- **Typography & Styling Customization**:
+  - Customized `@tailwindcss/typography` in `tailwind.config.js` to change default heading weights from `extrabold` to `bold` for a cleaner aesthetic.
+  - Responsive adjustment for blog layout: added mobile-specific padding and switched to smaller typography (`prose-sm`) for better phone readability.
+- **Navigation Refinement**:
+  - Modified `Header.tsx` to filter out the "About" link from the **Mobile Menu** while preserving it in the desktop view.
+
+### The "Wall" 🚧
+
+- Found that `vite-imagetools` uses complex query strings that TypeScript cannot infer automatically, requiring manual wildcard module declarations.
+- A corrupted asset (HTML-disguised-as-JPEG) was causing `Sharp` to crash during the Vite build process.
+
+### Next Steps 📋
+
+1. **Continue Step 9**: Begin full implementation of the **Wishlist Feature**.
+2. **Asset Polish**: Replace the temporary placeholder for the "Edge Computing" blog post with genuine hero content.
+3. **Accessibility Audit**: Continue ensuring all new components follow the kebab-case ID convention.
+
 ---
 
 Summary complete! See TODO.md for your hand-off notes.

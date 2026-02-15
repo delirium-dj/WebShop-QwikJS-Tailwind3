@@ -1260,8 +1260,9 @@ useVisibleTask$(() => {
 
 - [x] **User Authentication (Step 6)**: Full system with Supabase, Google OAuth, and Profile Management
 - [x] **Implementing Reactive Sorting & Filtering in Shop**: URL state sync and instant UI updates
+- [x] **Blog Image Optimization**: Resolved TypeScript module errors and identified corrupted assets
 - [ ] Designing the Checkout Flow (Step 7)
-- [ ] Setting up Order tracking system (Step 8)
+- [x] **Step 8: User Dashboard & Order History**: CRUD for addresses and order viewing (COMPLETED ✅)
 
 ### Planned Features 📋
 
@@ -1496,33 +1497,23 @@ When working on this project:
 
 ---
 
-**Document Version:** 1.8  
-**Last Updated:** February 14, 2026 (Account Fixes & SPA Restoration - 75% Project Complete)
-**Session:** Fixed Account Layout & Navigation:
+**Document Version:** 1.9  
+**Last Updated:** February 15, 2026 (Blog Fixes & Mobile Menu Refinement)
+**Session:** Blog Image Optimization & Menu Tweaks:
 
-- ✅ **Fixed "Blank Page" Issue**: Moved `AuthGuard` in `account/layout.tsx` to wrap only the inner content `<Slot />`. This ensures layout shell renders immediately and solves hydration mismatches.
-- ✅ **Restored SPA Navigation**: Reverted `UserMenu.tsx` links from `<a>` to `<Link>` components, eliminating header flicker and preserved auth state during account routing.
-- ✅ **Addresses Page**: Created `src/routes/account/addresses/index.tsx` placeholder.
-- ✅ **Database Verification**: Verified `orders` table functionality in Supabase; page now handles data without "relation missing" errors.
-- ✅ **Build Quality**: Verified zero errors after link restoration.
+- ✅ **Fixed Image Import Errors**: Created `src/types/imagetools.d.ts` to provide TypeScript definitions for optimized image queries (`?as=picture`), resolving "module not found" errors.
+- ✅ **Corrupted Asset Fix**: Identified `edge-computing.jpg` as a 404 HTML file crashing the build; replaced with a placeholder to restore development server availability.
+- ✅ **Typography Customization**: Modified `tailwind.config.js` to override heading weights from `extrabold` to `bold` for the `prose` plugin.
+- ✅ **Mobile Layout Optimization**: Updated blog post layout with mobile-first padding and responsive typography sizes (`prose-sm` on mobile).
+- ✅ **Mobile Menu Refinement**: Excluded the "About" link from the mobile drawer in `Header.tsx` while maintaining its presence in the desktop navigation.
 
-**Latest Session (Feb 14, 2026 - Part 2):**
+**Previous Session (Feb 14, 2026 - Part 2):**
 
 - ✅ **Address Management**: Full CRUD for addresses with server-side auth validation.
 - ✅ **Server-Side Auth**: Implemented manual cookie syncing to fix 401 errors in loaders.
 - ✅ **Asset Restoration**: Fixed 404 errors by adding placeholder images for categories.
 - ✅ **Production Debugging**: Identified Supabase Dashboard config as cause of OAuth redirect issues.
 
-**Previous Session Completion (ID Attributes):**
+**Project Status:** 80% Feature Complete (Step 8 Finished, Step 9 Wishlist Pending)
 
-- ✅ **40+ unique ID attributes** added to interactive components (Feb 13, 2026)
-- ✅ Enhanced accessibility and browser testing compatibility.
-
-**Previous Session Completion (Step 7):**
-
-- ✅ Multi-step Checkout Flow (Shipping → Review → Confirmation)
-- ✅ Cart clearing, order validation, success page
-
-**Project Status:** 75% Feature Complete (Step 8 User Dashboard partially complete)
-
-**Next Priority:** Step 8 Finalize - Order details page & Step 9 - Wishlist Feature
+**Next Priority:** Step 9 - Wishlist Feature & Step 10 - Reviews & Ratings
