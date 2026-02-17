@@ -1497,9 +1497,14 @@ When working on this project:
 
 ---
 
-**Document Version:** 1.9  
-**Last Updated:** February 15, 2026 (Blog Fixes & Mobile Menu Refinement)
-**Session:** Blog Image Optimization & Menu Tweaks:
+**Document Version:** 2.0  
+**Last Updated:** February 17, 2026 (Blog Content Polish & Responsive UI)
+**Session (Feb 17):** Blog Polish:
+
+- ✅ **Standardized Blog Images**: Updated all MDX posts to use unified `vite-imagetools` optimized imports and responsive `<picture>` tags.
+- ✅ **Responsive Typography**: Polish to "About" and blog layouts (`prose-sm md:prose-lg`) for improved mobile readability.
+
+**Previous Session (Feb 15):** Blog Image Optimization & Menu Tweaks:
 
 - ✅ **Fixed Image Import Errors**: Created `src/types/imagetools.d.ts` to provide TypeScript definitions for optimized image queries (`?as=picture`), resolving "module not found" errors.
 - ✅ **Corrupted Asset Fix**: Identified `edge-computing.jpg` as a 404 HTML file crashing the build; replaced with a placeholder to restore development server availability.
