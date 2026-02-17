@@ -184,7 +184,7 @@ export interface WishlistActions {
    * const saved = await wishlist.actions.isInWishlist(product.id);
    * ```
    */
-  isInWishlist: QRL<(id: number) => boolean>;
+  isInWishlist: QRL<(id: number) => Promise<boolean>>;
 
   /**
    * clearWishlist — remove every item from the wishlist.

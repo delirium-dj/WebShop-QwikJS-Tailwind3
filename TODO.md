@@ -181,14 +181,14 @@ Benefits: Completes the purchase funnel ✅
 - [ ] Reorder functionality (placeholder - coming soon)
 - [x] Saved addresses management (COMPLETED ✅ - Placeholder created)
 
-### Step 9: Wishlist Feature ❤️
+### Step 9: Wishlist Feature ❤️ (COMPLETED ✅)
 
 #### What to implement:
 
-- [ ] Wishlist context/store
-- [ ] Add to wishlist button on products
-- [ ] Wishlist page
-- [ ] Move items from wishlist to cart
+- [x] Wishlist context/store (COMPLETED ✅)
+- [x] Add to wishlist button on products (COMPLETED ✅)
+- [x] Wishlist page (COMPLETED ✅)
+- [x] Move items from wishlist to cart (COMPLETED ✅)
 
 ### Step 10: Reviews & Ratings ⭐
 
@@ -654,7 +654,7 @@ Benefits: Completes the purchase funnel
 
 ---
 
-## Session Summary (2026-02-17)
+## Session Summary (2026-02-17 — Part 1)
 
 ### What's Finished ✅
 
@@ -670,10 +670,35 @@ Benefits: Completes the purchase funnel
 
 - No significant blockers. The transition to optimized local assets is now complete across all current blog content.
 
+---
+
+## Session Summary (2026-02-17 — Part 2)
+
+### What's Finished ✅
+
+- **Step 9: Wishlist Feature (COMPLETED)**:
+  - **WishlistContext**: Created global reactive store with `addItem`, `removeItem`, `toggleItem`, `isInWishlist`, and `clearWishlist` actions, persisted to `localStorage`.
+  - **WishlistButton**: Built `icon` (heart on cards) and `button` (on detail page) variants with instant reactive updates.
+  - **Wishlist Page** (`/account/wishlist`): Responsive grid with empty state, "Move to Cart", "Add All to Cart", "Clear All", and relative date labels.
+  - **Integration**: Added `<WishlistProvider>` to `layout.tsx`, integrated heart button into `ProductCard.tsx` and `ProductInfo.tsx`.
+- **Bug Fixes**:
+  - **Click Propagation**: Refactored `ProductCard.tsx` to split image and details into separate `<Link>` wrappers, preventing the heart button from triggering navigation.
+  - **Build Error**: Fixed `TS2322` in `types.ts` — `isInWishlist` type changed from `QRL<(id: number) => boolean>` to `QRL<(id: number) => Promise<boolean>>` to match the async QRL implementation.
+  - **Directory Typo**: Renamed `components/whishlist/` → `components/wishlist/` and updated all import paths.
+- **UI Standardization**:
+  - Heart button now consistently pinned to bottom-right of product images with `bottom-4 right-4` (1rem margins) across Homepage, Shop, and Wishlist pages.
+- **Task Management**:
+  - Moved all Step 8 and Step 9 guide files to `tasks/Done/`.
+  - Updated `IMPLEMENTATION_GUIDE.md` with UI stabilization notes.
+
+### The "Wall" 🚧
+
+- The `$()` QRL wrapper in Qwik makes all functions async (returning `Promise`), which the static type definition must reflect. This caused a build-blocking `TS2322` error that only manifested during `pnpm run build` (not during dev).
+
 ### Next Steps 📋
 
-1. **Step 9: Wishlist Feature**: Implement the global wishlist store, "Heart" buttons on product cards, and the `/wishlist` route.
-2. **Step 10: Reviews & Ratings**: Begin planning the submission form and average rating display logic.
+1. **Step 10: Reviews & Ratings**: Begin planning the submission form and average rating display logic.
+2. **Supabase Wishlist Sync**: Future enhancement to persist wishlist across devices when authenticated.
 3. **Asset Polish**: Continue replacing placeholders with high-quality themed images.
 
 ---

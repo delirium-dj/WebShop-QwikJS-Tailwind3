@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 15, 2026 (Step 8 Complete - Order Types Consolidation & Order Details Page)
+**Last Updated:** February 17, 2026 (Step 9 Complete - Wishlist Feature & Build Fix)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -29,6 +29,7 @@
 - ✅ **Multi-Step Checkout**: Shipping address validation → Order review → Confirmation with cart clearing
 - ✅ **SPA Navigation & Layout Fixes**: Resolved hydration issues by refactoring `AuthGuard` placement and restored smooth SPA routing for the account section (Feb 14, 2026)
 - ✅ **Semantic ID Attributes**: 40+ unique IDs on all interactive elements (Feb 13, 2026)
+- ✅ **Wishlist System**: Full add/remove/toggle with localStorage persistence, heart buttons on ProductCard and ProductInfo, dedicated `/account/wishlist` page with bulk actions (Feb 17, 2026)
 
 ### Technology Stack
 
@@ -119,6 +120,8 @@ reconshop/
 │   │   ├── orders/                      # Order display components
 │   │   │   ├── OrderCard.tsx            # Order summary card for lists
 │   │   │   └── OrderStatusBadge.tsx     # Status badge (pending/shipped/etc.)
+│   │   ├── wishlist/                    # Wishlist components (NEW - Step 9)
+│   │   │   └── WishlistButton.tsx       # Heart icon ("icon") and full button ("button") variants
 │   │   └── cart/                        # Shopping cart components
 │   │       ├── AddToCartButton.tsx      # Add to cart button
 │   │       ├── CartBadge.tsx            # Cart icon with count badge
@@ -137,6 +140,12 @@ reconshop/
 │   │   │   ├── AuthContext.tsx          # Auth provider component
 │   │   │   ├── useAuth.ts               # Custom hook to access auth
 │   │   │   ├── types.ts                 # TypeScript interfaces
+│   │   │   └── index.ts                 # Barrel exports
+│   │   ├── wishlist/                    # Wishlist context (NEW - Step 9)
+│   │   │   ├── WishlistContext.tsx      # Provider with state + actions (localStorage)
+│   │   │   ├── useWishlist.ts           # Custom hook to access wishlist
+│   │   │   ├── types.ts                 # WishlistItem, WishlistState, WishlistActions
+│   │   │   ├── utils.ts                 # localStorage helpers
 │   │   │   └── index.ts                 # Barrel exports
 │   │   └── toast/                       # Toast notification context
 │   │       ├── ToastContext.tsx         # Toast provider component
@@ -170,7 +179,9 @@ reconshop/
 │   │   │   ├── orders/                  # Order listing & details
 │   │   │   │   ├── index.tsx            # Order history page
 │   │   │   │   └── [id]/index.tsx       # Order details page (dynamic)
-│   │   │   └── addresses/               # Managed addresses (NEW)
+│   │   │   ├── wishlist/                # Wishlist page (NEW - Step 9)
+│   │   │   │   └── index.tsx            # Saved products grid with bulk actions
+│   │   │   └── addresses/               # Managed addresses
 │   │   ├── checkout/                    # Checkout flow (NEW)
 │   │   │   ├── index.tsx                # Multi-step checkout page
 │   │   │   └── success/index.tsx        # Success/Confirmation page
