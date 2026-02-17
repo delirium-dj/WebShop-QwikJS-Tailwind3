@@ -8,7 +8,7 @@ tags:
 author: ReconShop Team
 ---
 
-import blogImage from "./tailwind-styling.jpg?as=picture&w=400;800;1200&format=avif;webp;jpg&quality=85&placeholder=blur";
+import blogImage from "./tailwind-styling.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=85&placeholder=blur";
 
 # Styling with Tailwind CSS 3
 
@@ -19,7 +19,7 @@ import blogImage from "./tailwind-styling.jpg?as=picture&w=400;800;1200&format=a
     ))}
     <img
       src={blogImage.img.src}
-      class="w-full rounded-2xl shadow-xl"
+      class="h-64 object-cover rounded-2xl shadow-xl"
       alt="Styling with Tailwind"
       width={blogImage.img.w}
       height={blogImage.img.h}

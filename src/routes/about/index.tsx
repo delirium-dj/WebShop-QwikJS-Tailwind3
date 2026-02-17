@@ -11,7 +11,7 @@ export default component$(() => {
         </div>
         <div class="relative container mx-auto px-4">
           <div class="max-w-2xl">
-            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">
               About ReconShop
             </h1>
             <p class="mt-6 text-xl text-gray-300">
