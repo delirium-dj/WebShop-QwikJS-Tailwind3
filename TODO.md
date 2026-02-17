@@ -703,4 +703,33 @@ Benefits: Completes the purchase funnel
 
 ---
 
+---
+
+## Session Summary (2026-02-17 — Part 3)
+
+### What's Finished ✅
+
+- **Image Optimization Type Resolution**:
+  - Fixed a critical "Module not found" error for `vite-imagetools` imports (`?as=picture`).
+  - Updated `src/imagetools.d.ts` to use **exact query-string suffixes** (e.g., `*.jpg?as=picture&w=480...`).
+  - **WHY?** TypeScript's ambient module resolver supports only **one** wildcard (_). Single-wildcard patterns like `_.jpg`only match strings **ending** in`.jpg`, which our imports don't (they end in query params). Two-wildcard patterns like `_.jpg?_` are unsupported. Exact suffixes are the most robust solution.
+- **Banner Carousel implementation**:
+  - Refactored `src/components/home/Banner.tsx` from a static image to a **multi-image carousel**.
+  - Implemented same `useSignal` and `useVisibleTask$` logic as `Hero.tsx` for auto-rotation every 5 seconds.
+  - Added smooth CSS opacity transitions and a subtle gradient overlay for better text readability.
+  - Synced assets: The banner now uses optimized slides from the `hero` folder for variety.
+- **Linting & Code Quality**:
+  - Ran `eslint --fix` to clean up unused directives in `AddToCartButton.tsx`.
+  - Verified `pnpm run build` passes with zero errors.
+
+### The "Wall" 🚧
+
+- Found that `generate_image` tool had capacity issues (503 Service Unavailable). Resolved by using existing high-quality assets (`hero` slides) for the banner to maintain professional aesthetic while avoiding broken images.
+
+### Next Steps 📋
+
+1. **Step 10: Reviews & Ratings**: Begin planning the submission form and average rating display logic.
+2. **Checkout Flow UI**: Start building the multi-step checkout interface (Shipping, Payment, Review).
+3. **Product Search**: Enhance the existing search bar with real functionality.
+
 Summary complete! See TODO.md for your hand-off notes.
