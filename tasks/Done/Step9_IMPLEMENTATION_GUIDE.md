@@ -8,16 +8,16 @@
 
 ## What Was Built
 
-| Deliverable | File to create | Purpose |
-|---|---|---|
-| Context types | `src/contexts/wishlist/types.ts` | All TypeScript interfaces |
-| Storage helpers | `src/contexts/wishlist/utils.ts` | localStorage read/write/clear |
-| Context provider | `src/contexts/wishlist/WishlistContext.tsx` | Global reactive state + actions |
-| Custom hook | `src/contexts/wishlist/useWishlist.ts` | `useWishlist()` for components |
-| Barrel export | `src/contexts/wishlist/index.ts` | Single clean import point |
-| Heart button | `src/components/wishlist/WishlistButton.tsx` | Icon + button variants |
-| Wishlist page | `src/routes/account/wishlist/index.tsx` | `/account/wishlist` route |
-| Patch guide | `INTEGRATION_PATCHES.md` | What to change in existing files |
+| Deliverable      | File to create                               | Purpose                          |
+| ---------------- | -------------------------------------------- | -------------------------------- |
+| Context types    | `src/contexts/wishlist/types.ts`             | All TypeScript interfaces        |
+| Storage helpers  | `src/contexts/wishlist/utils.ts`             | localStorage read/write/clear    |
+| Context provider | `src/contexts/wishlist/WishlistContext.tsx`  | Global reactive state + actions  |
+| Custom hook      | `src/contexts/wishlist/useWishlist.ts`       | `useWishlist()` for components   |
+| Barrel export    | `src/contexts/wishlist/index.ts`             | Single clean import point        |
+| Heart button     | `src/components/wishlist/WishlistButton.tsx` | Icon + button variants           |
+| Wishlist page    | `src/routes/account/wishlist/index.tsx`      | `/account/wishlist` route        |
+| Patch guide      | `INTEGRATION_PATCHES.md`                     | What to change in existing files |
 
 ---
 
@@ -76,6 +76,7 @@ cp wishlist-index.tsx src/routes/account/wishlist/index.tsx
 ### Step 4 — Apply integration patches to existing files
 
 Open **INTEGRATION_PATCHES.md** and make the four small edits:
+
 - `src/routes/layout.tsx` → add `<WishlistProvider>`
 - `src/components/product/ProductCard.tsx` → add `<WishlistButton variant="icon">`
 - `src/routes/product/[id]/index.tsx` → add `<WishlistButton variant="button">`
@@ -122,10 +123,12 @@ src/
 ## Testing Checklist
 
 ### Context
+
 - [ ] `pnpm dev` starts with zero errors
 - [ ] `pnpm build` completes successfully
 
 ### Heart Button on ProductCard
+
 - [ ] Heart icon (♡) visible in top-right corner of every card on `/shop`
 - [ ] Clicking the heart turns it red/filled (♥)
 - [ ] Clicking again returns it to outline (♡)
@@ -133,11 +136,13 @@ src/
 - [ ] All cards for the same product show the same saved state simultaneously
 
 ### Heart Button on Product Detail Page
+
 - [ ] "Add to Wishlist" button appears next to "Add to Cart"
 - [ ] Clicking changes label to "Saved"
 - [ ] The ProductCard heart for that same product also turns red
 
 ### /account/wishlist Page
+
 - [ ] Redirects to login if not authenticated (AuthGuard from layout.tsx)
 - [ ] Empty state shows large heart + "Browse Shop" link when no items saved
 - [ ] Saved items appear in responsive grid (1 → 2 → 3 → 4 columns)
@@ -154,6 +159,7 @@ src/
 - [ ] Count in page heading updates immediately after any change
 
 ### Account Layout Tab
+
 - [ ] "Wishlist" tab visible in account navigation
 - [ ] Tab is active/highlighted when on `/account/wishlist`
 - [ ] Clicking tab uses SPA navigation (no full page reload)
@@ -166,12 +172,12 @@ src/
 
 The Cart also uses localStorage. It's the right choice here because:
 
-| localStorage | Supabase |
-|---|---|
-| Instant (no network request) | Requires API call |
-| Works when logged out | Requires auth session |
-| Same pattern as the Cart | New pattern to learn/maintain |
-| Fine for device-local wishlist | Needed for cross-device sync |
+| localStorage                   | Supabase                      |
+| ------------------------------ | ----------------------------- |
+| Instant (no network request)   | Requires API call             |
+| Works when logged out          | Requires auth session         |
+| Same pattern as the Cart       | New pattern to learn/maintain |
+| Fine for device-local wishlist | Needed for cross-device sync  |
 
 **When to add Supabase sync (future enhancement):**
 Create a `wishlists` table and call `supabase.from('wishlists').upsert(...)`
@@ -190,7 +196,7 @@ The `WishlistButton` uses `useVisibleTask$` with `track(() => wishlist.state.tot
 When `totalItems` changes (any save or remove), every mounted `WishlistButton`
 re-checks `isInWishlist(product.id)` and updates its own `isSaved` signal.
 
-Result: clicking the heart on a product in the shop *also* updates the heart
+Result: clicking the heart on a product in the shop _also_ updates the heart
 on the same product anywhere else it appears (featured products, related items, etc.)
 
 ---
@@ -243,10 +249,20 @@ All four requirements are met. ✅
 
 ## ID Attributes Added (follows project kebab-case convention)
 
-| Element | ID |
-|---|---|
-| Heart button (any product) | `wishlist-btn-{product.id}` |
-| Wishlist card wrapper | `wishlist-card-{item.id}` |
+| Element                       | ID                            |
+| ----------------------------- | ----------------------------- |
+| Heart button (any product)    | `wishlist-btn-{product.id}`   |
+| Wishlist card wrapper         | `wishlist-card-{item.id}`     |
 | "Move to Cart" button on card | `wishlist-cart-btn-{item.id}` |
-| "Add All to Cart" bulk button | `wishlist-add-all-btn` |
-| "Clear All" button | `wishlist-clear-btn` |
+| "Add All to Cart" bulk button | `wishlist-add-all-btn`        |
+| "Clear All" button            | `wishlist-clear-btn`          |
+
+---
+
+### UI Stabilization Refinement (Feb 17)
+
+To ensure a premium feel, the `WishlistButton` (heart) was standardized across all product cards:
+
+- **Position**: Always pinned to the **bottom-right** of the product image.
+- **Margins**: Consistent `bottom-4` and `right-4` (1rem / 16px).
+- **Structure**: The `ProductCard` was refactored to separate the button from the image link, preventing "click propagation" bugs where saving an item would accidentally navigate to the product page.
