@@ -3,6 +3,7 @@ import { component$, useSignal, $ } from "@builder.io/qwik";
 import { useCart } from "~/contexts/cart";
 import { QuantitySelector } from "./QuantitySelector";
 import { AddToCartButton } from "~/components/cart/AddToCartButton";
+import { WishlistButton } from "../wishlist/WishlistButton";
 
 type ProductInfoProps = {
   id: number;
@@ -251,7 +252,7 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
       */}
       <div class="flex gap-4">
         {/* Enhanced Add to Cart Button */}
-        <div class="flex-1">
+        <div class="flex-1 flex gap-3">
           <AddToCartButton
             product={{
               id: props.id,
@@ -267,6 +268,17 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
             size="lg"
             fullWidth
             disabled={isOutOfStock}
+          />
+          <WishlistButton
+            product={{
+              id: props.id,
+              title: props.title,
+              price: props.price,
+              image: props.image,
+              category: props.category || "Uncategorized",
+              discount: props.discount,
+            }}
+            variant="button"
           />
         </div>
 

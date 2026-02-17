@@ -21,6 +21,8 @@ import { Header } from '~/components/ui/Header';
 import { ToastProvider } from '~/contexts/toast';
 import { AuthProvider } from '~/contexts/auth';
 
+import { WishlistProvider } from '~/contexts/wishlist';
+
 /**
  * routeLoader$ - Getting data before the page loads
  * This one just returns the current server time.
@@ -35,6 +37,7 @@ export default component$(() => {
   return (
     <AuthProvider>
     <CartProvider>
+    <WishlistProvider>
       <div class="min-h-screen flex flex-col font-sans">
         <Header />
         <main class="flex-1 bg-white">
@@ -48,6 +51,7 @@ export default component$(() => {
           </div>
         </footer>
       </div>
+    </WishlistProvider>
     </CartProvider>
     </AuthProvider>
   );
