@@ -100,7 +100,7 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
             : "";
 
         // Show toast notification with product details
-        // eslint-disable-next-line qwik/valid-lexical-scope
+         
         toast.showToast(
           `${quantity > 1 ? `${quantity}x ` : ""}${product.title}${variantText} added to cart`,
           "success",
@@ -117,7 +117,7 @@ export const AddToCartButton = component$<AddToCartButtonProps>(
         }, 2000);
       } catch (error) {
         // Show error toast
-        // eslint-disable-next-line qwik/valid-lexical-scope
+         
         toast.showToast("Failed to add item to cart", "error");
         console.error("Add to cart error:", error);
       } finally {
