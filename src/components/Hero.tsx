@@ -1,3 +1,4 @@
+
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
 
@@ -45,14 +46,14 @@ export const Hero = component$(() => {
             }`}
           >
             <picture>
-              {Object.entries((slide.image as any).sources).map(([key, value]) => (
+              {Object.entries(slide.image.sources).map(([key, value]) => (
                 <source key={key} srcset={value as string} type={"image/" + key} />
               ))}
               <img
-                src={(slide.image as any).img.src}
+                src={slide.image.img.src}
                 alt={slide.alt}
-                width={(slide.image as any).img.w}
-                height={(slide.image as any).img.h}
+                width={slide.image.img.w}
+                height={slide.image.img.h}
                 class="h-full w-full object-cover opacity-60" // moderate opacity for text readability
                 loading="lazy"
               />
