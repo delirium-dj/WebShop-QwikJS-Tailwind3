@@ -33,6 +33,23 @@ declare module '*?as=picture&w=400;800&format=avif;webp;jpg&quality=80' {
     export default content;
   }
   
+  declare module '*?as=picture&w=512;640;720&format=avif;webp;jpg&quality=85&placeholder=blur' {
+    const content: {
+      sources: {
+        avif: string;
+        webp: string;
+        jpg: string;
+        [key: string]: string;
+      };
+      img: {
+        src: string;
+        w: number;
+        h: number;
+      };
+    };
+    export default content;
+  }
+  
   // Generic fallback for any other imagetools queries
   declare module '*?as=picture*' {
     const content: any;

@@ -2,8 +2,9 @@ import { component$ } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
 
 // Import images as components using the ?jsx suffix for automatic optimization (WebP, AVIF, lazy loading)
-import ImgWomen from '~/media/images/categories/women.jpg?jsx';
-import ImgMen from '~/media/images/categories/men.jpg?jsx';
+import ImgWomen from '~/media/images/categories/renaldo-matamoro-0LVSC_L2lEc-unsplash.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=85&placeholder=blur';
+import ImgMen from '~/media/images/categories/hunters-race-hNoSCxPWYII-unsplash.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=85&placeholder=blur';
+import ImgElectronics from '~/media/images/categories/electronics.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=85&placeholder=blur';
 
 const categories = [
   {
@@ -21,7 +22,7 @@ const categories = [
   {
     id: 3,
     title: "Electronics",
-    image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1000&auto=format&fit=crop",
+    image: ImgElectronics,
     url: "/shop?category=electronics",
   },
 ];
@@ -34,14 +35,20 @@ export const Categories = component$(() => {
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
           {categories.map((category) => {
-            // Determine if the image is a component (ESM import) or a string (external URL)
-            const ImageComponent = category.image;
+            // Determine if the image is a component (ESM import), a string (external URL), or a metadata object
+            const ImageComponent = category.image as any;
             
             const Content = (
               <div
                 id={`category-card-${category.id}`}
                 class="group relative overflow-hidden rounded-lg"
               >
+                {/* 
+                  Image Handling Logic:
+                  1. If it's a string, it's an external URL.
+                  2. If it's an object with 'sources', it's a vite-imagetools "picture" metadata object.
+                  3. Defaults to a JSX component (from ?jsx suffix).
+                */}
                 {typeof ImageComponent === 'string' ? (
                   <img
                     src={ImageComponent}
@@ -49,7 +56,22 @@ export const Categories = component$(() => {
                     width={400}
                     height={400}
                     class="h-80 w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
                   />
+                ) : (ImageComponent as any).sources ? (
+                  <picture class="h-80 w-full overflow-hidden">
+                    {Object.entries((ImageComponent as any).sources).map(([key, value]) => (
+                      <source key={key} srcset={value as string} type={"image/" + key} />
+                    ))}
+                    <img
+                      src={(ImageComponent as any).img.src}
+                      alt={category.title}
+                      width={(ImageComponent as any).img.w}
+                      height={(ImageComponent as any).img.h}
+                      class="h-80 w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </picture>
                 ) : (
                   <ImageComponent 
                     alt={category.title}
