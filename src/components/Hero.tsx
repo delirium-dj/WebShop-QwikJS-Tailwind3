@@ -40,7 +40,8 @@ export const Hero = component$(() => {
           <div
             key={slide.id}
             class={`absolute inset-0 h-full w-full transition-opacity duration-1000 ease-in-out ${
-              isMounted.value && index === currentSlide.value
+              // Ensure the first slide is visible during SSR and before client-side hydration
+              (isMounted.value && index === currentSlide.value) || (!isMounted.value && index === 0)
                 ? "opacity-100"
                 : "opacity-0"
             }`}
@@ -55,7 +56,10 @@ export const Hero = component$(() => {
                 width={slide.image.img.w}
                 height={slide.image.img.h}
                 class="h-full w-full object-cover opacity-60" // moderate opacity for text readability
-                loading="lazy"
+                // Optimization: Eager load the first slide's image for better LCP
+                loading={index === 0 ? "eager" : "lazy"}
+                // @ts-expect-error - fetchpriority is a valid but newer attribute
+                fetchpriority={index === 0 ? "high" : undefined}
               />
             </picture>
             {/* Gradient Overlay for better text contrast */}
