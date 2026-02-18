@@ -43,7 +43,7 @@
  * ```
  */
 
-import { component$, useSignal, $ } from "@builder.io/qwik";
+import { component$, useSignal, $, type PropFunction } from "@builder.io/qwik";
 import type { StarRating as StarRatingValue } from "~/types/review";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ interface StarRatingProps {
    * Receives the chosen star value (1–5).
    * Required in "input" mode, ignored in "display" mode.
    */
-  onChange$?: (rating: StarRatingValue) => void;
+  onChange$?: PropFunction<(rating: StarRatingValue) => void>;
 
   /** Extra CSS classes for outer wrapper positioning */
   class?: string;

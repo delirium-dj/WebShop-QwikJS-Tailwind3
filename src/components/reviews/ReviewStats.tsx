@@ -31,8 +31,7 @@
 
 import { component$ } from "@builder.io/qwik";
 import type { QRL } from "@builder.io/qwik";
-import type { ReviewStats, StarRating } from "~/types/review";
-import { STAR_LABELS } from "~/types/review";
+import type { ReviewStats as ReviewStatsData, StarRating } from "~/types/review";
 import { StarRating as StarRatingComponent } from "./StarRating";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -41,7 +40,7 @@ import { StarRating as StarRatingComponent } from "./StarRating";
 
 interface ReviewStatsProps {
   /** The aggregated stats object to display */
-  stats: ReviewStats;
+  stats: ReviewStatsData;
 
   /**
    * Optional: called when the user clicks a rating row to filter by it.

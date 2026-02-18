@@ -41,16 +41,16 @@ interface ImageToolsPicture {
 
 // ─── Pattern 1: Hero slides ────────────────────────────────────────
 // Used in: src/components/Hero.tsx (slide1–4)
-// Query:   ?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=80&placeholder=blur
-declare module "*.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=80&placeholder=blur" {
+// Query:   ?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur
+declare module "*.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur" {
   const value: ImageToolsPicture;
   export default value;
 }
 
 // ─── Pattern 2: Category images ────────────────────────────────────
 // Used in: src/components/home/Categories.tsx
-// Query:   ?as=picture&w=512;640;720&format=avif;webp;jpg&quality=85&placeholder=blur
-declare module "*.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=85&placeholder=blur" {
+// Query:   ?as=picture&w=512;640;720&format=avif;webp;jpg&quality=75&placeholder=blur
+declare module "*.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=75&placeholder=blur" {
   const value: ImageToolsPicture;
   export default value;
 }
