@@ -7,6 +7,7 @@ import { RelatedProducts } from '~/components/product/RelatedProducts';
 import { Breadcrumb } from '~/components/ui/Breadcrumb';
 import { getProductById, getAllProducts } from '~/services/api/products';
 import { mapApiProductToProduct, mapApiProductsToProducts } from '~/utils/product-mapper';
+import { ProductReviews } from "~/components/reviews";
 
 // We use routeLoader$ to fetch data on the server before the component renders.
 export const useProductData = routeLoader$(async ({ params, status }) => {
@@ -87,6 +88,14 @@ export default component$(() => {
             <ProductGallery
               images={product.images || [product.image]}
               title={product.title}
+              product={{
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: product.image,
+                category: product.category,
+                discount: product.discount
+              }}
             />
           </div>
 
@@ -121,6 +130,14 @@ export default component$(() => {
           />
         </div>
       )}
+
+      {/* REVIEWS SECTION — Step 10 */}
+      <div class="container mx-auto px-4 border-t py-12">
+        <ProductReviews
+          productId={product.id}
+          productTitle={product.title}
+        />
+      </div>
     </div>
   );
 });

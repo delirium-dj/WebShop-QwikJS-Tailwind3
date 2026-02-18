@@ -1,6 +1,6 @@
 # ReconShop Project - Complete AI Context Guide
 
-**Last Updated:** February 17, 2026 (Step 9 Complete - Wishlist & Banner Carousel)
+**Last Updated:** February 18, 2026 (Step 10 Complete - Reviews & Ratings & UI Refinements)
 **Framework:** QwikJS v1.19.0 with Qwik City  
 **Language:** TypeScript 5.4.5  
 **Styling:** Tailwind CSS 3.4.17  
@@ -30,6 +30,8 @@
 - ✅ **SPA Navigation & Layout Fixes**: Resolved hydration issues by refactoring `AuthGuard` placement and restored smooth SPA routing for the account section (Feb 14, 2026)
 - ✅ **Semantic ID Attributes**: 40+ unique IDs on all interactive elements (Feb 13, 2026)
 - ✅ **Wishlist System**: Full add/remove/toggle with localStorage persistence, heart buttons on ProductCard and ProductInfo, dedicated `/account/wishlist` page with bulk actions (Feb 17, 2026)
+- ✅ **Reviews & Ratings**: Comprehensive user-generated content system with star ratings, filters, and review submission integrated into product pages (Feb 18, 2026)
+- ✅ **UI Refinements**: Relocated wishlist heart to image gallery and expanded "Add to Cart" button for improved UX (Feb 18, 2026)
 
 ### Technology Stack
 
@@ -101,12 +103,19 @@ reconshop/
 │   │   ├── product/                     # Product-related components
 │   │   │   ├── ProductImage.tsx         # Individual product image
 │   │   │   ├── ImageGallery.tsx         # Gallery with thumbnails
-│   │   │   ├── ProductCard.tsx          # Product card for listings
-│   │   │   ├── ProductGallery.tsx       # Product detail gallery
-│   │   │   ├── ProductInfo.tsx          # Product details & specs
+│   │   │   ├── ProductCard.tsx          # Product card for listings (with StarRating)
+│   │   │   ├── ProductGallery.tsx       # Product detail gallery (with integrated Wishlist)
+│   │   │   ├── ProductInfo.tsx          # Product details & specs (expanded AddToCart)
 │   │   │   ├── ProductImage.tsx         # Single product image
 │   │   │   ├── QuantitySelector.tsx     # Quantity input component
 │   │   │   ├── RelatedProducts.tsx      # Related items section
+│   │   │   └── index.ts                 # Barrel exports
+│   │   ├── reviews/                     # Reviews & Ratings components (NEW - Step 10)
+│   │   │   ├── ProductReviews.tsx       # Main reviews container & logic
+│   │   │   ├── ReviewCard.tsx           # Individual review display
+│   │   │   ├── ReviewForm.tsx           # Review submission/edit form
+│   │   │   ├── ReviewStats.tsx          # Rating breakdown & summary
+│   │   │   ├── StarRating.tsx           # Reusable star rating component
 │   │   │   └── index.ts                 # Barrel exports
 │   │   ├── auth/                        # User authentication components (NEW)
 │   │   │   ├── LoginForm.tsx            # Login form logic & UI
@@ -192,17 +201,19 @@ reconshop/
 │   │   ├── layout.tsx                   # Root layout with providers
 │   │
 │   ├── services/                        # API and business logic
-│   │   ├── api/                         # API service layer (products)
-│   │   └── orders.service.ts            # Order CRUD (createOrder, getOrderById, etc.)
-│   │       ├── products.ts              # Product API functions
-│   │       ├── types.ts                 # API type definitions
-│   │       ├── config.ts                # API configuration
-│   │       └── index.ts                 # Barrel exports
+│   │   ├── api/                         # API service layer
+│   │   │   ├── products.ts              # Product API functions
+│   │   │   ├── reviews.service.ts       # Review CRUD for Supabase (NEW - Step 10)
+│   │   │   ├── types.ts                 # API type definitions
+│   │   │   ├── config.ts                # API configuration
+│   │   │   └── index.ts                 # Barrel exports
+│   │   └── orders.service.ts            # Order CRUD (createOrder, etc.)
 │   │
 │   ├── types/                           # Shared TypeScript interfaces
 │   │   ├── product.ts                   # Product interfaces
-│   │   ├── order.ts                     # Order types (Order, OrderItem, OrderStatus, etc.)
-│   │   └── image.types.ts               # Image-related types
+│   │   ├── order.ts                     # Order types (Order, OrderItem, etc.)
+│   │   ├── image.types.ts               # Image-related types
+│   │   └── review.ts                    # Review types (Review, ReviewRow, etc.) (NEW)
 │   │
 │   ├── utils/                           # Utility functions
 │   │   ├── image.ts                     # Consolidated image utilities
@@ -791,6 +802,13 @@ All images in `public/` are automatically optimized during build.
 - Variant selectors (size, color dropdowns)
 - Quantity selector
 - Add to cart button
+- Buy Now button
+
+#### ProductGallery Component (Updated)
+
+- Main image display with Zoom.
+- **Integrated WishlistButton**: Heart icon in the bottom-right corner.
+- Image counter relocated to bottom-left to avoid overlap.
 
 #### QuantitySelector Component
 
@@ -799,6 +817,21 @@ All images in `public/` are automatically optimized during build.
 - Decrement (-) button
 - Min/max validation
 - Accessible ARIA labels
+
+#### ProductReviews Component (NEW - Step 10)
+
+- **Reviews Logic**: Fetches and displays reviews from Supabase.
+- **Stats Display**: Shows average rating and total review count.
+- **Review Listing**: Sortable (newest, highest, lowest) and filterable reviews.
+- **Social Proof**: Individual `ReviewCard` components with author info.
+- **Interactivity**: `ReviewForm` for verified users to submit or edit their reviews.
+
+#### StarRating Component (NEW - Step 10)
+
+- **Reusable Utility**: Standardized star display across the app.
+- **Interactive Mode**: Allows clicking stars to set a rating (1-5).
+- **Display Mode**: Shows readonly ratings (supports half-stars/fractional).
+- **Size Options**: `xs`, `sm`, `md`, `lg` for different UI contexts.
 
 #### RelatedProducts Component
 
@@ -1508,8 +1541,14 @@ When working on this project:
 
 ---
 
-**Document Version:** 2.1  
-**Last Updated:** February 17, 2026 (Part 3 — Banner Carousel & Image Optimization Fix)
+**Document Version:** 2.2  
+**Last Updated:** February 18, 2026 (Part 1 — Reviews & Ratings)
+**Session (Feb 18 - Part 1):** Reviews & Ratings Integration:
+
+- ✅ **Step 10: Reviews System**: Full integration of product reviews including stats, filtering, and submission forms.
+- ✅ **StarRating System**: Standardized all rating displays using a single reusable component.
+- ✅ **UI Optimization**: Relocated wishlist heart to gallery and expanded "Add to Cart" button for better UX.
+
 **Session (Feb 17 - Part 3):** Banner Carousel & Imagetools Fix:
 
 - ✅ **Banner Carousel**: Refactored `Banner.tsx` into an auto-rotating carousel using optimized images and smooth crossfade transitions.

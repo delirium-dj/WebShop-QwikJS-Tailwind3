@@ -18,6 +18,7 @@ ReconShop is a high-performance, SEO-optimized eCommerce platform built using **
 - **Reactive Filtering & Sorting**: Instant, client-side dynamic grid updates with URL parameter synchronization.
 - **Image Optimization**: Professional-grade optimization (AVIF/WebP) using `vite-plugin-image-optimizer`.
 - **Mobile UX**: High-performance animated hamburger menu, user profile menu, and slide-in cart drawer.
+- **Reviews & Ratings**: Comprehensive user-generated content system with star ratings, filters, and review submission.
 
 ## 🛠️ Tech Stack
 

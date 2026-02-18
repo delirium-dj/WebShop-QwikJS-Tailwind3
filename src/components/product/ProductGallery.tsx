@@ -1,10 +1,20 @@
 import { component$, useSignal, $ } from "@builder.io/qwik";
 import type { ProductImage } from "~/utils/image";
+import { WishlistButton } from "../wishlist/WishlistButton";
 
 // Prop definitions for the ProductGallery component
 type ProductGalleryProps = {
   images: (string | ProductImage)[]; // Array of image URLs or objects
   title: string; // Product title for alt text accessibility
+  // Added for wishlist integration
+  product?: {
+    id: number;
+    title: string;
+    price: number;
+    image: string;
+    category: string;
+    discount?: number;
+  };
 };
 
 /**
@@ -13,7 +23,7 @@ type ProductGalleryProps = {
  * zoom functionality, and a thumbnail navigation bar.
  */
 export const ProductGallery = component$<ProductGalleryProps>(
-  ({ images, title }) => {
+  ({ images, title, product }) => {
     // Helper to get image URL regardless of format
     const getUrl = (img: string | ProductImage) =>
       typeof img === "string" ? img : img.url;
@@ -71,6 +81,23 @@ export const ProductGallery = component$<ProductGalleryProps>(
             />
           </div>
 
+          {/* Wishlist Button — Integrated into bottom-right corner of main image gallery */}
+          {product && (
+            <div class="absolute bottom-4 right-4 z-40">
+              <WishlistButton 
+                product={{
+                  id: product.id,
+                  title: product.title,
+                  price: product.price,
+                  image: product.image,
+                  category: product.category || "Uncategorized",
+                  discount: product.discount || 0
+                }} 
+                variant="icon"
+              />
+            </div>
+          )}
+
           {/* Navigation Arrows (Only visible on hover) */}
           {images.length > 1 && (
             <>
@@ -117,9 +144,9 @@ export const ProductGallery = component$<ProductGalleryProps>(
             </>
           )}
 
-          {/* Image Counter Badge */}
+          {/* Image Counter Badge — Shifted slightly to left to avoid collision with Wishlist heart */}
           {images.length > 1 && (
-            <div class="absolute bottom-4 right-4 rounded-full bg-black/60 px-3 py-1 text-xs font-medium tracking-wider text-white backdrop-blur-md">
+            <div class="absolute bottom-4 left-4 rounded-full bg-black/60 px-3 py-1 text-xs font-medium tracking-wider text-white backdrop-blur-md">
               {selectedImageIndex.value + 1} / {images.length}
             </div>
           )}

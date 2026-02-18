@@ -3,7 +3,7 @@ import { component$, useSignal, $ } from "@builder.io/qwik";
 import { useCart } from "~/contexts/cart";
 import { QuantitySelector } from "./QuantitySelector";
 import { AddToCartButton } from "~/components/cart/AddToCartButton";
-import { WishlistButton } from "../wishlist/WishlistButton";
+import { StarRating } from "~/components/reviews/StarRating";
 
 type ProductInfoProps = {
   id: number;
@@ -88,31 +88,17 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
       {/* Title */}
       <h1 class="text-3xl font-bold text-gray-900">{props.title}</h1>
 
-      {/* Rating & Reviews */}
+      {/* Rating & Reviews — Step 10: Use StarRating component */}
       {props.rating && (
         <div class="flex items-center gap-4">
-          <div class="flex items-center">
-            <div class="flex text-yellow-400">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  class={`h-5 w-5 ${
-                    i < Math.floor(props.rating!)
-                      ? "fill-current"
-                      : "fill-gray-300"
-                  }`}
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-              ))}
-            </div>
-            <span class="ml-2 font-medium text-gray-700">
+          <div class="flex items-center gap-2">
+            <StarRating value={props.rating} mode="display" size="sm" />
+            <span class="font-medium text-gray-700">
               {props.rating.toFixed(1)}
             </span>
           </div>
           {props.reviews && (
-            <span class="text-gray-500">({props.reviews} reviews)</span>
+            <span class="text-sm text-gray-500">({props.reviews} reviews)</span>
           )}
         </div>
       )}
@@ -251,8 +237,8 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
           - Buy Now button for quick checkout (navigates to cart immediately)
       */}
       <div class="flex gap-4">
-        {/* Enhanced Add to Cart Button */}
-        <div class="flex-1 flex gap-3">
+        {/* Enhanced Add to Cart Button — Now takes full width of the primary action area */}
+        <div class="flex-1">
           <AddToCartButton
             product={{
               id: props.id,
@@ -268,17 +254,6 @@ export const ProductInfo = component$<ProductInfoProps>((props) => {
             size="lg"
             fullWidth
             disabled={isOutOfStock}
-          />
-          <WishlistButton
-            product={{
-              id: props.id,
-              title: props.title,
-              price: props.price,
-              image: props.image,
-              category: props.category || "Uncategorized",
-              discount: props.discount,
-            }}
-            variant="button"
           />
         </div>
 
