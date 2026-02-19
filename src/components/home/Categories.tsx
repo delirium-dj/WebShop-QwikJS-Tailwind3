@@ -2,7 +2,7 @@ import { component$ } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
 
 // Import images as components using the ?jsx suffix for automatic optimization (WebP, AVIF, lazy loading)
-import ImgWomen from '~/media/images/categories/renaldo-matamoro-0LVSC_L2lEc-unsplash.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=75&placeholder=blur';
+import ImgWomen from '~/media/images/categories/srinivas-bandari-6Hp13-PYaOE-unsplash.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=75&placeholder=blur';
 import ImgMen from '~/media/images/categories/hunters-race-hNoSCxPWYII-unsplash.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=75&placeholder=blur';
 import ImgElectronics from '~/media/images/categories/electronics.jpg?as=picture&w=512;640;720&format=avif;webp;jpg&quality=75&placeholder=blur';
 

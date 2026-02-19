@@ -47,7 +47,7 @@ export default component$(() => {
         </main>
         <footer class="bg-gray-900 text-white py-6">
           <div class="container mx-auto px-4 text-center">
-            <p class="text-gray-500">© 2024 ReconShop. All rights reserved.</p>
+            <p class="text-gray-400">© 2024 ReconShop. All rights reserved.</p>
           </div>
         </footer>
       </div>

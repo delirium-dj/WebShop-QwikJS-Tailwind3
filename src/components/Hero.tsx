@@ -3,10 +3,10 @@ import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
 
 // Import local hero images with optimization queries
-import ImgHero1 from '~/media/images/hero/slide1.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
-import ImgHero2 from '~/media/images/hero/slide2.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
-import ImgHero3 from '~/media/images/hero/slide3.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
-import ImgHero4 from '~/media/images/hero/slide4.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
+import ImgHero1 from '~/media/images/hero/renaldo-matamoro-0LVSC_L2lEc-unsplash.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
+import ImgHero2 from '~/media/images/hero/slide1.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
+import ImgHero3 from '~/media/images/hero/renaldo-matamoro-nmqeZMomaMI-unsplash.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
+import ImgHero4 from '~/media/images/hero/tamara-bellis-IwVRO3TLjLc-unsplash.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
 
 const SLIDES = [
   { id: 1, image: ImgHero1, alt: "Summer Fashion Collection" },

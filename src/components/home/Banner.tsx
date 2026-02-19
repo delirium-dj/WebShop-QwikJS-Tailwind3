@@ -2,9 +2,9 @@ import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 
 // Import banner images with optimization queries
 // Using the same query string pattern as Hero.tsx for consistency
-import ImgBanner1 from '~/media/images/hero/slide2.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
-import ImgBanner2 from '~/media/images/hero/slide3.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
-import ImgBanner3 from '~/media/images/hero/slide4.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
+import ImgBanner1 from '~/media/images/banner/gary-yost-uvHy-_5A4oU-unsplash.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
+import ImgBanner2 from '~/media/images/banner/bohdan-stocek-011PDv4bx6o-unsplash.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
+import ImgBanner3 from '~/media/images/banner/huy-phan-MeXT3dO6KJI-unsplash.jpg?as=picture&w=480;720;1080;1920&format=avif;webp;jpg&quality=50&placeholder=blur';
 
 const SLIDES = [
   { id: 1, image: ImgBanner1, alt: "New Season Arrivals" },
